@@ -1,0 +1,425 @@
+<?php
+
+namespace Amplify\System\Support;
+
+class Money
+{
+    public const AED = 'AED';
+
+    public const AFN = 'AFN';
+
+    public const ALL = 'ALL';
+
+    public const AMD = 'AMD';
+
+    public const ANG = 'ANG';
+
+    public const AOA = 'AOA';
+
+    public const ARS = 'ARS';
+
+    public const AUD = 'AUD';
+
+    public const AWG = 'AWG';
+
+    public const AZN = 'AZN';
+
+    public const BAM = 'BAM';
+
+    public const BBD = 'BBD';
+
+    public const BDT = 'BDT';
+
+    public const BGN = 'BGN';
+
+    public const BHD = 'BHD';
+
+    public const BIF = 'BIF';
+
+    public const BMD = 'BMD';
+
+    public const BND = 'BND';
+
+    public const BOB = 'BOB';
+
+    public const BOV = 'BOV';
+
+    public const BRL = 'BRL';
+
+    public const BSD = 'BSD';
+
+    public const BTN = 'BTN';
+
+    public const BWP = 'BWP';
+
+    public const BYN = 'BYN';
+
+    public const BZD = 'BZD';
+
+    public const CAD = 'CAD';
+
+    public const CDF = 'CDF';
+
+    public const CHF = 'CHF';
+
+    public const CLF = 'CLF';
+
+    public const CLP = 'CLP';
+
+    public const CNY = 'CNY';
+
+    public const COP = 'COP';
+
+    public const CRC = 'CRC';
+
+    public const CUC = 'CUC';
+
+    public const CUP = 'CUP';
+
+    public const CVE = 'CVE';
+
+    public const CZK = 'CZK';
+
+    public const DJF = 'DJF';
+
+    public const DKK = 'DKK';
+
+    public const DOP = 'DOP';
+
+    public const DZD = 'DZD';
+
+    public const EGP = 'EGP';
+
+    public const ERN = 'ERN';
+
+    public const ETB = 'ETB';
+
+    public const EUR = 'EUR';
+
+    public const FJD = 'FJD';
+
+    public const FKP = 'FKP';
+
+    public const GBP = 'GBP';
+
+    public const GEL = 'GEL';
+
+    public const GHS = 'GHS';
+
+    public const GIP = 'GIP';
+
+    public const GMD = 'GMD';
+
+    public const GNF = 'GNF';
+
+    public const GTQ = 'GTQ';
+
+    public const GYD = 'GYD';
+
+    public const HKD = 'HKD';
+
+    public const HNL = 'HNL';
+
+    public const HRK = 'HRK';
+
+    public const HTG = 'HTG';
+
+    public const HUF = 'HUF';
+
+    public const IDR = 'IDR';
+
+    public const ILS = 'ILS';
+
+    public const INR = 'INR';
+
+    public const IQD = 'IQD';
+
+    public const IRR = 'IRR';
+
+    public const ISK = 'ISK';
+
+    public const JMD = 'JMD';
+
+    public const JOD = 'JOD';
+
+    public const JPY = 'JPY';
+
+    public const KES = 'KES';
+
+    public const KGS = 'KGS';
+
+    public const KHR = 'KHR';
+
+    public const KMF = 'KMF';
+
+    public const KPW = 'KPW';
+
+    public const KRW = 'KRW';
+
+    public const KWD = 'KWD';
+
+    public const KYD = 'KYD';
+
+    public const KZT = 'KZT';
+
+    public const LAK = 'LAK';
+
+    public const LBP = 'LBP';
+
+    public const LKR = 'LKR';
+
+    public const LRD = 'LRD';
+
+    public const LSL = 'LSL';
+
+    public const LTL = 'LTL';
+
+    public const LVL = 'LVL';
+
+    public const LYD = 'LYD';
+
+    public const MAD = 'MAD';
+
+    public const MDL = 'MDL';
+
+    public const MGA = 'MGA';
+
+    public const MKD = 'MKD';
+
+    public const MMK = 'MMK';
+
+    public const MNT = 'MNT';
+
+    public const MOP = 'MOP';
+
+    public const MRO = 'MRO';
+
+    public const MUR = 'MUR';
+
+    public const MVR = 'MVR';
+
+    public const MWK = 'MWK';
+
+    public const MXN = 'MXN';
+
+    public const MYR = 'MYR';
+
+    public const MZN = 'MZN';
+
+    public const NAD = 'NAD';
+
+    public const NGN = 'NGN';
+
+    public const NIO = 'NIO';
+
+    public const NOK = 'NOK';
+
+    public const NPR = 'NPR';
+
+    public const NZD = 'NZD';
+
+    public const OMR = 'OMR';
+
+    public const PAB = 'PAB';
+
+    public const PEN = 'PEN';
+
+    public const PGK = 'PGK';
+
+    public const PHP = 'PHP';
+
+    public const PKR = 'PKR';
+
+    public const PLN = 'PLN';
+
+    public const PYG = 'PYG';
+
+    public const QAR = 'QAR';
+
+    public const RON = 'RON';
+
+    public const RSD = 'RSD';
+
+    public const RUB = 'RUB';
+
+    public const RWF = 'RWF';
+
+    public const SAR = 'SAR';
+
+    public const SBD = 'SBD';
+
+    public const SCR = 'SCR';
+
+    public const SDG = 'SDG';
+
+    public const SEK = 'SEK';
+
+    public const SGD = 'SGD';
+
+    public const SHP = 'SHP';
+
+    public const SLL = 'SLL';
+
+    public const SOS = 'SOS';
+
+    public const SRD = 'SRD';
+
+    public const SSP = 'SSP';
+
+    public const STD = 'STD';
+
+    public const SVC = 'SVC';
+
+    public const SYP = 'SYP';
+
+    public const SZL = 'SZL';
+
+    public const THB = 'THB';
+
+    public const TJS = 'TJS';
+
+    public const TMT = 'TMT';
+
+    public const TND = 'TND';
+
+    public const TOP = 'TOP';
+
+    public const TRY = 'TRY';
+
+    public const TTD = 'TTD';
+
+    public const TWD = 'TWD';
+
+    public const TZS = 'TZS';
+
+    public const UAH = 'UAH';
+
+    public const UGX = 'UGX';
+
+    public const USD = 'USD';
+
+    public const UYU = 'UYU';
+
+    public const UZS = 'UZS';
+
+    public const VEF = 'VEF';
+
+    public const VND = 'VND';
+
+    public const VUV = 'VUV';
+
+    public const WST = 'WST';
+
+    public const XAF = 'XAF';
+
+    public const XAG = 'XAG';
+
+    public const XAU = 'XAU';
+
+    public const XCD = 'XCD';
+
+    public const XDR = 'XDR';
+
+    public const XOF = 'XOF';
+
+    public const XPF = 'XPF';
+
+    public const YER = 'YER';
+
+    public const ZAR = 'ZAR';
+
+    public const ZMW = 'ZMW';
+
+    public const ZWL = 'ZWL';
+
+    public $input;
+
+    public ?int $amount;
+
+    public $subunit;
+
+    public string $code;
+
+    public array $config;
+
+    public function __construct(string|float|int|null $amount = 0.0, ?string $code = null)
+    {
+        $this->loadConfig($code);
+        $this->loadAmount($amount);
+    }
+
+    private function loadConfig(?string $code = null): void
+    {
+        $systemCurrencyCode = config('amplify.basic.global_currency', self::USD);
+        $this->config = config('amplify.constant.currency.'.($code ?? $systemCurrencyCode));
+
+    }
+
+    private function loadAmount(string|float|int|null $amount = 0.0): void
+    {
+        $this->input = $amount;
+
+        if ($amount === null || strlen($amount) == '') {
+            $this->amount = null;
+            $this->subunit = null;
+
+            return;
+        }
+
+        $thousandsSeparator = $this->config['thousands_separator'];
+        $amount = str_replace($thousandsSeparator, '', $amount);
+
+        $decimalSeparator = $this->config['decimal_mark'];
+        $values = explode($decimalSeparator, $amount);
+
+        if ($values[0] == '') {
+            $this->amount = 0;
+        } else {
+            $this->amount = (int) filter_var($values[0], FILTER_SANITIZE_NUMBER_INT);
+        }
+
+        if (isset($values[1])) {
+            $subunit = filter_var($values[1], FILTER_SANITIZE_NUMBER_INT);
+            $this->subunit = str_pad($subunit, $this->config['precision'], '0');
+        } else {
+            $this->subunit = 0;
+        }
+
+    }
+
+    public static function parse(string|float|int|null $amount, ?string $code = null): static
+    {
+        return new static($amount, $code);
+    }
+
+    public function format(string $code): string
+    {
+        $this->loadConfig($code);
+
+        return (string) $this;
+    }
+
+    public function toFloat(): ?float
+    {
+        if ($this->amount == null) {
+            return null;
+        }
+
+        return floatval($this->amount.'.'.$this->subunit);
+    }
+
+    public function __toString(): string
+    {
+        if ($this->amount === null) {
+            return '-';
+        }
+
+        $mergedValue = floatval($this->amount.'.'.$this->subunit);
+
+        $money = number_format($mergedValue, $this->config['precision'], $this->config['decimal_mark'], $this->config['thousands_separator']);
+
+        return ($this->config['symbol_first'])
+            ? ($this->config['symbol'].$money)
+            : ($money.$this->config['symbol']);
+    }
+}

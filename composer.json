@@ -1,0 +1,42 @@
+{
+    "name": "amplify/system",
+    "description": "This is a System module for amplify",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Hafijul Islam",
+            "email": "hafijul.islam@easyask.com",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-gd": "*",
+        "amplify/captcha": "*",
+        "amplify/cms": "*",
+        "amplify/marketing": "*",
+        "amplify/media": "*",
+        "amplify/message": "*",
+        "amplify/order-rule": "*",
+        "amplify/sayt": "*",
+        "amplify/ticket": "*",
+        "amplify/utility": "*",
+        "amplify/custom-item": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Amplify\\System\\": "./"
+        },
+        "files": [
+            "./helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Amplify\\System\\SystemServiceProvider"
+            ]
+        }
+    }
+}
