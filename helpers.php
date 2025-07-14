@@ -329,8 +329,8 @@ if (! function_exists('array_flatten')) {
 if (! function_exists('checkIfProductFieldIsRequired')) {
     function checkIfProductFieldIsRequired($productFieldName): bool
     {
-        if (\App\Helpers\ProductHelper::isRequiredFields()) {
-            if (in_array($productFieldName, \App\Helpers\ProductHelper::getProductMandatoryFields(), true)) {
+        if (\Amplify\System\Helpers\ProductHelper::isRequiredFields()) {
+            if (in_array($productFieldName, \Amplify\System\Helpers\ProductHelper::getProductMandatoryFields(), true)) {
                 return true;
             }
         }
