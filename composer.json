@@ -31,6 +31,7 @@
         "amplify/ticket": "*",
         "amplify/utility": "*",
         "amplify/custom-item": "*",
+        "amplify/payment": "*",
         "backpack/permissionmanager": "^6.0.17",
         "barryvdh/laravel-dompdf": "^2.2",
         "carlos-meneses/laravel-mpdf": "^2.1.13",
