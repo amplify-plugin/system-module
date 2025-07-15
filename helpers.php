@@ -1336,7 +1336,7 @@ if (! function_exists('getCart')) {
             ])->first();
         }
 
-        if (config('amplify.frontend.guest_checkout')) {
+        if (config('amplify.frontend.guest_add_to_cart')) {
             return Cart::where([
                 'session_id' => session()->token(),
                 'status' => true,
