@@ -632,6 +632,8 @@ class UtilityHelper
                 $xpath = new \DOMXPath($domProd);
 
                 $parentId = (int) $productNode->getAttribute('ID');
+                $parentUrl = $productNode->getAttribute('URL');
+                $parentCode = collect(explode('/', $parentUrl))->last();
 
                 foreach ($xpath->query('//Item') as $itemNode) {
                     $skuId = (int) $itemNode->getAttribute('ID');
@@ -702,6 +704,7 @@ class UtilityHelper
                     yield [
                         'id' => $skuId,
                         'parent_id' => $parentId,
+                        'parent_product_code' => $parentCode,
                         'product_code' => $skuCode,
                         'product_name' => $productName,
                         'attributes' => $attributes,
