@@ -367,14 +367,19 @@ class UtilityHelper
 
             // Get first <Item> and collect AttributeIDs
             $attributeIds = [];
-            foreach ($productNode->getElementsByTagName('Item') as $itemNode) {
-                foreach ($itemNode->getElementsByTagName('Data') as $dataNode) {
-                    $attrId = $dataNode->getAttribute('AttributeID');
-                    if ($attrId && is_numeric($attrId)) {
-                        $attributeIds[] = (int) $attrId;
+            $skuProductCodes = [];
+            foreach ($productNode->getElementsByTagName('Item') as $index => $itemNode) {
+                if ($index === 0) {
+                    foreach ($itemNode->getElementsByTagName('Data') as $dataNode) {
+                        $attrId = $dataNode->getAttribute('AttributeID');
+                        if ($attrId && is_numeric($attrId)) {
+                            $attributeIds[] = (int) $attrId;
+                        }
                     }
-                }
-                break; // only first item
+                } //only for first time
+
+                $skuUrl = $itemNode->getAttribute('URL');
+                $skuProductCodes[] = collect(explode('/', $skuUrl))->last();
             }
 
             $products[] = [
@@ -383,6 +388,7 @@ class UtilityHelper
                 'product_code' => $productCode,
                 'image' => $imageUrl,
                 'sku_default_attributes' => array_values(array_unique($attributeIds)),
+                'sku_product_codes' => array_values(array_unique($skuProductCodes)),
             ];
         }
 
