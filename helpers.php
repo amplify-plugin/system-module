@@ -1167,7 +1167,9 @@ if (! function_exists('frontendSingleProductURL')) {
     function frontendSingleProductURL($product, $seo_path = null): string
     {
         $productSlug = returnProductSlug($product);
-
+        if(empty($seo_path)){
+            $seo_path = \Sayt::getDefaultCatPath();
+        }
         return getIsDynamicSiteFromCache()
             ? \request()->getSchemeAndHttpHost().'/'.getDynamicSiteSlugFromCache()."/shop/product/{$productSlug}/{$seo_path}"
             : route('frontend.shop.show', [$productSlug, $seo_path]);
