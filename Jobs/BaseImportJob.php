@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
-use Amplify\System\Backend\Services\JobFailService;
+use Amplify\System\Services\JobFailService;
 use Amplify\System\Utility\Models\ImportError;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;

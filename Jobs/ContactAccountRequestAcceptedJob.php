@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
-use Amplify\System\Backend\Services\MessageService;
+use Amplify\System\Services\MessageService;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
 use App\Models\Contact;
 use App\Models\Event;
@@ -13,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * @property \Amplify\System\Backend\Services\EmailService $emailService
+ * @property \Amplify\System\Services\EmailService $emailService
  * @property MessageService $messageService
  * @property Event $eventInfo
  */

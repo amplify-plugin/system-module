@@ -1,6 +1,6 @@
 <?php
 
-namespace Amplify\System\Backend\Services\PunchOutApi;
+namespace Amplify\System\Services\PunchOutApi;
 
 use Illuminate\Support\Facades\Http;
 

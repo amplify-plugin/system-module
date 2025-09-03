@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Jobs;
 
-use Amplify\System\Backend\Services\EmailService;
-use Amplify\System\Backend\Services\MessageService;
+use Amplify\System\Services\EmailService;
+use Amplify\System\Services\MessageService;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
 use App\Models\Contact;
 use App\Models\Event;

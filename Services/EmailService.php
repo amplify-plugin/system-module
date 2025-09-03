@@ -1,6 +1,6 @@
 <?php
 
-namespace Amplify\System\Backend\Services;
+namespace Amplify\System\Services;
 
 use Amplify\ErpApi\Wrappers\Customer as ErpCustomer;
 use Amplify\System\Jobs\DispatchEmailJob;

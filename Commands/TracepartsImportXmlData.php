@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Commands;
 
-use Amplify\System\Backend\Services\TracepartsXmlDataImportService;
+use Amplify\System\Services\TracepartsXmlDataImportService;
 use Illuminate\Console\Command;
 
 class TracepartsImportXmlData extends Command

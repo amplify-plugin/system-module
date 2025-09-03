@@ -1,6 +1,6 @@
 <?php
 
-namespace Amplify\System\Backend\Services;
+namespace Amplify\System\Services;
 
 class JobFailService
 {
