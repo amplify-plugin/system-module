@@ -105,8 +105,9 @@ class CategoryServiceJob extends BaseImportJob implements ShouldQueue
             $this->category->is_new = 1;
         }
 
+        $parentId = ! empty($this->category->parent_id) ? $this->category->parent_id : null;
         $this->category->is_updated = (bool) $this->is_updating;
-        $this->category->parent_id = $this->parent_id ?? null;
+        $this->category->parent_id = ! empty($this->parent_id) ? $this->parent_id : $parentId;
         $this->category->save();
     }
 

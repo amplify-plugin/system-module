@@ -3,12 +3,15 @@
 namespace Amplify\System\Backend\Services;
 
 use Amplify\System\Helpers\UtilityHelper;
-use Amplify\System\Jobs\ImportTracepartsXmlDataSkuChunkJob;
+use Amplify\System\Jobs\ImportTracePartsXmlDataSkuChunkJob;
 use App\Models\Attribute;
 use App\Models\Category;
+use App\Models\CategoryProduct;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\SkuProduct;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -134,41 +137,35 @@ class TracepartsXmlDataImportService
         $userId = $this->getImportUserId();
 
         foreach ($prods as $p) {
-            $existingProduct = Product::whereNull('traceparts_product_id')
-                ->where('product_code', $p['product_code'])
-                ->first();
-            if ($existingProduct) {
-                $skipped++;
-                Log::info("Skipping product with code {$p['product_code']} as it already exists without traceparts_product_id.");
+            $existingSkus = Product::whereIn('product_code', $p['sku_product_codes'])->count();
+            $firstSku = Product::whereIn('product_code', $p['sku_product_codes'])->with('productImage')->first();
 
-                continue;
-            }
+            if ($existingSkus > 0) {
+                $product = $this->updateProductData($p, $userId);
 
-            // Upsert the product by traceparts_product_id
-            $product = Product::updateOrCreate(
-                ['traceparts_product_id' => $p['id']],
-                [
-                    'product_code' => $p['product_code'],
-                    'product_name' => $p['product_name'],
-                    'sku_default_attributes' => json_encode($p['sku_default_attributes']),
-                    'has_sku' => true,
-                    'user_id' => $userId,
-                ]
-            );
+                Product::whereIn('product_code', $p['sku_product_codes'])
+                    ->where('product_code', '!=', $product['product_code'])
+                    ->update([
+                        'parent_id' => $product->id,
+                        'sku_id' => DB::raw("CONCAT_WS('-', {$product->id}, id)"),
+                    ]);
 
-            // Tally created vs updated
-            if ($product->wasRecentlyCreated) {
-                $created++;
-            } else {
-                $updated++;
-            }
+                if (! empty($firstSku->productImage->main)) {
+                    // Create or update product image
+                    ProductImage::updateOrCreate(
+                        ['product_id' => $product->id],
+                        [
+                            'main' => $firstSku->productImage->main,
+                        ]
+                    );
+                }
 
-            // Upsert the image using the real PK
-            if (! empty($p['image'])) {
-                ProductImage::updateOrCreate(
-                    ['product_id' => $product->id],
-                    ['main' => $p['image']]
-                );
+                // Tally created vs updated
+                if ($product->wasRecentlyCreated) {
+                    $created++;
+                } else {
+                    $updated++;
+                }
             }
         }
 
@@ -177,9 +174,69 @@ class TracepartsXmlDataImportService
 
     public function attachMasterProductsToCategories(): array
     {
-        $res = UtilityHelper::attachProductsToCategories($this->xml);
+        // Step 1: Get child -> parent mapping
+        $parentProducts = Product::whereNotNull('parent_id')
+            ->groupBy('parent_id')
+            ->pluck('parent_id', 'id')
+            ->toArray(); // [child_id => parent_id]
 
-        return [$res['attached'], $res['skipped']];
+        // Step 2: Get category_ids grouped by child_id, pick latest (sorted)
+        $categoryProducts = CategoryProduct::whereIn('product_id', array_keys($parentProducts))
+            ->select('product_id', 'category_id')
+            ->get()
+            ->groupBy('product_id')
+            ->map(function ($items) {
+                return $items->pluck('category_id')->sort()->last();
+            })
+            ->toArray(); // [child_id => latest_category_id]
+
+        // Step 3: Build the data for parent products
+        $now = Carbon::now();
+        $categoryProductData = [];
+
+        foreach ($categoryProducts as $childId => $categoryId) {
+            $parentId = $parentProducts[$childId];
+            $categoryProductData[] = [
+                'product_id' => $parentId,
+                'category_id' => $categoryId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        // Step 4: Prepare for insert/update
+        $existing = CategoryProduct::whereIn('product_id', collect($categoryProductData)->pluck('product_id'))
+            ->select('product_id', 'category_id')
+            ->get()
+            ->mapWithKeys(fn ($item) => [$item->product_id.'|'.$item->category_id => true]);
+
+        $toInsert = [];
+        $toUpdate = [];
+
+        foreach ($categoryProductData as $row) {
+            $key = $row['product_id'].'|'.$row['category_id'];
+            if (isset($existing[$key])) {
+                $toUpdate[] = ['product_id' => $row['product_id'], 'category_id' => $row['category_id'], 'updated_at' => $now];
+            } else {
+                $toInsert[] = $row;
+            }
+        }
+
+        // Step 5: Insert new ones
+        if (! empty($toInsert)) {
+            CategoryProduct::insert($toInsert);
+        }
+
+        // Step 6: Update existing ones
+        if (! empty($toUpdate)) {
+            CategoryProduct::upsert($toUpdate, ['product_id', 'category_id'], ['updated_at']);
+        }
+
+        // Step 7: Counts
+        $insertCount = count($toInsert);
+        $updateCount = count($toUpdate);
+
+        return [$insertCount, $updateCount];
     }
 
     public function importSkuProductsWithAllData(): array
@@ -196,14 +253,13 @@ class TracepartsXmlDataImportService
             $chunks[] = $sku;
 
             if (count($chunks) === 500) {
-                dispatch(new ImportTracepartsXmlDataSkuChunkJob($chunks));
+                dispatch(new ImportTracePartsXmlDataSkuChunkJob($chunks));
                 $jobCount++;
                 $chunks = [];
             }
         }
-
         if (count($chunks)) {
-            dispatch(new ImportTracepartsXmlDataSkuChunkJob($chunks));
+            dispatch(new ImportTracePartsXmlDataSkuChunkJob($chunks));
             $jobCount++;
         }
 
@@ -212,11 +268,60 @@ class TracepartsXmlDataImportService
 
     public function updateSkuId(): array
     {
-        $products = Product::whereNotNull('parent_id')->where('has_sku', false)->update([
-            'sku_id' => DB::raw("CONCAT_WS('-', parent_id, id)"),
-        ]);
-        Log::info('Updated sku_id', [$products]);
+        $products = Product::whereNotNull('parent_id')->get()->map(function ($product) {
+            return [
+                'parent_id' => $product->parent_id,
+                'sku_id' => $product->id,
+            ];
+        })->toArray();
 
-        return [$products];
+        $dbSkuProducts = SkuProduct::get();
+
+        $newSkuProducts = [];
+
+        foreach ($products as $skuProduct) {
+            $exists = $dbSkuProducts->where('sku_id', $skuProduct['sku_id'])
+                ->where('parent_id', $skuProduct['parent_id'])
+                ->first();
+            if (empty($exists)) {
+                $newSkuProducts[] = $skuProduct;
+            }
+        }
+
+        SkuProduct::insert($newSkuProducts);
+
+        return [$newSkuProducts];
+    }
+
+    private function updateProductData($p, $userId)
+    {
+        $existingProduct = Product::where('product_code', $p['product_code'])
+            ->first();
+
+        $attributeIds = Attribute::whereIn('traceparts_attribute_id', $p['sku_default_attributes'])
+            ->get()
+            ->pluck('id')
+            ->toArray();
+
+        if ($existingProduct) {
+            $existingProduct->update([
+                'sku_default_attributes' => json_encode($attributeIds),
+                'has_sku' => true,
+                'user_id' => $userId,
+            ]);
+
+            return $existingProduct;
+        }
+
+        // Update or Create new product by product_code
+        return Product::Create(
+            [
+                'product_code' => strtoupper($p['product_code']),
+                'product_name' => strtoupper($p['product_name']),
+                'sku_default_attributes' => json_encode($p['sku_default_attributes']),
+                'has_sku' => true,
+                'user_id' => $userId,
+            ]
+        );
     }
 }
