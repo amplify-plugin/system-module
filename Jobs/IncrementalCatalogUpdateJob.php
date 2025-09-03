@@ -3,6 +3,7 @@
 namespace Amplify\System\Jobs;
 
 use App\Models\Attribute;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\DocumentType;
 use App\Models\Manufacturer;
@@ -184,11 +185,11 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
         $manufacturer_id = $this->createManufacturer($jsonData) ?? null;
         $manufacturerNumber = $this->getManufacturerNumber($jsonData) ?? null;
         $productClassificationId = $this->createProductClassification($jsonData['facets']) ?? null;
-        $brandName = $this->getBrandName($jsonData) ?? null;
+        $brand = $this->createOrGetBrand($jsonData) ?? null;
 
         return [
             'product_name' => $jsonData['name'] ?? $this->getFallBackProductNameOrShortDescription($jsonData),
-            'short_description' => $jsonData['short_description'] ?? $this->getFallBackProductNameOrShortDescription($jsonData),
+            //'short_description' => $jsonData['short_description'] ?? $this->getFallBackProductNameOrShortDescription($jsonData),
             'description' => $jsonData['long_description'] ?? null,
             'features' => isset($jsonData['features']) ? json_encode($jsonData['features']) : null,
             'specifications' => isset($jsonData['specifications']) ? json_encode($jsonData['specifications']) : null,
@@ -199,7 +200,8 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
             'selling_price' => $jsonData['list_price'] ?? null,
             'prop65_message' => $jsonData['prop_65_message'] ?? null,
             'product_classification_id' => $productClassificationId,
-            'brand_name' => $brandName,
+            'brand_id'  => $brand['id'] ?? null,
+            'brand_name' => $brand['name'] ?? null,
         ];
     }
 
@@ -445,41 +447,70 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
         ]);
     }
 
-    private function getBrandName(array $specifications): bool|string
+    private function createOrGetBrand(array $specifications): ?array
     {
+        $brandName = null;
+
         if (! empty($specifications['distributor_attributes'])) {
             foreach ($specifications['distributor_attributes'] as $distributor_attribute) {
                 if ($distributor_attribute['attribute_key'] == 'distributor_brand_name') {
-                    return $distributor_attribute['attribute_value'];
+                    $brandName = $distributor_attribute['attribute_value'];
+                    break;
                 }
             }
         }
 
-        if (! empty($specifications['specifications'])) {
+        if (! $brandName && ! empty($specifications['specifications'])) {
             foreach ($specifications['specifications'] as $specification) {
                 foreach ($specification['group_items'] as $group_item) {
                     if ($group_item['name'] === 'Brand') {
-                        return $group_item['value'];
+                        $brandName = $group_item['value'];
+                        break 2;
                     }
                 }
             }
         }
 
-        if (isset($specifications['manufacturer']['name']) &&
+        if (! $brandName && isset($specifications['manufacturer']['name']) &&
             ! empty($specifications['manufacturer']['name'])) {
-            return $specifications['manufacturer']['name'];
+            $brandName = $specifications['manufacturer']['name'];
         }
 
-        if (! empty($specifications['distributor_attributes'])) {
+        if (! $brandName && ! empty($specifications['distributor_attributes'])) {
             foreach ($specifications['distributor_attributes'] as $distributor_attribute) {
                 if ($distributor_attribute['attribute_key'] == 'distributor_manufacturer_name') {
-                    return $distributor_attribute['attribute_value'];
+                    $brandName = $distributor_attribute['attribute_value'];
+                    break;
                 }
             }
         }
 
-        return false;
+        if ( empty($brandName)) {
+            return null; // no brand found
+        }
+
+        // Handle image upload if exists
+        $imgPath = null;
+        if (! empty($specifications['manufacturer']['image']['uri'])) {
+            $imgPath = $this->fileUpload(
+                fileUrl: $specifications['manufacturer']['image']['uri'],
+                folderName: 'images/brands',
+                fileName: $brandName
+            ) ?? null;
+        }
+
+
+        $brand = Brand::updateOrCreate(
+            ['title' => $brandName],
+            ['image' => $imgPath]
+        );
+
+        return [
+            'id'   => $brand->id,
+            'name' => $brandName,
+        ];
     }
+
 
     public function getManufacturerNumber($manufacturer): ?string
     {
