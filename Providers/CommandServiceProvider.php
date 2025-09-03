@@ -15,7 +15,6 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\CleanApiLogCommand::class,
                 \Amplify\System\Commands\CleanAuditCommand::class,
                 \Amplify\System\Commands\CreateAllLoginCommand::class,
-                \Amplify\System\Commands\CrudControllerBackpackCommand::class,
                 \Amplify\System\Commands\DeleteProductsCommand::class,
                 \Amplify\System\Commands\FetchTracePartsCatalogCommand::class,
                 \Amplify\System\Commands\FixForeignKeyTypeCommand::class,
@@ -32,6 +31,12 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\TraitMakeCommand::class,
                 \Amplify\System\Commands\TransformProduct::class,
             ]);
+
+            if (class_exists('Backpack\Generators\Services\BackpackCommand')) {
+                $this->commands([
+                    \Amplify\System\Commands\CrudControllerBackpackCommand::class,
+                ]);
+            }
         }
 
     }
