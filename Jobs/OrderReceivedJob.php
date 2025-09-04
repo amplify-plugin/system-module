@@ -3,6 +3,7 @@
 namespace Amplify\System\Jobs;
 
 use Amplify\System\Backend\Traits\NotificationEventTrait;
+use App\Models\Contact;
 use App\Models\Customer;
 use App\Models\CustomerOrder;
 use Illuminate\Bus\Queueable;
@@ -23,18 +24,27 @@ class OrderReceivedJob implements ShouldQueue
 
     public $guestCustomerName;
 
+    public $contactId;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($event_code, $order_id, $customer_id, $guest_customer_email = null, $guest_customer_name = null)
-    {
+    public function __construct(
+        $event_code, 
+        $order_id, 
+        $customer_id, 
+        $guest_customer_email = null, 
+        $guest_customer_name = null,
+        $contact_id = null
+    ) {
         $this->eventCode = $event_code;
         $this->orderId = $order_id;
         $this->customerId = $customer_id;
         $this->guestCustomerEmail = $guest_customer_email;
         $this->guestCustomerName = $guest_customer_name;
+        $this->contactId = $contact_id;
     }
 
     /**
@@ -47,6 +57,7 @@ class OrderReceivedJob implements ShouldQueue
         $this->getNecessaryItems();
         $order = CustomerOrder::find($this->orderId);
         $customer = Customer::find($this->customerId);
+        $contact = Contact::find($this->contactId ?? null);
 
         foreach ($this->eventInfo->eventActions ?? [] as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
@@ -55,7 +66,8 @@ class OrderReceivedJob implements ShouldQueue
                     $order,
                     $customer,
                     $this->guestCustomerEmail,
-                    $this->guestCustomerName
+                    $this->guestCustomerName,
+                    $contact
                 );
             }
 

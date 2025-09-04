@@ -83,6 +83,7 @@ class NotificationFactory
                     $args['customer_id'],
                     $args['guest_customer_email'],
                     $args['guest_customer_name'],
+                    $args['contact_id'],
                 );
                 break;
 

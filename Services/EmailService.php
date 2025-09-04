@@ -14,7 +14,7 @@ class EmailService
 {
     private $replaceAbleKeys = ['email_content', 'subject'];
 
-    public function sendOrderDetailsEmailToCustomer($email_action, $order, $customer, $guestCustomerEmail, $guestCustomerName): void
+    public function sendOrderDetailsEmailToCustomer($email_action, $order, $customer, $guestCustomerEmail, $guestCustomerName, $contact = null): void
     {
         $email_data = $email_action->eventTemplate;
 
@@ -56,7 +56,7 @@ class EmailService
 
         $this->dispatchEmailJobs(
             $this->replaceMailContentProperty($data),
-            $this->getRecipientsEmail($customer, $email_action, null, $guestCustomerEmail)
+            $this->getRecipientsEmail($customer, $email_action, null, $guestCustomerEmail, $contact)
         );
     }
 
@@ -1094,10 +1094,23 @@ class EmailService
         }
     }
 
+    private function getContactEmail($customer, $contact)
+    {
+        if (! empty($contact) && $contact instanceof Contact) {
+            return $contact->email;
+        }
+
+        if ($customer instanceof Customer && ! empty($customer->contact)) {
+            return $customer->contact->email;
+        }
+
+        return '';
+    }
+
     /**
      * @return array|false
      */
-    private function getRecipientsEmail($customer, $email_action, $quotation = null, $guestCustomerEmail = null)
+    private function getRecipientsEmail($customer, $email_action, $quotation = null, $guestCustomerEmail = null, $contact = null)
     {
         $emails = [];
 
@@ -1119,7 +1132,7 @@ class EmailService
             }
 
             if ($email_action->is_get_contact) {
-                $emails[] = ! empty($customer->contact) ? $customer->contact->email : '';
+                $emails[] = $this->getContactEmail($customer, $contact);
             }
         }
 
