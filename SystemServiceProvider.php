@@ -6,6 +6,7 @@ use Amplify\System\Facades\AssetsFacade;
 use Amplify\System\Observers\AttributeObserver;
 use Amplify\System\Observers\CategoryObserver;
 use Amplify\System\Observers\ProductObserver;
+use Amplify\System\Providers\AuthServiceProvider;
 use Amplify\System\Providers\BladeServiceProvider;
 use Amplify\System\Providers\CommandServiceProvider;
 use Amplify\System\Providers\EventServiceProvider;
@@ -30,6 +31,8 @@ class SystemServiceProvider extends ServiceProvider
         $this->app->register(BladeServiceProvider::class);
 
         $this->app->register(CommandServiceProvider::class);
+
+        $this->app->register(AuthServiceProvider::class);
 
         $this->app->singleton(AssetsLoader::class, fn () => new AssetsLoader);
     }
