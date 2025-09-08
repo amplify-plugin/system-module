@@ -16,11 +16,14 @@ class SetupEnvCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:config-dev-module {--force : Remove the existing destination folder.}';
+    protected $signature = 'amplify:publish-module {--force : Remove the existing destination folder.}';
 
     protected $description = 'Setup Developer Environment Setup';
 
-    protected $modules = ['all', 'system', 'custom-item', 'cms', 'utility', 'marketing', 'ticket', 'media', 'order-rule', 'sayt', 'captcha', 'message', 'payment'];
+    protected $modules = ['all', 'system', 'custom-item', 'cms',
+        'utility', 'marketing', 'ticket', 'media',
+        'order-rule', 'sayt', 'captcha', 'message', 'payment',
+        'frontend', 'api', 'widget'];
 
     private $packages = [];
 
