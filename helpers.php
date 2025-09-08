@@ -929,7 +929,7 @@ if (! function_exists('getLayoutList')) {
         $navLayouts = [];
         $rootFolder = base_path();
         $directoryFolder =
-            $rootFolder."/templates/{$templateComponentDir}/components/{$location}";
+            $rootFolder."/themes/{$templateComponentDir}/components/{$location}";
 
         if (file_exists($directoryFolder) && $handle = opendir($directoryFolder)) {
             $blacklist = ['.', '..'];
@@ -1039,7 +1039,7 @@ if (! function_exists('error_layout')) {
     {
         return (request()->is(config('backpack.base.route_prefix').'/*') || request()->is('sales/*'))
             ? 'errors.layout'
-            : template_view('error');
+            : theme_view('error');
     }
 }
 
