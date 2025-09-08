@@ -2,13 +2,13 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\DocumentType;
+use Amplify\System\Backend\Models\DocumentTypeProduct;
+use Amplify\System\Backend\Models\Manufacturer;
+use Amplify\System\Backend\Models\Product;
+use Amplify\System\Backend\Models\ProductImage;
 use Amplify\System\Services\JobFailService;
 use Amplify\System\Utility\Models\IcecatTransformationError;
-use App\Models\DocumentType;
-use App\Models\DocumentTypeProduct;
-use App\Models\Manufacturer;
-use App\Models\Product;
-use App\Models\ProductImage;
 use Carbon\Carbon;
 use ErrorException;
 use GuzzleHttp\Client;

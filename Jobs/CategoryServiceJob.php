@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Category;
+use Amplify\System\Backend\Models\Category;
 use ErrorException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

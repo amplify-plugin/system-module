@@ -2,10 +2,10 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\Customer;
+use Amplify\System\Backend\Models\CustomerOrder;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
-use App\Models\Contact;
-use App\Models\Customer;
-use App\Models\CustomerOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,10 +32,10 @@ class OrderReceivedJob implements ShouldQueue
      * @return void
      */
     public function __construct(
-        $event_code, 
-        $order_id, 
-        $customer_id, 
-        $guest_customer_email = null, 
+        $event_code,
+        $order_id,
+        $customer_id,
+        $guest_customer_email = null,
         $guest_customer_name = null,
         $contact_id = null
     ) {

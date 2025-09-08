@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Customer;
-use App\Models\CustomerAddress;
-use App\Models\Warehouse;
+use Amplify\System\Backend\Models\Customer;
+use Amplify\System\Backend\Models\CustomerAddress;
+use Amplify\System\Backend\Models\Warehouse;
 use ErrorException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

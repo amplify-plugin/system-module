@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Observers;
 
-use App\Models\Attribute;
+use Amplify\System\Backend\Models\Attribute;
 
 class AttributeObserver
 {

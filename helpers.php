@@ -1,22 +1,21 @@
 <?php
 
-use Amplify\System\Facades\AssetsFacade;
-use Amplify\System\Support\AssetsLoader;
-use Illuminate\Support\HtmlString;
 use Amplify\ErpApi\Facades\ErpApi;
+use Amplify\System\Backend\Models\Cart;
+use Amplify\System\Backend\Models\Category;
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\Customer;
+use Amplify\System\Backend\Models\CustomerAddress;
+use Amplify\System\Backend\Models\CustomerOrder;
+use Amplify\System\Backend\Models\Product;
 use Amplify\System\Cms\Models\Banner;
 use Amplify\System\Cms\Models\Navigation;
 use Amplify\System\Cms\Models\Page;
 use Amplify\System\Cms\Models\Template;
+use Amplify\System\Facades\AssetsFacade;
+use Amplify\System\Support\AssetsLoader;
 use Amplify\System\Utility\Models\DataTransformation;
 use Amplify\System\Utility\Models\ImportJobHistory;
-use App\Models\Cart;
-use App\Models\Category;
-use App\Models\Contact;
-use App\Models\Customer;
-use App\Models\CustomerAddress;
-use App\Models\CustomerOrder;
-use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,6 +31,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -394,7 +394,7 @@ if (! function_exists('getPriceOfItem')) {
 if (! function_exists('getAllAttributes')) {
     function getAllAttributes(): array
     {
-        $attributes = \App\Models\Attribute::query()->get(['name']);
+        $attributes = \Amplify\System\Backend\Models\Attribute::query()->get(['name']);
 
         return collect($attributes)
             ->map(function ($attribute) {

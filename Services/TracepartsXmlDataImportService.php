@@ -2,15 +2,15 @@
 
 namespace Amplify\System\Services;
 
+use Amplify\System\Backend\Models\Attribute;
+use Amplify\System\Backend\Models\Category;
+use Amplify\System\Backend\Models\CategoryProduct;
+use Amplify\System\Backend\Models\Product;
+use Amplify\System\Backend\Models\ProductImage;
+use Amplify\System\Backend\Models\SkuProduct;
+use Amplify\System\Backend\Models\User;
 use Amplify\System\Helpers\UtilityHelper;
 use Amplify\System\Jobs\ImportTracePartsXmlDataSkuChunkJob;
-use App\Models\Attribute;
-use App\Models\Category;
-use App\Models\CategoryProduct;
-use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\SkuProduct;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

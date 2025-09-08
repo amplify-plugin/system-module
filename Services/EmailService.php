@@ -3,10 +3,10 @@
 namespace Amplify\System\Services;
 
 use Amplify\ErpApi\Wrappers\Customer as ErpCustomer;
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\Customer;
+use Amplify\System\Backend\Models\EventAction;
 use Amplify\System\Jobs\DispatchEmailJob;
-use App\Models\Contact;
-use App\Models\Customer;
-use App\Models\EventAction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\URL;
 

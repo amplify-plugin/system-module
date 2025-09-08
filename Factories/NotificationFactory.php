@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Factories;
 
+use Amplify\System\Backend\Models\Event;
 use Amplify\System\Cms\Jobs\SendFormResponse;
 use Amplify\System\Jobs\CatalogChangedJob;
 use Amplify\System\Jobs\ContactAccountRequestAcceptedJob;
@@ -20,7 +21,6 @@ use Amplify\System\Jobs\QuotationReceivedJob;
 use Amplify\System\Jobs\RegistrationRequestAcceptedJob;
 use Amplify\System\Jobs\RegistrationRequestReceivedJob;
 use Amplify\System\Jobs\ResetPassword;
-use App\Models\Event;
 
 class NotificationFactory
 {

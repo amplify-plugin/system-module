@@ -2,16 +2,16 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\Attribute;
+use Amplify\System\Backend\Models\AttributeProduct;
+use Amplify\System\Backend\Models\Category;
+use Amplify\System\Backend\Models\CategoryProduct;
+use Amplify\System\Backend\Models\Product;
+use Amplify\System\Backend\Models\ProductClassification;
+use Amplify\System\Backend\Models\ProductImage;
 use Amplify\System\Services\JobFailService;
 use Amplify\System\Utility\Models\DataTransformationError;
 use Amplify\System\Utility\Services\DataTransformation\ExecuteScriptService;
-use App\Models\Attribute;
-use App\Models\AttributeProduct;
-use App\Models\Category;
-use App\Models\CategoryProduct;
-use App\Models\Product;
-use App\Models\ProductClassification;
-use App\Models\ProductImage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

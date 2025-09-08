@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Helpers;
 
+use Amplify\System\Backend\Models\Category;
 use Amplify\System\Utility\Models\IcecatDefinition;
-use App\Models\Category;
 
 class IcecatTransformationHelper
 {

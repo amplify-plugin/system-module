@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Listeners;
 
+use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Events\OrderApproved;
-use App\Models\Contact;
 
 class ApprovedMailFired
 {

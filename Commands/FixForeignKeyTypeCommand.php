@@ -3,8 +3,8 @@
 namespace Amplify\System\Commands;
 
 use Amplify\ErpApi\Facades\ErpApi;
-use App\Models\CartItem;
-use App\Models\CustomerOrderLine;
+use Amplify\System\Backend\Models\CartItem;
+use Amplify\System\Backend\Models\CustomerOrderLine;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;

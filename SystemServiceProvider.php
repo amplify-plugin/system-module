@@ -2,6 +2,9 @@
 
 namespace Amplify\System;
 
+use Amplify\System\Backend\Models\Attribute;
+use Amplify\System\Backend\Models\Category;
+use Amplify\System\Backend\Models\Product;
 use Amplify\System\Facades\AssetsFacade;
 use Amplify\System\Observers\AttributeObserver;
 use Amplify\System\Observers\CategoryObserver;
@@ -11,9 +14,6 @@ use Amplify\System\Providers\BladeServiceProvider;
 use Amplify\System\Providers\CommandServiceProvider;
 use Amplify\System\Providers\EventServiceProvider;
 use Amplify\System\Support\AssetsLoader;
-use App\Models\Attribute;
-use App\Models\Category;
-use App\Models\Product;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 

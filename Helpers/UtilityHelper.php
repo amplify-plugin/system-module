@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Helpers;
 
-use App\Models\Category;
-use App\Models\CategoryProduct;
-use App\Models\Product;
+use Amplify\System\Backend\Models\Category;
+use Amplify\System\Backend\Models\CategoryProduct;
+use Amplify\System\Backend\Models\Product;
 
 class UtilityHelper
 {

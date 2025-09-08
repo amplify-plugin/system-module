@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Providers;
 
-use App\Models\User;
+use Amplify\System\Backend\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 

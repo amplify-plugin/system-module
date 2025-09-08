@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Commands;
 
-use App\Models\Contact;
-use App\Models\CustomerAddress;
-use App\Models\CustomerOrderLine;
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\CustomerAddress;
+use Amplify\System\Backend\Models\CustomerOrderLine;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

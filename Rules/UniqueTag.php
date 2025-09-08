@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Rules;
 
-use App\Models\Tag;
+use Amplify\System\Backend\Models\Tag;
 use Illuminate\Contracts\Validation\Rule;
 
 class UniqueTag implements Rule

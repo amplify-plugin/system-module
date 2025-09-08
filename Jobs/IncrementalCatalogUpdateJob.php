@@ -2,13 +2,13 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Attribute;
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\DocumentType;
-use App\Models\Manufacturer;
-use App\Models\Product;
-use App\Models\ProductClassification;
+use Amplify\System\Backend\Models\Attribute;
+use Amplify\System\Backend\Models\Brand;
+use Amplify\System\Backend\Models\Category;
+use Amplify\System\Backend\Models\DocumentType;
+use Amplify\System\Backend\Models\Manufacturer;
+use Amplify\System\Backend\Models\Product;
+use Amplify\System\Backend\Models\ProductClassification;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

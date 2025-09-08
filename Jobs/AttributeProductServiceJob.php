@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Attribute;
-use App\Models\AttributeProduct;
-use App\Models\Product;
+use Amplify\System\Backend\Models\Attribute;
+use Amplify\System\Backend\Models\AttributeProduct;
+use Amplify\System\Backend\Models\Product;
 use ErrorException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

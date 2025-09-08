@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Language;
+use Amplify\System\Backend\Models\Language;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

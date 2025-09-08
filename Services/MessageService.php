@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Services;
 
+use Amplify\System\Backend\Models\User;
 use Amplify\System\Message\Facades\Messenger;
-use App\Models\User;
 use Illuminate\Support\Facades\URL;
 
 class MessageService

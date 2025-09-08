@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Helpers;
 
-use App\Models\Category;
+use Amplify\System\Backend\Models\Category;
 
 class DataTransformationHelper
 {

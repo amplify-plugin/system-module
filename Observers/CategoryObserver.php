@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Observers;
 
-use App\Models\Category;
+use Amplify\System\Backend\Models\Category;
 
 class CategoryObserver
 {

@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
-use App\Models\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

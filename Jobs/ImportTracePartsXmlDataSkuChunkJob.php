@@ -2,11 +2,11 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Attribute;
-use App\Models\AttributeProduct;
-use App\Models\DocumentTypeProduct;
-use App\Models\Product;
-use App\Models\User;
+use Amplify\System\Backend\Models\Attribute;
+use Amplify\System\Backend\Models\AttributeProduct;
+use Amplify\System\Backend\Models\DocumentTypeProduct;
+use Amplify\System\Backend\Models\Product;
+use Amplify\System\Backend\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;

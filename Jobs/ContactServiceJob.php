@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\Contact;
-use App\Models\CustomerRole;
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\CustomerRole;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

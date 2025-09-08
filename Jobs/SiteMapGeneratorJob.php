@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\Product;
 use Amplify\System\Cms\Models\Page;
-use App\Models\Product;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Commands;
 
-use App\Models\Contact;
-use App\Models\ContactLogin;
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\ContactLogin;
 use Illuminate\Console\Command;
 
 class CreateAllLoginCommand extends Command

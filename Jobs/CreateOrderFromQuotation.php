@@ -3,8 +3,8 @@
 namespace Amplify\System\Jobs;
 
 use Amplify\ErpApi\Facades\ErpApi;
+use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
-use App\Models\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
-use App\Models\ProductClassification;
+use Amplify\System\Backend\Models\ProductClassification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

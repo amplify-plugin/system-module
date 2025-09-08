@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Commands;
 
+use Amplify\System\Backend\Models\Product;
 use Amplify\System\Jobs\GenerateProductSlugJob;
-use App\Models\Product;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 

@@ -2,10 +2,10 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\Customer;
+use Amplify\System\Backend\Models\Permission;
 use Amplify\System\Helpers\UtilityHelper;
-use App\Models\Contact;
-use App\Models\Customer;
-use App\Models\Permission;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
