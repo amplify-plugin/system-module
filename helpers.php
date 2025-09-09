@@ -938,7 +938,7 @@ if (! function_exists('getLayoutList')) {
                     $fileLocation = $directoryFolder.'/'."$folder/config.json";
                     if (file_exists($fileLocation) && $layout = json_decode(file_get_contents($fileLocation), true)) {
                         $layout['blade_folder'] =
-                            "template::{$templateComponentDir}.components.".str_replace('/', '.', $location)
+                            "theme::{$templateComponentDir}.components.".str_replace('/', '.', $location)
                             .".{$folder}.index";
                         ! empty($layout['unique_identifier'])
                             ? $navLayouts[$layout['unique_identifier']] = $layout
