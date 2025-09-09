@@ -925,7 +925,7 @@ if (! function_exists('generateEACategoryList')) {
 if (! function_exists('getLayoutList')) {
     function getLayoutList($location): array
     {
-        $templateComponentDir = template()->component_folder ?? template('fallback')->component_folder;
+        $templateComponentDir = theme()->component_folder ?? theme('fallback')->component_folder;
         $navLayouts = [];
         $rootFolder = base_path();
         $directoryFolder =
@@ -974,7 +974,7 @@ if (! function_exists('getActiveNavigationLayout')) {
     {
         $navigationLayouts = getNavigationLayoutList();
         $activeNavigation = Navigation::query()
-            ->where(['template_id' => (template()->id ?? template('fallback')->id), 'is_enabled' => 1])
+            ->where(['template_id' => (theme()->id ?? theme('fallback')->id), 'is_enabled' => 1])
             ->with(['menu_group', 'mobile_menu', 'account_menu'])
             ->first();
 
