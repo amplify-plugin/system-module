@@ -32,7 +32,8 @@ trait ConsoleScheduleTrait
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(app_path('Console/Commands'));
+
         require base_path('routes/console.php');
     }
 
