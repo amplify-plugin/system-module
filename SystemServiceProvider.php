@@ -26,13 +26,13 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->register(AuthServiceProvider::class);
+
         $this->app->register(EventServiceProvider::class);
 
         $this->app->register(BladeServiceProvider::class);
 
         $this->app->register(CommandServiceProvider::class);
-
-        $this->app->register(AuthServiceProvider::class);
 
         $this->app->singleton(AssetsLoader::class, fn () => new AssetsLoader);
     }
