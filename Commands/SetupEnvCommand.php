@@ -21,9 +21,9 @@ class SetupEnvCommand extends Command
     protected $description = 'Setup Developer Environment Setup';
 
     protected $modules = ['all', 'system', 'custom-item', 'cms',
-        'utility', 'marketing', 'ticket', 'media',
+        'utility', 'marketing', 'ticket', 'media', 'erp',
         'order-rule', 'sayt', 'captcha', 'message', 'payment',
-        'frontend', 'api', 'widget'];
+        'frontend', 'api', 'widget', 'backend'];
 
     private $packages = [];
 
