@@ -23,22 +23,23 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::before(function ($user, $ability) {
-            // Allow Backend User Model Only Permission
-            if ($user instanceof User) {
-                setPermissionsTeamId(0);
-                if ($user->hasRole('Super Admin')) {
-                    return true;
-                }
-
-                return false;
-            }
-
-            // check frontend role feature is enabled or not
-            if (! config('amplify.basic.is_permission_system_enabled')) {
-                return true;
-            }
-
-            return null;
+            return true;
+//            // Allow Backend User Model Only Permission
+//            if ($user instanceof User) {
+//                setPermissionsTeamId(0);
+//                if ($user->hasRole('Super Admin')) {
+//                    return true;
+//                }
+//
+//                return false;
+//            }
+//
+//            // check frontend role feature is enabled or not
+//            if (! config('amplify.basic.is_permission_system_enabled')) {
+//                return true;
+//            }
+//
+//            return null;
         });
     }
 }
