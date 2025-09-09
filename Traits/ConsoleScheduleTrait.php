@@ -27,15 +27,6 @@ trait ConsoleScheduleTrait
         }
     }
 
-    /**
-     * Register the commands for the application.
-     */
-    protected function commands(): void
-    {
-        $this->load(app_path('Console/Commands'));
-
-        require base_path('routes/console.php');
-    }
 
     private function getEnabledCommands(array $commands): array
     {
