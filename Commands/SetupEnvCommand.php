@@ -49,7 +49,7 @@ class SetupEnvCommand extends Command
     {
         try {
 
-            $this->packages = $this->choice('Which modules do you want to setup? (comma-space separated)', $this->modules, 0, 5, true);
+            $this->packages = $this->choice('Which plugins do you want to setup? (comma-space separated)', $this->modules, 0, 5, true);
 
             if (in_array('all', $this->packages)) {
                 unset($this->modules[0]);
