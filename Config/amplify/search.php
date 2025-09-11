@@ -6,7 +6,6 @@ return [
     'easyask_port' => null,
     'easyask_dictionary' => 'amplify-demo',
     'protocol' => 'http', // https, http
-    'logger_enabled' => true,
     'use_product_restriction' => false,
     'search_box_placeholder' => 'Search Product all',
     'default_catalog' => null,
