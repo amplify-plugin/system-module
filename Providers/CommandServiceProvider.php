@@ -30,6 +30,7 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\TracepartsImportXmlData::class,
                 \Amplify\System\Commands\TraitMakeCommand::class,
                 \Amplify\System\Commands\TransformProduct::class,
+                \Amplify\System\Commands\UpgradeIssueFix::class,
             ]);
 
             if (class_exists('Backpack\Generators\Services\BackpackCommand')) {

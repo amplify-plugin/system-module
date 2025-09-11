@@ -26,6 +26,12 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/config/amplify.php', 'amplify');
+
+        foreach (glob(__DIR__ . '/config/amplify/*.php') as $file) {
+            $this->mergeConfigFrom($file, "amplify.".basename($file, '.php'));
+        }
+
         $this->app->register(AuthServiceProvider::class);
 
         $this->app->register(EventServiceProvider::class);
@@ -34,7 +40,7 @@ class SystemServiceProvider extends ServiceProvider
 
         $this->app->register(CommandServiceProvider::class);
 
-        $this->app->singleton(AssetsLoader::class, fn () => new AssetsLoader);
+        $this->app->singleton(AssetsLoader::class, fn() => new AssetsLoader);
     }
 
     /**
@@ -44,6 +50,16 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->publishes([
+            __DIR__ . '/config/amplify.php' => config_path('amplify.php'),
+        ], 'amplify-config');
+
+        foreach (glob(__DIR__ . '/config/amplify/*.php') as $file) {
+            $this->publishes([
+                $file => config_path('amplify/'. basename($file)),
+            ], "amplify-". basename($file, '.php')."-config");
+        }
+
         AliasLoader::getInstance()->alias('Asset', AssetsFacade::class);
 
         $this->loadObservers();
