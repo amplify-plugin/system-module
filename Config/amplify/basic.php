@@ -8,7 +8,6 @@ return [
     'countries' => [],
     'web_order_prefix' => env('AMPLIFY_WEB_ORDER_PREFIX', 'AMP'),
     'nxt_available_web_order_number' => '0000001',
-    'project_mode' => 'developer',
     'is_elfinder_drag_and_drop' => true,
     'date_time_format' => 'Y-m-d H:i:s',
     'date_format' => 'd M Y',
