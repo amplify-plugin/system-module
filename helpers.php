@@ -1618,7 +1618,7 @@ if (! function_exists('carbon2moment_format')) {
 if (! function_exists('suppress_exception')) {
     function suppress_exception(): bool
     {
-        return config('amplify.basic.suppress_exception', true);
+        return config('amplify.suppress_exception', true);
     }
 }
 

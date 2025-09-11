@@ -14,7 +14,7 @@ return [
     'default_reorder_limit' => 10,
     'navbar_brand' => 'img/Amplify Logo 280 tagline.png',
     'footer_image' => 'img/Powered by EasyAsk.png',
-    'suppress_exception' => env('AMPLIFY_SUPPRESS_EXCEPTION', true),
+
     'length_options' => '10,25,50,100,500',
     'color_scheme' => 'orange',
     'force_password_reset_enabled' => true,
