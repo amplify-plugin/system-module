@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'force_password_reset_enabled' => true,
     'password_length' => 4,
     'cookie_title' => 'We value your privacy',
     'cookie_content' => <<<'HTML'
