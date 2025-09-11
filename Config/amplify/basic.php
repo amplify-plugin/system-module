@@ -13,8 +13,6 @@ return [
     'date_format' => 'd M Y',
     'default_reorder_limit' => 10,
     'navbar_brand' => 'img/Amplify Logo 280 tagline.png',
-    'footer_image' => 'img/Powered by EasyAsk.png',
-
     'length_options' => '10,25,50,100,500',
     'color_scheme' => 'orange',
     'force_password_reset_enabled' => true,
@@ -22,7 +20,6 @@ return [
     'enable_quick_list' => true,
     'enable_multi_customer_manage' => true,
     'enable_guest_pricing' => false,
-    'shop_page_prefix' => env('AMPLIFY_SHOP_PAGE_PREFIX', 'shop'),
     'is_permission_system_enabled' => (bool) env('AMPLIFY_PERMISSION_SYSTEM_ENABLED', false),
     'excluded_redirect_urls' => [
         'login',
