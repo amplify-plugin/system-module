@@ -56,13 +56,13 @@ class SetupEnvCommand extends Command
                 $this->packages = $this->modules;
             }
 
-            if (! is_dir(base_path($this->rootDir))) {
+            if (!is_dir(base_path($this->rootDir))) {
                 mkdir(base_path($this->rootDir));
             }
 
             $this->runGitOperation();
 
-            $this->info('['.implode(',', $this->packages).'] module(s) configured. Run `composer update` command to update class autoloader.');
+            $this->info('[' . implode(',', $this->packages) . '] module(s) configured. Run `composer update` command to update class autoloader.');
 
             return self::SUCCESS;
 
@@ -78,9 +78,9 @@ class SetupEnvCommand extends Command
     {
         foreach ($this->packages as $package) {
 
-            $directory = base_path($this->rootDir.DIRECTORY_SEPARATOR.$package);
+            $directory = base_path($this->rootDir . DIRECTORY_SEPARATOR . $package);
 
-            $this->info('Configuring: '.Str::studly($package).' module into [.'.str_replace('\\', '/', str_replace(base_path(), '', $directory)).']');
+            $this->info('Configuring: ' . Str::studly($package) . ' module into [.' . str_replace('\\', '/', str_replace(base_path(), '', $directory)) . ']');
 
             if (is_dir($directory) && $this->option('force', false)) {
                 $this->removeDir($directory);
@@ -91,6 +91,8 @@ class SetupEnvCommand extends Command
         }
 
         $this->updateComposerFile();
+
+        shell_exec("composer update --no-cache");
     }
 
     private function updateComposerFile()
@@ -101,15 +103,28 @@ class SetupEnvCommand extends Command
 
         $repositories = $composer['repositories'] ?? [];
 
-        $repositories = array_filter($repositories, fn ($item) => $item['type'] === 'composer');
+        $packagesExists = false;
 
-        foreach ($this->packages as $package) {
+        $repositories = array_filter($repositories, function ($item) use(&$packagesExists) {
+            if (in_array($item['type'], ['composer', 'vcs'])) {
+                return true;
+            }
+
+            if ($item['type'] === 'path' && $item['url'] == "./packages/*") {
+                $packagesExists = true;
+                return true;
+            }
+
+            return false;
+        });
+
+        if (!$packagesExists) {
             $repositories[] = [
-                'type' => 'path',
-                'url' => "./{$this->rootDir}/{$package}",
-                'options' => [
-                    'symlink' => true,
-                ],
+                "type" => "path",
+                "url" => "./packages/*",
+                "options" => [
+                    "symlink" => true
+                ]
             ];
         }
 
