@@ -50,6 +50,12 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'system');
+
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/amplify/system'),
+        ], 'system-view');
+
         $this->publishes([
             __DIR__ . '/../config/amplify.php' => config_path('amplify.php'),
         ], 'amplify-config');

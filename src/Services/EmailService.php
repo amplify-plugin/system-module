@@ -7,11 +7,14 @@ use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\EventAction;
 use Amplify\System\Jobs\DispatchEmailJob;
+use Amplify\System\Traits\OrderEmailFormatingTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class EmailService
 {
+    use OrderEmailFormatingTrait;
     private $replaceAbleKeys = ['email_content', 'subject'];
 
     public function sendOrderDetailsEmailToCustomer($email_action, $order, $customer, $guestCustomerEmail, $guestCustomerName, $contact = null): void
@@ -49,6 +52,7 @@ class EmailService
             'button_text' => optional($email_data)->button_text,
             'guest_customer_name' => $guestCustomerName,
             'is_customer_mail' => true,
+            'body_width' => '90%'
         ];
         /*
          * Dispatch order  email job
@@ -284,46 +288,7 @@ class EmailService
             }
 
             if (isset($data['order'])) {
-                $data[$key] = str_replace(
-                    '__web_order_number__',
-                    $data['order']->web_order_number,
-                    $data[$key]
-                );
-                $data[$key] = str_replace(
-                    '__erp_order_number__',
-                    ($data['order']->erp_order_id ?? ''),
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__total_amount__',
-                    $data['order']->total_amount,
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__contact_name__',
-                    $data['order']->contact->name ?? '',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__notes__',
-                    ! empty($data['notes']) ? $data['notes'] : $data['order']->notes ?? '',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__customer_order_details_url__',
-                    '<a href="'.route('frontend.orders.show', $data['order']->erp_order_id).'">View Details</a>',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__customer_quotation_details_url__',
-                    '<a href="'.route('frontend.quotations.show', $data['order']->erp_order_id).'">View Details</a>',
-                    $data[$key]
-                );
+                $data = $this->replaceContentsForOrder($data, $key);
             }
 
             if (isset($data['customer_order_rule_track'])) {
@@ -538,7 +503,7 @@ class EmailService
                 $data[$key] = str_replace(
                     '__customer_quotation_details__',
                     view(
-                        'components.customer.quotation.details',
+                        'system::email.quote.details',
                         ['details' => $data['erp_quotation_data']['QuoteDetail']]
                     )->render(),
                     $data[$key]

@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\ErpApi\Facades\ErpApi;
 use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\CustomerOrder;
@@ -11,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class OrderReceivedJob implements ShouldQueue
 {
@@ -58,6 +60,8 @@ class OrderReceivedJob implements ShouldQueue
         $order = CustomerOrder::find($this->orderId);
         $customer = Customer::find($this->customerId);
         $contact = Contact::find($this->contactId ?? null);
+
+        $order->erp_details = ErpApi::getOrderDetail(['order_number' => $order->erp_order_id])->toArray();
 
         foreach ($this->eventInfo->eventActions ?? [] as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {

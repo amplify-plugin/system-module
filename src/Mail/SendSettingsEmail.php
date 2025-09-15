@@ -14,6 +14,7 @@ class SendSettingsEmail extends Mailable
     use Queueable, SerializesModels;
 
     public $data;
+    public $width = '570';
 
     /**
      * Create a new message instance.
@@ -22,6 +23,14 @@ class SendSettingsEmail extends Mailable
      */
     public function __construct($data)
     {
+        if (! empty($data['body_width'])) {
+            $this->width = $data['body_width'];
+        }
+
+        if (isset($data['body_width'])) {
+            unset($data['body_width']);
+        }
+
         $this->data = $data;
     }
 
@@ -61,12 +70,13 @@ class SendSettingsEmail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.settings_email', [
+        return $this->markdown('system::email.settings_email', [
             'email_content' => $this->data['email_content'] ?? '',
             'show_button' => $this->data['show_button'] ?? '',
             'button_url' => $this->data['button_url'] ?? '',
             'button_text' => $this->data['button_text'] ?? '',
             'is_customer_mail' => $this->data['is_customer_mail'] ?? '',
+            'width' => $this->width,
         ]);
     }
 }

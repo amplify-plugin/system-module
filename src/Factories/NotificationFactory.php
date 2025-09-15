@@ -79,7 +79,8 @@ class NotificationFactory
 
             case Event::ORDER_RECEIVED:
                 OrderReceivedJob::dispatch(
-                    $event_code, $args['order_id'],
+                    $event_code,
+                    $args['order_id'],
                     $args['customer_id'],
                     $args['guest_customer_email'],
                     $args['guest_customer_name'],
