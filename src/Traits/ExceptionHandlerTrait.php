@@ -35,25 +35,18 @@ trait ExceptionHandlerTrait
     {
         try {
             if (app()->environment('production')) {
+                $support_mails = config('amplify.developer.bug_recipient', []);
+                if (!empty($support_mails)) {
 
-                $support_mails = config('mail.error_notify_email');
+                    $content['message'] = $throwable->getMessage();
+                    $content['file'] = $throwable->getFile();
+                    $content['line'] = $throwable->getLine();
+                    $content['trace'] = $throwable->getTrace();
+                    $content['url'] = request()->url();
+                    $content['body'] = request()->all();
+                    $content['ip'] = request()->ip();
 
-                if (strlen($support_mails) > 5) {
-
-                    $support_mails = filter_var_array(explode(',', $support_mails), FILTER_VALIDATE_EMAIL);
-
-                    if (!empty($support_mails)) {
-
-                        $content['message'] = $throwable->getMessage();
-                        $content['file'] = $throwable->getFile();
-                        $content['line'] = $throwable->getLine();
-                        $content['trace'] = $throwable->getTrace();
-                        $content['url'] = request()->url();
-                        $content['body'] = request()->all();
-                        $content['ip'] = request()->ip();
-
-                        Mail::to($support_mails)->send(new ExceptionReportMail($content));
-                    }
+                    Mail::to($support_mails)->send(new ExceptionReportMail($content));
                 }
             }
         } catch (Throwable $exception) {
