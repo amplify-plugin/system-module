@@ -21,4 +21,7 @@ return [
 
     'pim_db_enabled' => env('DB_PIM_ENABLED', false),
     'document_type' => null,
+    'unit_of_measurements' => [
+        ['code' => 'ea', 'label' => 'Each']
+    ]
 ];
