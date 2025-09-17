@@ -40,6 +40,14 @@ class UpgradeIssueFix extends Command
             DB::table('model_has_roles')
                 ->where('model_type', 'App\\Models\\Contact')
                 ->update(['model_type' => 'Amplify\\System\\Backend\\Models\\Contact']);
+
+            DB::table('model_has_permissions')
+                ->where('model_type', 'App\\Models\\User')
+                ->update(['model_type' => 'Amplify\\System\\Backend\\Models\\User']);
+
+            DB::table('model_has_permissions')
+                ->where('model_type', 'App\\Models\\Contact')
+                ->update(['model_type' => 'Amplify\\System\\Backend\\Models\\Contact']);
         });
 
         if ($this->components->confirm("Did you Setup the Storage Configuration in .Env", true)) {
