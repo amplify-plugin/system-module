@@ -25,9 +25,13 @@ class BladeServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->afterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
-
             $bladeCompiler->directive('money', function ($expression) {
                 return "<?php echo currency_format({$expression}); ?>";
+            });
+
+            $bladeCompiler->directive('uom', function ($expression) {
+                dd($expression);
+                return "<?php e(uom({$expression})); ?>";
             });
         });
     }
