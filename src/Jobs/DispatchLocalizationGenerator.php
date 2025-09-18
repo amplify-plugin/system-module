@@ -30,7 +30,7 @@ class DispatchLocalizationGenerator implements ShouldQueue
      */
     public function handle()
     {
-        foreach (Language::all() as $language) {
+        foreach ((new Language) as $language) {
             GenerateLocalization::dispatch($language->code);
         }
     }
