@@ -85,7 +85,7 @@ class TracepartsXmlDataImportService
 
         foreach ($cats as $cat) {
             $query = Category::where('traceparts_category_id', $cat['category_id']);
-            $catalogId = config('amplify.search.default_catalog') ?? null;
+            $catalogId = config('amplify.sayt.default_catalog') ?? null;
             // Generate unique category code and slug
             $code = UtilityHelper::generateUniqueCategoryCodeOrSlug($cat['category_id'], $cat['category_code']);
             $slug = UtilityHelper::generateUniqueCategoryCodeOrSlug($cat['category_id'], $cat['category_slug'], 'slug');

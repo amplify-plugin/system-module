@@ -3,6 +3,8 @@
 namespace Amplify\System\Traits;
 
 use Illuminate\Console\Scheduling\Schedule;
+use \Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 
 trait ConsoleScheduleTrait
 {
@@ -25,6 +27,9 @@ trait ConsoleScheduleTrait
                 $command['variables'] ?? []
             );
         }
+        //Health Check Job
+        $schedule->command(DispatchQueueCheckJobsCommand::class)->everyMinute();
+        $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
     }
 
 
@@ -36,7 +41,7 @@ trait ConsoleScheduleTrait
             ->all();
     }
 
-    private function scheduleCommand($schedule, $command, $timeZone, $interval, $time, $variables): void
+    private function scheduleCommand(&$schedule, $command, $timeZone, $interval, $time, $variables): void
     {
         $schedule->command($command, $this->prepareVariables($variables))
             ->timezone($timeZone)

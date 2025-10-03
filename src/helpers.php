@@ -1249,7 +1249,7 @@ if (!function_exists('getProductsByIds')) {
             $products = collect($products->items)->map(function ($product) {
                 $product->isSkuProduct = isset($product->Sku_Id) ? true : false;
                 $product->seopath = '-' . trim(
-                        config('amplify.search.product_search_by_id_prefix')
+                        config('amplify.sayt.product_search_by_id_prefix')
                     ) . '-=-' . $product->Product_Id;
 
                 return $product;
