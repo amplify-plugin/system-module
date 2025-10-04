@@ -35,12 +35,12 @@ class HealthCheckServiceProvider extends ServiceProvider
             DebugModeCheck::new(),
 
             UsedDiskSpaceCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->warnWhenUsedSpaceIsAbovePercentage(70)
                 ->failWhenUsedSpaceIsAbovePercentage(90),
 
             BackupsCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->onDisk('backups')
                 ->locatedAt('*.zip')
                 ->youngestBackShouldHaveBeenMadeBefore(now()->subDays(1))
@@ -50,11 +50,11 @@ class HealthCheckServiceProvider extends ServiceProvider
                 ->driver('file'),
 
             CpuLoadCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->if(PHP_OS === "Linux"),
 
             DatabaseCheck::new()
-                ->if(app()->isProduction()),
+                /* ->if(app()->isProduction()) */,
 
             DatabaseCheck::new()
                 ->name('PimDatabase')
@@ -63,27 +63,27 @@ class HealthCheckServiceProvider extends ServiceProvider
                 ->if(config('amplify.pim.pim_db_enabled', false)),
 
             DatabaseConnectionCountCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->warnWhenMoreConnectionsThan(50)
                 ->failWhenMoreConnectionsThan(100),
 
             DatabaseSizeCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->if(in_array(config('database.connections.mysql.host'), ['127.0.0.1', 'localhost']))
                 ->failWhenSizeAboveGb(errorThresholdGb: 5.0),
 
             DatabaseTableSizeCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->name('ApiLogsTableSize')
                 ->table('api_logs', maxSizeInMb: 1_000),
 
             DatabaseTableSizeCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->name('ActivityLogsTableSize')
                 ->table('audits', maxSizeInMb: 2_000),
 
             DatabaseTableSizeCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->name('QueueFailedTableSize')
                 ->table('failed_jobs', maxSizeInMb: 100),
 
@@ -103,19 +103,19 @@ class HealthCheckServiceProvider extends ServiceProvider
             QueueCheck::new(),
 
             RedisCheck::new()
-                ->if(app()->isProduction()),
+                /* ->if(app()->isProduction()) */,
 
             ScheduleCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->heartbeatMaxAgeInMinutes(2),
 
             SslCertificateValidityCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->if(Str::contains(config('app.url'), 'https://'))
                 ->url(config('app.url')),
 
             SslCertificateExpiredCheck::new()
-                ->if(app()->isProduction())
+                /* ->if(app()->isProduction()) */
                 ->if(Str::contains(config('app.url'), 'https://'))
                 ->url(config('app.url'))
 
