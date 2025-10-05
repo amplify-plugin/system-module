@@ -103,6 +103,7 @@ class HealthCheckServiceProvider extends ServiceProvider
             QueueCheck::new(),
 
             RedisCheck::new()
+                ->if(class_exists('Redis'))
                 /* ->if(app()->isProduction()) */,
 
             ScheduleCheck::new()

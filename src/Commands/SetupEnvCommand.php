@@ -103,25 +103,14 @@ class SetupEnvCommand extends Command
 
         $repositories = $composer['repositories'] ?? [];
 
-        $packagesExists = false;
-
-        $repositories = array_filter($repositories, function ($item) use(&$packagesExists) {
-            if (in_array($item['type'], ['composer', 'vcs'])) {
-                return true;
-            }
-
-            if ($item['type'] === 'path' && $item['url'] == "./packages/*") {
-                $packagesExists = true;
-                return true;
-            }
-
-            return false;
+        $repositories = array_filter($repositories, function ($item){
+            return in_array($item['type'], ['composer', 'vcs']);
         });
 
-        if (!$packagesExists) {
+        foreach ($this->packages as $package) {
             $repositories[] = [
                 "type" => "path",
-                "url" => "./packages/*",
+                "url" => "./packages/{$package}",
                 "options" => [
                     "symlink" => true
                 ]

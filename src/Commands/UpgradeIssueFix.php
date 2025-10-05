@@ -74,5 +74,13 @@ class UpgradeIssueFix extends Command
                 ->delete();
         });
 
+        if ($this->components->confirm("Did you Setup the EasyAsk Search Configuration in .Env", true)) {
+            $this->components->task("Configuration Search Configuration", function () {
+                DB::table('system_configurations')->whereIn('name', ['search', 'sayt'])
+                    ->delete();
+            });
+        } else {
+            $this->components->info("Please Configure the EasyAsk Search configuration in .env and remove it from `system_configurations` table.");
+        }
     }
 }
