@@ -5,6 +5,7 @@ namespace Amplify\System\Providers;
 use Amplify\System\Checks\CpuLoad\CpuLoadCheck;
 use Amplify\System\Checks\SslCertificate\SslCertificateExpiredCheck;
 use Amplify\System\Checks\SslCertificate\SslCertificateValidityCheck;
+use Amplify\System\Sayt\Facade\Sayt;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Spatie\Health\Checks\Check;
@@ -111,7 +112,7 @@ class HealthCheckServiceProvider extends ServiceProvider
 
             PingCheck::new()
                 ->name('SearchEngineAvailability')
-                ->easyAskUrl()
+                ->url(Sayt::getBaseUrl())
                 ->retryTimes(3)
                 ->timeout(10)
                 ->method('GET'),
