@@ -31,6 +31,26 @@ class HealthCheckServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Check::macro('easyAskUrl', function () {
+            $url = Url::fromString('/EasyAsk/apps/Advisor.jsp')
+                ->withHost(config('amplify.sayt.dictionary.host'))
+                ->withScheme(config('amplify.sayt.dictionary.protocol', 'http'))
+                ->withQueryParameters([
+                    'indexed' => '1',
+                    'ie' => 'utf-8',
+                    'disp' => 'json',
+                    'dct' => config('amplify.sayt.dictionary.dictionary')
+                ]);
+
+            $port = config('amplify.sayt.dictionary.port');
+
+            if (is_numeric($port)) {
+                $url = $url->withPort($port);
+            }
+
+            return $this->url((string)$url);
+        });
+
         Health::checks([
             DebugModeCheck::new(),
 
@@ -54,7 +74,7 @@ class HealthCheckServiceProvider extends ServiceProvider
                 ->if(PHP_OS === "Linux"),
 
             DatabaseCheck::new()
-                /* ->if(app()->isProduction()) */,
+            /* ->if(app()->isProduction()) */,
 
             DatabaseCheck::new()
                 ->name('PimDatabase')
@@ -91,12 +111,8 @@ class HealthCheckServiceProvider extends ServiceProvider
 
             PingCheck::new()
                 ->name('SearchEngineAvailability')
-                ->url((string)Url::fromString('/EasyAsk/apps/Advisor.jsp?indexed=1&ie=utf-8&disp=json')
-                    ->withHost(config('amplify.sayt.dictionary.host'))
-                    ->withScheme(config('amplify.sayt.dictionary.protocol', 'http'))
-                    ->withPort(config('amplify.sayt.dictionary.port'))
-                    ->withQueryParameter('dct', config('amplify.sayt.dictionary.dictionary'))
-                )->retryTimes(3)
+                ->easyAskUrl()
+                ->retryTimes(3)
                 ->timeout(10)
                 ->method('GET'),
 
@@ -104,7 +120,7 @@ class HealthCheckServiceProvider extends ServiceProvider
 
             RedisCheck::new()
                 ->if(class_exists('Redis'))
-                /* ->if(app()->isProduction()) */,
+            /* ->if(app()->isProduction()) */,
 
             ScheduleCheck::new()
                 /* ->if(app()->isProduction()) */
