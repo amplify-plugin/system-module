@@ -544,12 +544,9 @@ class EmailService
     public function resetPasswordEmailToCustomer(EventAction $email_action, $otp, $customer)
     {
         $eventTemplate = $email_action->eventTemplate;
-        //    dd($customer);
-        /*
-         * Preparing email data
-         */
+
         $data = [
-            'customer' => $customer,
+            'contact' => $customer,
             'otp' => $otp,
             'email_content' => $eventTemplate->email_body,
             'subject' => 'Password Reset OTP',
