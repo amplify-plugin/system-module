@@ -32,111 +32,101 @@ class HealthCheckServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Check::macro('easyAskUrl', function () {
-            $url = Url::fromString('/EasyAsk/apps/Advisor.jsp')
-                ->withHost(config('amplify.sayt.dictionary.host'))
-                ->withScheme(config('amplify.sayt.dictionary.protocol', 'http'))
-                ->withQueryParameters([
-                    'indexed' => '1',
-                    'ie' => 'utf-8',
-                    'disp' => 'json',
-                    'dct' => config('amplify.sayt.dictionary.dictionary')
-                ]);
+        if (app()->environment('production', 'staging')) {
 
-            $port = config('amplify.sayt.dictionary.port');
+            Check::macro('easyAskUrl', function () {
+                $url = Url::fromString('/EasyAsk/apps/Advisor.jsp')
+                    ->withHost(config('amplify.sayt.dictionary.host'))
+                    ->withScheme(config('amplify.sayt.dictionary.protocol', 'http'))
+                    ->withQueryParameters([
+                        'indexed' => '1',
+                        'ie' => 'utf-8',
+                        'disp' => 'json',
+                        'dct' => config('amplify.sayt.dictionary.dictionary')
+                    ]);
 
-            if (is_numeric($port)) {
-                $url = $url->withPort($port);
-            }
+                $port = config('amplify.sayt.dictionary.port');
 
-            return $this->url((string)$url);
-        });
+                if (is_numeric($port)) {
+                    $url = $url->withPort($port);
+                }
 
-        Health::checks([
-            DebugModeCheck::new(),
+                return $this->url((string)$url);
+            });
 
-            UsedDiskSpaceCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->warnWhenUsedSpaceIsAbovePercentage(70)
-                ->failWhenUsedSpaceIsAbovePercentage(90),
+            Health::checks([
+                DebugModeCheck::new(),
 
-            BackupsCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->onDisk('backups')
-                ->locatedAt('*.zip')
-                ->youngestBackShouldHaveBeenMadeBefore(now()->subDays(1))
-                ->onlyCheckSizeOnFirstAndLast(),
+                UsedDiskSpaceCheck::new()
+                    ->warnWhenUsedSpaceIsAbovePercentage(70)
+                    ->failWhenUsedSpaceIsAbovePercentage(90),
 
-            CacheCheck::new()
-                ->driver('file'),
+                BackupsCheck::new()
+                    ->onDisk('backups')
+                    ->locatedAt('*.zip')
+                    ->youngestBackShouldHaveBeenMadeBefore(now()->subDays(1))
+                    ->onlyCheckSizeOnFirstAndLast(),
 
-            CpuLoadCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->if(PHP_OS === "Linux"),
+                CacheCheck::new()
+                    ->driver('file'),
 
-            DatabaseCheck::new()
-            /* ->if(app()->isProduction()) */,
+                CpuLoadCheck::new()
+                    ->if(PHP_OS === "Linux"),
 
-            DatabaseCheck::new()
-                ->name('PimDatabase')
-                ->label('PIM Database')
-                ->connectionName('pim_db')
-                ->if(config('amplify.pim.pim_db_enabled', false)),
+                DatabaseCheck::new(),
 
-            DatabaseConnectionCountCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->warnWhenMoreConnectionsThan(50)
-                ->failWhenMoreConnectionsThan(100),
+                DatabaseCheck::new()
+                    ->name('PimDatabase')
+                    ->label('PIM Database')
+                    ->connectionName('pim_db')
+                    ->if(config('amplify.pim.pim_db_enabled', false)),
 
-            DatabaseSizeCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->if(in_array(config('database.connections.mysql.host'), ['127.0.0.1', 'localhost']))
-                ->failWhenSizeAboveGb(errorThresholdGb: 5.0),
+                DatabaseConnectionCountCheck::new()
+                    ->warnWhenMoreConnectionsThan(50)
+                    ->failWhenMoreConnectionsThan(100),
 
-            DatabaseTableSizeCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->name('ApiLogsTableSize')
-                ->table('api_logs', maxSizeInMb: 1_000),
+                DatabaseSizeCheck::new()
+                    ->if(in_array(config('database.connections.mysql.host'), ['127.0.0.1', 'localhost']))
+                    ->failWhenSizeAboveGb(errorThresholdGb: 5.0),
 
-            DatabaseTableSizeCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->name('ActivityLogsTableSize')
-                ->table('audits', maxSizeInMb: 2_000),
+                DatabaseTableSizeCheck::new()
+                    ->name('ApiLogsTableSize')
+                    ->table('api_logs', maxSizeInMb: 1_000),
 
-            DatabaseTableSizeCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->name('QueueFailedTableSize')
-                ->table('failed_jobs', maxSizeInMb: 100),
+                DatabaseTableSizeCheck::new()
+                    ->name('ActivityLogsTableSize')
+                    ->table('audits', maxSizeInMb: 2_000),
 
-            EnvironmentCheck::new(),
+                DatabaseTableSizeCheck::new()
+                    ->name('QueueFailedTableSize')
+                    ->table('failed_jobs', maxSizeInMb: 100),
 
-            PingCheck::new()
-                ->name('SearchEngineAvailability')
-                ->url(Sayt::getBaseUrl())
-                ->retryTimes(3)
-                ->timeout(10)
-                ->method('GET'),
+                EnvironmentCheck::new(),
 
-            QueueCheck::new(),
+                PingCheck::new()
+                    ->name('SearchEngineAvailability')
+                    ->url(Sayt::getBaseUrl())
+                    ->retryTimes(3)
+                    ->timeout(10)
+                    ->method('GET'),
 
-            RedisCheck::new()
-                ->if(class_exists('Redis'))
-            /* ->if(app()->isProduction()) */,
+                QueueCheck::new(),
 
-            ScheduleCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->heartbeatMaxAgeInMinutes(2),
+                RedisCheck::new()
+                    ->if(class_exists('Redis')),
 
-            SslCertificateValidityCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->if(Str::contains(config('app.url'), 'https://'))
-                ->url(config('app.url')),
+                ScheduleCheck::new()
+                    ->heartbeatMaxAgeInMinutes(2),
 
-            SslCertificateExpiredCheck::new()
-                /* ->if(app()->isProduction()) */
-                ->if(Str::contains(config('app.url'), 'https://'))
-                ->url(config('app.url'))
+                SslCertificateValidityCheck::new()
+                    ->if(Str::contains(config('app.url'), 'https://'))
+                    ->url(config('app.url')),
 
-        ]);
+                SslCertificateExpiredCheck::new()
+                    ->if(Str::contains(config('app.url'), 'https://'))
+                    ->url(config('app.url'))
+
+            ]);
+        }
     }
 }

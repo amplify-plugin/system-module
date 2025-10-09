@@ -27,9 +27,12 @@ trait ConsoleScheduleTrait
                 $command['variables'] ?? []
             );
         }
+
         //Health Check Job
-        $schedule->command(DispatchQueueCheckJobsCommand::class)->everyMinute();
-        $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+        if(app()->environment('production', 'staging')) {
+            $schedule->command(DispatchQueueCheckJobsCommand::class)->everyMinute();
+            $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+        }
     }
 
 
