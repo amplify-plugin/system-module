@@ -27,7 +27,6 @@ return [
         'audit_clean' => 'Clean Activity Log Data',
         'hello_world' => 'Hello World',
         // 'backup_table' => 'Backup Table',
-        // 'sayt_reconfigure' => 'SAYT Reconfigured',
         'incremental-catalog' => 'Incremental Catalog Update',
     ],
     'commands' => [
@@ -174,21 +173,6 @@ return [
                     .'customers,manufacturers,option_product_classification,option_product,'
                     .'options,products,product__images,products,warehouses',
             ],
-            'time' => [
-                'minute' => '0',
-                'hour' => '*',
-                'day' => '*',
-                'month' => '*',
-                'weekday' => '*',
-            ],
-        ],
-
-        'sayt_reconfigure' => [
-            'command' => 'sayt:reconfigure',
-            'enabled' => true,
-            'priority' => 2,
-            'interval' => 'daily',
-            'variables' => [],
             'time' => [
                 'minute' => '0',
                 'hour' => '*',
