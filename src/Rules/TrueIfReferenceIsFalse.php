@@ -4,7 +4,7 @@ namespace Amplify\System\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class trueIfReferenceIsFalse implements Rule
+class TrueIfReferenceIsFalse implements Rule
 {
     protected array $columns;
 
