@@ -1640,7 +1640,9 @@ if (!function_exists('sku_attribute_filter')) {
 if (!function_exists('active_shop_view')) {
     function active_shop_view()
     {
-        return request('view', config('amplify.frontend.shop_page_default_view'));
+        return request()->filled('view')
+            ? request('view', config('amplify.frontend.shop_page_default_view'))
+            : request()->cookie('showView', config('amplify.frontend.shop_page_default_view'));
     }
 }
 
