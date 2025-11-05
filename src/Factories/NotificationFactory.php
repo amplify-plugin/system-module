@@ -8,6 +8,7 @@ use Amplify\System\Jobs\CatalogChangedJob;
 use Amplify\System\Jobs\ContactAccountRequestAcceptedJob;
 use Amplify\System\Jobs\ContactAccountRequestReceivedJob;
 use Amplify\System\Jobs\CreateOrderFromQuotation;
+use Amplify\System\Jobs\CustomerPartNumberDeletedJob;
 use Amplify\System\Jobs\CustomProduct\CoilQuoteRequestJob;
 use Amplify\System\Jobs\DraftOrderReceivedJob;
 use Amplify\System\Jobs\ModelOrSerialNumberResearchJob;
@@ -150,6 +151,10 @@ class NotificationFactory
 
             case Event::CREATE_ORDER_FROM_QUOTATION:
                 CreateOrderFromQuotation::dispatch($event_code, $args);
+                break;
+
+            case Event::CUSTOMER_PART_NUMBER_DELETED:
+                CustomerPartNumberDeletedJob::dispatch($event_code, $args);
                 break;
         }
     }

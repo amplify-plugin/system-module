@@ -161,6 +161,36 @@ class EmailService
         );
     }
 
+    public function sendCustomerPartNumberDeletedNotification($email_action, $args)
+    {
+        $email_data = $email_action->eventTemplate;
+
+        $customer = $args['customer'];
+        $product = $args['customer'];
+
+        $data = [
+            'customer' => $customer,
+            'subject' => optional($email_data)->subject,
+            'email_content' => optional($email_data)->email_body,
+            'show_button' => optional($email_data)->show_button === 1,
+            'button_url' => frontendSingleProductURL($product),
+            'button_text' => optional($email_data)->button_text,
+            'customer_name' => $customer->customer_name ?? '',
+            'customer_code' => $customer->customer_code ?? '',
+            'product_code' => $customer->product_code ?? '',
+            'product_name' => $customer->product_name ?? '',
+            'customer_part_number' => $args['customer_product_code'] ?? '',
+        ];
+
+        /*
+         * Dispatch order submit email job
+         */
+        $this->dispatchEmailJobs(
+            $this->replaceMailContentProperty($data),
+            $this->getRecipientsEmail($args['customer'], $email_action)
+        );
+    }
+
     protected function replaceOTPMailContentProperty($data): array
     {
         $data['email_content'] = str_replace(
