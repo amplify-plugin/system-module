@@ -28,6 +28,7 @@ return [
         'hello_world' => 'Hello World',
         // 'backup_table' => 'Backup Table',
         'incremental-catalog' => 'Incremental Catalog Update',
+        'customer-report' => 'Customer Registration Report',
     ],
     'commands' => [
         'product_sync' => [
@@ -207,6 +208,20 @@ return [
                 'minute' => '0',
                 'hour' => '0',
                 'day' => '*',
+                'month' => '*',
+                'weekday' => '*',
+            ],
+        ],
+        'customer-report' => [
+            'command' => 'amplify:send-customer-registered-report',
+            'enabled' => true,
+            'priority' => 2,
+            'interval' => 'monthly',
+            'variables' => [],
+            'time' => [
+                'minute' => '0',
+                'hour' => '0',
+                'day' => '1',
                 'month' => '*',
                 'weekday' => '*',
             ],
