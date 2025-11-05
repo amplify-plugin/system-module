@@ -41,8 +41,6 @@ class DispatchEmailJob implements ShouldQueue
             return;
         }
 
-        logger()->debug('receiver', ['emails' => $emails]);
-
         foreach ($emails as $email) {
             if (strlen($email) > 1) {
                 \Mail::to($email)->send(new SendSettingsEmail($this->data));
