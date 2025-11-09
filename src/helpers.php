@@ -1176,7 +1176,7 @@ if (!function_exists('frontendSingleProductURL')) {
         }
         return getIsDynamicSiteFromCache()
             ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/shop/product/{$productSlug}/{$seo_path}"
-            : route('frontend.shop.show', [$productSlug, $seo_path]);
+            : route('frontend.shop.show', ['identifier' => $productSlug, 'seo_path' => $seo_path]);
     }
 }
 
