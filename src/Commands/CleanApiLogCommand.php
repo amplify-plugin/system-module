@@ -14,7 +14,7 @@ class CleanApiLogCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'api-log:clean {--days=7}';
+    protected $signature = 'amplify:api-log-clean {--days=7}';
 
     /**
      * The console command description.

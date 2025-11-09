@@ -32,7 +32,7 @@ return [
     ],
     'commands' => [
         'product_sync' => [
-            'command' => 'product:sync',
+            'command' => 'amplify:product-sync',
             'enabled' => true,
             'priority' => 3,
             'interval' => 'daily',
@@ -101,7 +101,7 @@ return [
         ],
 
         'api_log_clean' => [
-            'command' => 'api-log:clean',
+            'command' => 'amplify:api-log-clean',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'daily',
