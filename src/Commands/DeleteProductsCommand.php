@@ -13,7 +13,7 @@ class DeleteProductsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:delete-products';
+    protected $signature = 'amplify:delete-products';
 
     /**
      * The console command description.

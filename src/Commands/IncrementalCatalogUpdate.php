@@ -14,7 +14,7 @@ class IncrementalCatalogUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'app:incremental-catalog-update {--date=*} {--delay=0}';
+    protected $signature = 'amplify:incremental-catalog-update {--date=*} {--delay=0}';
 
     /**
      * The console command description.

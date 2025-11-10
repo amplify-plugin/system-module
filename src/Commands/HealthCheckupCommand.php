@@ -11,7 +11,7 @@ use Throwable;
  */
 class HealthCheckupCommand extends Command
 {
-    public $signature = 'app:health-checkup';
+    public $signature = 'amplify:health-checkup';
 
     public $description = 'Configure the system for the `fintech/core` module';
 

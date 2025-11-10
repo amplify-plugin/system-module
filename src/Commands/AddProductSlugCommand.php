@@ -14,7 +14,7 @@ class AddProductSlugCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'create:product-slug';
+    protected $signature = 'amplify:create-product-slug';
 
     /**
      * The console command description.

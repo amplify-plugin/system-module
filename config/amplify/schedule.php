@@ -86,7 +86,7 @@ return [
         ],
 
         'hello_world' => [
-            'command' => 'hello:world',
+            'command' => 'amplify:hello-world',
             'enabled' => false,
             'priority' => 4,
             'interval' => 'cron',
@@ -150,7 +150,7 @@ return [
         ],
 
         'product_slug' => [
-            'command' => 'create:product-slug',
+            'command' => 'amplify:create-product-slug',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'cron',
@@ -184,7 +184,7 @@ return [
         ],
 
         'incremental-catalog' => [
-            'command' => 'app:incremental-catalog-update',
+            'command' => 'amplify:incremental-catalog-update',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'daily',
@@ -199,7 +199,7 @@ return [
         ],
 
         'delete_products' => [
-            'command' => 'app:delete-products',
+            'command' => 'amplify:delete-products',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'daily',

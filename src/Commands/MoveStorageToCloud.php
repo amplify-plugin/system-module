@@ -13,7 +13,7 @@ class MoveStorageToCloud extends Command
      *
      * @var string
      */
-    protected $signature = 'move:storage {from}';
+    protected $signature = 'amplify:move-storage {from}';
 
     /**
      * The console command description.

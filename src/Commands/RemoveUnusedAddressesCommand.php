@@ -15,7 +15,7 @@ class RemoveUnusedAddressesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'remove:unused-addresses';
+    protected $signature = 'amplify:remove-unused-addresses';
 
     /**
      * The console command description.
