@@ -29,6 +29,7 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\TraitMakeCommand::class,
                 \Amplify\System\Commands\TransformProduct::class,
                 \Amplify\System\Commands\UpgradeIssueFix::class,
+                \Amplify\System\Commands\CustomerRegisteredReportCommand::class,
             ]);
 
             if (class_exists('Backpack\Generators\Services\BackpackCommand')) {

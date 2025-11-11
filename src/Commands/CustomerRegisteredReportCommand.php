@@ -4,14 +4,14 @@ namespace Amplify\System\Commands;
 
 use Illuminate\Console\Command;
 
-class SendRegisteredCustomerReport extends Command
+class CustomerRegisteredReportCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'amplify:send-customer-registered-report';
+    protected $signature = 'amplify:customer-registered-report';
 
     /**
      * The console command description.

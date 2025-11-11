@@ -213,7 +213,7 @@ return [
             ],
         ],
         'customer-report' => [
-            'command' => 'amplify:send-customer-registered-report',
+            'command' => 'amplify:customer-registered-report',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'monthly',
