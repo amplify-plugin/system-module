@@ -203,7 +203,7 @@ return [
             'enabled' => true,
             'priority' => 2,
             'interval' => 'monthly',
-            'variables' => ['days' => 30],
+            'variables' => ['--days' => 30],
             'time' => [
                 'minute' => '0',
                 'hour' => '0',

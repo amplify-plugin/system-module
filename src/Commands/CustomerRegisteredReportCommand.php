@@ -17,7 +17,7 @@ class CustomerRegisteredReportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:customer-registered-report {days : The interval each report sent}';
+    protected $signature = 'amplify:customer-registered-report {--days=30 : The interval each report sent}';
 
     /**
      * The console command description.
@@ -32,8 +32,10 @@ class CustomerRegisteredReportCommand extends Command
      */
     public function handle()
     {
+
         try {
-            $interval = intval($this->argument('days') ?? 30);
+            $interval = intval($this->option('days') ?? 30);
+
             $start = now()->subDays($interval)->format('Y-m-d');
 
             $end = now()->format('Y-m-d');
@@ -52,11 +54,14 @@ class CustomerRegisteredReportCommand extends Command
                 'filepath' => Storage::disk('public')->path($filename)
             ]);
 
+            $this->info("Customer Registration From {$start} to {$end} generated on [". Storage::disk('public')->path($filename). "] completed.");
+
             return self::SUCCESS;
+
         } catch (\Exception $exception) {
+            $this->error($exception->getMessage());
             throw new \Exception($exception->getMessage(), $exception->getCode(), $exception);
         }
-
         return self::FAILURE;
     }
 }

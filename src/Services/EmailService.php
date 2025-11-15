@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\URL;
 class EmailService
 {
     use OrderEmailFormatingTrait;
+
     private $replaceAbleKeys = ['email_content', 'subject'];
 
     public function sendOrderDetailsEmailToCustomer($email_action, $order, $customer, $guestCustomerEmail, $guestCustomerName, $contact = null): void
@@ -48,7 +49,7 @@ class EmailService
             'subject' => optional($email_data)->subject,
             'email_content' => optional($email_data)->email_body,
             'show_button' => optional($email_data)->show_button === 1,
-            'button_url' => ! isset($button_url) ? '' : URL::to($button_url),
+            'button_url' => !isset($button_url) ? '' : URL::to($button_url),
             'button_text' => optional($email_data)->button_text,
             'guest_customer_name' => $guestCustomerName,
             'is_customer_mail' => true,
@@ -104,7 +105,7 @@ class EmailService
             'subject' => optional($email_data)->subject,
             'email_content' => optional($email_data)->email_body,
             'show_button' => optional($email_data)->show_button === 1,
-            'button_url' => ! isset($button_url) ? '' : URL::to($button_url),
+            'button_url' => !isset($button_url) ? '' : URL::to($button_url),
             'button_text' => optional($email_data)->button_text,
             'is_customer_mail' => true,
         ];
@@ -127,13 +128,13 @@ class EmailService
         if (optional($email_data)->button_url === '__order_details_url__') {
             $button_url_admin = str_replace(
                 '__order_details_url__',
-                '/admin/order/'.$order->id.'/show',
+                '/admin/order/' . $order->id . '/show',
                 $email_data->button_url
             );
         } elseif (optional($email_data)->button_url === '__quotation_details_url__') {
             $button_url_admin = str_replace(
                 '__quotation_details_url__',
-                '/admin/quote/'.$order->id.'/show',
+                '/admin/quote/' . $order->id . '/show',
                 $email_data->button_url
             );
         }
@@ -147,7 +148,7 @@ class EmailService
             'subject' => optional($email_data)->subject,
             'email_content' => optional($email_data)->email_body,
             'show_button' => optional($email_data)->show_button === 1,
-            'button_url' => ! isset($button_url_admin) ? '' : URL::to($button_url_admin),
+            'button_url' => !isset($button_url_admin) ? '' : URL::to($button_url_admin),
             'button_text' => optional($email_data)->button_text,
             'is_customer_mail' => false,
         ];
@@ -198,11 +199,16 @@ class EmailService
     {
         $email_data = $email_action->eventTemplate;
 
+        $attachments = $args['attachments'];
+
+        unset($args['attachments']);
+
         $data = [
-            'subject' => str_replace(array_keys($args), array_values($args), optional($email_data)->subject),
-            'email_content' => str_replace(array_keys($args), array_values($args), optional($email_data)->email_body),
-            'show_button' => false
-        ] + $args;
+                'subject' => str_replace(array_keys($args), array_values($args), optional($email_data)->subject),
+                'email_content' => str_replace(array_keys($args), array_values($args), optional($email_data)->email_body),
+                'show_button' => false,
+                'attachments' => $attachments
+            ] + $args;
 
         /*
          * Dispatch order submit email job
@@ -580,7 +586,7 @@ class EmailService
                 );
             }
 
-            if (! empty($data['guest_customer_name'])) {
+            if (!empty($data['guest_customer_name'])) {
                 $data[$key] = str_replace(
                     '__customer_name__',
                     $data['guest_customer_name'],
@@ -765,7 +771,7 @@ class EmailService
          */
         $button_url = str_replace(
             '__contacts_details_url_for_account_request_received__',
-            '/admin/contact/'.$contact->id.'/edit',
+            '/admin/contact/' . $contact->id . '/edit',
             $eventTemplate->button_url
         );
 
@@ -797,7 +803,7 @@ class EmailService
          */
         $button_url = str_replace(
             '__contacts_details_url_for_account_request_accepted__',
-            '/admin/contact/'.$contact->id.'/show',
+            '/admin/contact/' . $contact->id . '/show',
             $eventTemplate->button_url
         );
 
@@ -861,7 +867,7 @@ class EmailService
          */
         $button_url = str_replace(
             '__customer_details_url_for_request_received__',
-            '/admin/customer-registration/'.$customer->id.'/show',
+            '/admin/customer-registration/' . $customer->id . '/show',
             $email_data->button_url
         );
 
@@ -929,7 +935,7 @@ class EmailService
         */
         $button_url = str_replace(
             '__customer_details_url_for_request_accepted__',
-            '/admin/customer/'.$customer->id.'/show',
+            '/admin/customer/' . $customer->id . '/show',
             $email_data->button_url
         );
         /*
@@ -964,13 +970,13 @@ class EmailService
         if (optional($email_data)->button_url === '__customer_order_details_url__') {
             $button_url = str_replace(
                 '__customer_order_details_url__',
-                '/customer-profile-order-list-items?order_id='.$order->erp_order_id,
+                '/customer-profile-order-list-items?order_id=' . $order->erp_order_id,
                 optional($email_data)->button_url
             );
         } elseif (optional($email_data)->button_url === '__customer_quotation_details_url__') {
             $button_url = str_replace(
                 '__customer_quotation_details_url__',
-                '/customer-profile-quotation-list-items?order_id='.$order->erp_order_id,
+                '/customer-profile-quotation-list-items?order_id=' . $order->erp_order_id,
                 optional($email_data)->button_url
             );
         }
@@ -984,7 +990,7 @@ class EmailService
             'subject' => optional($email_data)->subject,
             'email_content' => optional($email_data)->email_body,
             'show_button' => optional($email_data)->show_button === 1,
-            'button_url' => ! isset($button_url) ? '' : URL::to($button_url),
+            'button_url' => !isset($button_url) ? '' : URL::to($button_url),
             'button_text' => optional($email_data)->button_text,
             'is_customer_mail' => true,
             'notes' => $notes,
@@ -1008,7 +1014,7 @@ class EmailService
         if (optional($email_data)->button_url === '__admin_order_details_url__') {
             $button_url = str_replace(
                 '__admin_order_details_url__',
-                '/admin/order-line?order_line_id='.$order->id,
+                '/admin/order-line?order_line_id=' . $order->id,
                 optional($email_data)->button_url
             );
         }
@@ -1021,7 +1027,7 @@ class EmailService
             'subject' => $email_data->subject,
             'email_content' => $email_data->email_body,
             'show_button' => $email_data->show_button === 1,
-            'button_url' => ! isset($button_url) ? '' : URL::to($button_url),
+            'button_url' => !isset($button_url) ? '' : URL::to($button_url),
             'button_text' => $email_data->button_text,
             'is_customer_mail' => false,
         ];
@@ -1050,7 +1056,7 @@ class EmailService
 
     public function coilQuoteRequestEmailToAdmin($email_action, $coilData, $customer)
     {
-        $pdfName = uniqid().'.pdf';
+        $pdfName = uniqid() . '.pdf';
         $eventTemplate = $email_action->eventTemplate;
         Pdf::loadView('custom-item::evaporator_coil_pdf', ['info' => $coilData])->save(storage_path($pdfName));
 
@@ -1063,7 +1069,7 @@ class EmailService
             'email_content' => $eventTemplate->email_body,
             'attachments' => [storage_path($pdfName)],
             'show_button' => $eventTemplate->show_button,
-            'button_url' => ! isset($eventTemplate->button_url) ? '' : URL::to($eventTemplate->button_url),
+            'button_url' => !isset($eventTemplate->button_url) ? '' : URL::to($eventTemplate->button_url),
             'button_text' => $eventTemplate->button_text,
         ];
 
@@ -1087,7 +1093,7 @@ class EmailService
             'email_content' => $eventTemplate->email_body,
             'attachments' => $uploadedFile ? [$uploadedFile] : [],
             'show_button' => $eventTemplate->show_button,
-            'button_url' => ! isset($eventTemplate->button_url) ? '' : URL::to($eventTemplate->button_url),
+            'button_url' => !isset($eventTemplate->button_url) ? '' : URL::to($eventTemplate->button_url),
             'button_text' => $eventTemplate->button_text,
         ];
 
@@ -1110,11 +1116,11 @@ class EmailService
 
     private function getContactEmail($customer, $contact)
     {
-        if (! empty($contact) && $contact instanceof Contact) {
+        if (!empty($contact) && $contact instanceof Contact) {
             return $contact->email;
         }
 
-        if ($customer instanceof Customer && ! empty($customer->contact)) {
+        if ($customer instanceof Customer && !empty($customer->contact)) {
             return $customer->contact->email;
         }
 
@@ -1128,7 +1134,7 @@ class EmailService
     {
         $emails = [];
 
-        if (! empty($guestCustomerEmail)) {
+        if (!empty($guestCustomerEmail)) {
             $emails[] = $guestCustomerEmail;
         }
 
@@ -1152,11 +1158,11 @@ class EmailService
 
         if ($customer instanceof Contact) {
             if ($email_action->is_get_customer) {
-                $emails[] = ! empty($customer->customer) ? $customer->customer->email : '';
+                $emails[] = !empty($customer->customer) ? $customer->customer->email : '';
             }
 
             if ($email_action->is_get_business_contact) {
-                $emails[] = ! empty($customer->customer) ? $customer->customer->business_contact : '';
+                $emails[] = !empty($customer->customer) ? $customer->customer->business_contact : '';
             }
 
             if ($email_action->is_get_contact) {
@@ -1170,7 +1176,7 @@ class EmailService
             }
         }
 
-        if ($email_action->is_quote_sales_person && ! empty($quotation)) {
+        if ($email_action->is_quote_sales_person && !empty($quotation)) {
             $emails[] = $quotation->QuotedByEmail;
         }
 
@@ -1200,31 +1206,31 @@ class EmailService
 
         $shippingAddress = '';
 
-        if (! empty($erp_quotation_data->ShipTo)) {
+        if (!empty($erp_quotation_data->ShipTo)) {
             $shippingAddress .= "<p>Ship To: $erp_quotation_data->ShipTo</p>";
         }
 
-        if (! empty($erp_quotation_data->ShipToNumber)) {
+        if (!empty($erp_quotation_data->ShipToNumber)) {
             $shippingAddress .= "<p>Ship To Number: $erp_quotation_data->ShipToNumber</p>";
         }
 
-        if (! empty($erp_quotation_data->ShipToContact)) {
+        if (!empty($erp_quotation_data->ShipToContact)) {
             $shippingAddress .= "<p>Ship To Contact: $erp_quotation_data->ShipToContact</p>";
         }
 
-        if (! empty($address)) {
+        if (!empty($address)) {
             $shippingAddress .= "<p>Address: $address</p>";
         }
 
-        if (! empty($erp_quotation_data->ShipToCity)) {
+        if (!empty($erp_quotation_data->ShipToCity)) {
             $shippingAddress .= "<p>City: $erp_quotation_data->ShipToCity</p>";
         }
 
-        if (! empty($erp_quotation_data->ShipToState)) {
+        if (!empty($erp_quotation_data->ShipToState)) {
             $shippingAddress .= "<p>State: $erp_quotation_data->ShipToState</p>";
         }
 
-        if (! empty($erp_quotation_data->ShipToZipCode)) {
+        if (!empty($erp_quotation_data->ShipToZipCode)) {
             $shippingAddress .= "<p>Zip Code: $erp_quotation_data->ShipToZipCode</p>";
         }
 
