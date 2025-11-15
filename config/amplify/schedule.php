@@ -25,7 +25,6 @@ return [
         'api_log_clean' => 'Clean API Request Log Data',
         'permission_sync' => 'Permission Synchronization',
         'audit_clean' => 'Clean Activity Log Data',
-        'hello_world' => 'Hello World',
         // 'backup_table' => 'Backup Table',
         'incremental-catalog' => 'Incremental Catalog Update',
         'customer-report' => 'Customer Registration Report',
@@ -76,21 +75,6 @@ return [
                 '--only-db' => '--no-arg-val--',
                 '--disable-notifications' => '--no-arg-val--',
             ],
-            'time' => [
-                'minute' => '0',
-                'hour' => '*',
-                'day' => '*',
-                'month' => '*',
-                'weekday' => '*',
-            ],
-        ],
-
-        'hello_world' => [
-            'command' => 'amplify:hello-world',
-            'enabled' => false,
-            'priority' => 4,
-            'interval' => 'cron',
-            'variables' => [],
             'time' => [
                 'minute' => '0',
                 'hour' => '*',
@@ -163,6 +147,7 @@ return [
                 'weekday' => '*',
             ],
         ],
+
         'backup_table' => [
             'command' => 'backup:database',
             'enabled' => env('SFTP_EXPORT', false),
@@ -212,6 +197,7 @@ return [
                 'weekday' => '*',
             ],
         ],
+
         'customer-report' => [
             'command' => 'amplify:customer-registered-report',
             'enabled' => true,
