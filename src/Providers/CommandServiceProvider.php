@@ -18,7 +18,6 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\DeleteProductsCommand::class,
                 \Amplify\System\Commands\FetchTracePartsCatalogCommand::class,
                 \Amplify\System\Commands\HealthCheckupCommand::class,
-                \Amplify\System\Commands\HelloWorldCommand::class,
                 \Amplify\System\Commands\IncrementalCatalogUpdate::class,
                 \Amplify\System\Commands\MoveStorageToCloud::class,
                 \Amplify\System\Commands\RemoveUnusedAddressesCommand::class,
