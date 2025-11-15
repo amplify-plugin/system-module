@@ -194,6 +194,25 @@ class EmailService
         );
     }
 
+    public function sendCustomerRegistrationReportNotification($email_action, $args)
+    {
+        $email_data = $email_action->eventTemplate;
+
+        $data = [
+            'subject' => str_replace(array_keys($args), array_values($args), optional($email_data)->subject),
+            'email_content' => str_replace(array_keys($args), array_values($args), optional($email_data)->email_body),
+            'show_button' => false
+        ] + $args;
+
+        /*
+         * Dispatch order submit email job
+         */
+        $this->dispatchEmailJobs(
+            $this->replaceMailContentProperty($data),
+            $this->getRecipientsEmail(null, $email_action)
+        );
+    }
+
     protected function replaceOTPMailContentProperty($data): array
     {
         $data['email_content'] = str_replace(

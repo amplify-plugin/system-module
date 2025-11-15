@@ -217,7 +217,7 @@ return [
             'enabled' => true,
             'priority' => 2,
             'interval' => 'monthly',
-            'variables' => [],
+            'variables' => ['days' => 30],
             'time' => [
                 'minute' => '0',
                 'hour' => '0',
