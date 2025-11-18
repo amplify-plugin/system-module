@@ -79,7 +79,7 @@ class DataPreparation implements AddToCart
             }
         }
 
-        abort_if(!empty($missingEntries), 500, __('Product Code(s) with: <b>:codes</b> not found in systems. Please try again later.', ['codes' => implode(',', $missingEntries)]));
+        abort_if(!empty($missingEntries), 500, __('Product Code(s) with: :codes not found in systems. Please try again later.', ['codes' => implode(', ', $missingEntries)]));
 
         return $next($data);
     }
