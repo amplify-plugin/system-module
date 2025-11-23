@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Amplify\System\Backend\Models\Contact;
+use Amplify\ErpApi\Facades\ErpApi;
 
 class QuotationReceivedJob implements ShouldQueue
 {
@@ -58,6 +59,8 @@ class QuotationReceivedJob implements ShouldQueue
         $order = CustomerOrder::find($this->orderId);
         $customer = Customer::find($this->customerId);
         $contact = Contact::find($this->contactId ?? null);
+
+        $order->erp_details = ErpApi::getOrderDetail(['order_number' => $order->erp_order_id])->toArray();
 
         foreach ($this->eventInfo->eventActions as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
