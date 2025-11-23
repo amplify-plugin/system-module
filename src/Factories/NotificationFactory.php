@@ -103,7 +103,14 @@ class NotificationFactory
                 break;
 
             case Event::QUOTATION_RECEIVED:
-                QuotationReceivedJob::dispatch($event_code, $args['order_id'], $args['customer_id']);
+                QuotationReceivedJob::dispatch(
+                    $event_code,
+                    $args['order_id'],
+                    $args['customer_id'],
+                    $args['guest_customer_email'],
+                    $args['guest_customer_name'],
+                    $args['contact_id'],
+                );
                 break;
 
             case Event::CATALOG_CHANGED:

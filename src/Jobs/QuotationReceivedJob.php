@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Amplify\System\Backend\Models\Contact;
 
 class QuotationReceivedJob implements ShouldQueue
 {
@@ -19,16 +20,31 @@ class QuotationReceivedJob implements ShouldQueue
 
     public $customerId;
 
+    public $guestCustomerEmail;
+
+    public $guestCustomerName;
+
+    public $contactId;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($event_code, $order_id, $customer_id)
+    public function __construct(
+        $event_code,
+        $order_id,
+        $customer_id,
+        $guest_customer_email = null,
+        $guest_customer_name = null,
+        $contact_id = null)
     {
         $this->eventCode = $event_code;
         $this->orderId = $order_id;
         $this->customerId = $customer_id;
+        $this->guestCustomerEmail = $guest_customer_email;
+        $this->guestCustomerName = $guest_customer_name;
+        $this->contactId = $contact_id;
     }
 
     /**
@@ -41,10 +57,17 @@ class QuotationReceivedJob implements ShouldQueue
         $this->getNecessaryItems();
         $order = CustomerOrder::find($this->orderId);
         $customer = Customer::find($this->customerId);
+        $contact = Contact::find($this->contactId ?? null);
 
         foreach ($this->eventInfo->eventActions as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
-                $this->emailService->sendOrderDetailsEmailToCustomer($eventAction, $order, $customer);
+                $this->emailService->sendOrderDetailsEmailToCustomer(
+                    $eventAction,
+                    $order,
+                    $customer,
+                    $this->guestCustomerEmail,
+                    $this->guestCustomerName,
+                    $contact);
             }
 
             if ($eventAction->eventTemplate->notification_type == 'messageable') {
