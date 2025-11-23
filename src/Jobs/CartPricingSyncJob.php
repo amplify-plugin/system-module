@@ -16,8 +16,6 @@ class CartPricingSyncJob implements ShouldQueue
 
     private ?Cart $cart;
 
-    public $afterCommit = true;
-
     /**
      * Create a new job instance.
      */
