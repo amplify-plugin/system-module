@@ -1297,19 +1297,6 @@ if (!function_exists('getPaginationLengths')) {
     }
 }
 
-if (!function_exists('getPaginationSortBy')) {
-    function getPaginationSortBy(): array
-    {
-        return [
-            'Relevance' => 'Relevance',
-            'Product Code - ASC' => 'Product code A-Z',
-            'Product Code - DESC' => 'Product code Z-A',
-            'Manufacturer - ASC' => 'Brand A-Z',
-            'Manufacturer - DESC' => 'Brand Z-A',
-        ];
-    }
-}
-
 if (!function_exists('customerCartUrl')) {
     function customerCartUrl(): string
     {
