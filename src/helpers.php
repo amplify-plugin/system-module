@@ -1330,10 +1330,10 @@ if (!function_exists('getCart')) {
         }
 
         if (config('amplify.frontend.guest_add_to_cart')) {
-            return Cart::where([
+            return Cart::firstOrCreate([
                 'session_id' => session()->token(),
                 'status' => true,
-            ])->first();
+            ]);
         }
 
         return null;
