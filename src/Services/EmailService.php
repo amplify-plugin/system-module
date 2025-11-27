@@ -1236,4 +1236,21 @@ class EmailService
 
         return $shippingAddress;
     }
+
+    public function sendWishlistProductRestockedEmail(EventAction $emailAction, $contact)
+    {
+        $eventTemplate = $emailAction->eventTemplate;
+
+        $data = [
+            'contact' => $contact,
+            'subject' => $eventTemplate->subject,
+            'email_content' => $eventTemplate->email_body,
+            'is_customer_mail' => true,
+        ];
+
+        $this->dispatchEmailJobs(
+            $this->replaceMailContentProperty($data),
+            $this->getRecipientsEmail($contact, $emailAction)
+        );
+    }
 }
