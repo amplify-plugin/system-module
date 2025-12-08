@@ -14,6 +14,12 @@ class Language extends Collection
         $items = [];
 
         foreach ($locales as $code => $name) {
+
+            $code = match($code) {
+                'en' => 'us',
+                default => $code
+            };
+
             $items[] = (object)[
                 'name' => $name,
                 'code' => $code,
