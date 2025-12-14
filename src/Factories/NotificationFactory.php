@@ -23,6 +23,7 @@ use Amplify\System\Jobs\QuotationReceivedJob;
 use Amplify\System\Jobs\RegistrationRequestAcceptedJob;
 use Amplify\System\Jobs\RegistrationRequestReceivedJob;
 use Amplify\System\Jobs\ResetPassword;
+use Amplify\System\Jobs\TicketCreatedNotifyJob;
 use Amplify\System\Jobs\WishlistProductRestockedJob;
 
 class NotificationFactory
@@ -172,6 +173,10 @@ class NotificationFactory
 
             case Event::WISHLIST_PRODUCT_RESTOCKED:
                 WishlistProductRestockedJob::dispatch($event_code, $args);
+                break;
+
+            case Event::TICKET_CREATED:
+                TicketCreatedNotifyJob::dispatch($event_code, $args['ticket']);
                 break;
         }
     }

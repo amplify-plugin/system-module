@@ -7,6 +7,8 @@ use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\EventAction;
 use Amplify\System\Jobs\DispatchEmailJob;
+use Amplify\System\Ticket\Models\Ticket;
+use Amplify\System\Ticket\Models\TicketDepartment;
 use Amplify\System\Traits\OrderEmailFormatingTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
@@ -1251,6 +1253,33 @@ class EmailService
         $this->dispatchEmailJobs(
             $this->replaceMailContentProperty($data),
             $this->getRecipientsEmail($contact, $emailAction)
+        );
+    }
+
+    public function sendTicketCreatedNotificationEmail(EventAction $emailAction, Ticket $ticket)
+    {
+        $eventTemplate = $emailAction->eventTemplate;
+
+        $department = TicketDepartment::findOrFail($ticket->departments_name_id);
+
+        $addTicketContentWithEmailBody = str_replace(
+            '__ticket_content__',
+            $ticket->message,
+            $eventTemplate->email_body
+        );
+
+        $data = [
+            'ticket' => $ticket,
+            'subject' => $eventTemplate->subject,
+            'email_content' => $addTicketContentWithEmailBody
+        ];
+
+        $emails = explode(',', str_replace([' ', "\t", "\n", "\r"], '', trim($emailAction->recipient_emails)));
+        array_push($emails, $department->email);
+
+        $this->dispatchEmailJobs(
+            $this->replaceMailContentProperty($data),
+            $emails
         );
     }
 }
