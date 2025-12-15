@@ -67,7 +67,9 @@ class CartPricingSyncJob implements ShouldQueue
 
                 $orderInfo = [
                     'customer_number' => $erpCustomer->CustomerNumber,
-                    'customer_default_warehouse' => $erpCustomer->DefaultWarehouse,
+                    'customer_default_warehouse' => empty($this->cart->contact_id)
+                        ? config('amplify.frontend.guest_checkout_warehouse')
+                        : $erpCustomer->DefaultWarehouse,
                     'shipping_method' => $erpCustomer->CarrierCode,
                     'customer_order_ref' => null,
                     'ship_to_number' => $shipTo?->ShipToNumber ?? '',
@@ -99,7 +101,7 @@ class CartPricingSyncJob implements ShouldQueue
 
                 if ($orderTotal->OrderLines->isNotEmpty()) {
                     foreach ($cartItems as $item) {
-                        if ($erpItem = $orderTotal->OrderLines->firstWhere('ItemNumber', $item->product_code)) {
+                        if ($erpItem = $orderTotal->OrderLines->firstWhere('ItemNumber', '=', $item->product_code)) {
                             $item->unitprice = $erpItem->UnitPrice;
                             $item->subtotal = $erpItem->TotalLineAmount;
                             $item->save();
@@ -107,9 +109,7 @@ class CartPricingSyncJob implements ShouldQueue
                     }
                 }
 
-            }
-
-            else {
+            } else {
                 $this->cart->sub_total = $this->cart->cartItems->sum('subtotal');
                 $this->cart->total = $this->cart->subtotal;
                 $this->cart->tax_amount = null;
