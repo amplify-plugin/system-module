@@ -37,6 +37,16 @@ class CartPricingSyncJob implements ShouldQueue
 
             $cartItems = $this->cart->cartItems()->exists() ? $this->cart->cartItems : new Collection();
 
+            // Reset Cart if no item exists
+            if ($cartItems->isEmpty()) {
+                $this->cart->sub_total = 0;
+                $this->cart->total = 0;
+                $this->cart->tax_amount = null;
+                $this->cart->ship_charge = null;
+                $this->cart->currency = config('amplify.basic.global_currency', 'USD');
+                return;
+            }
+
             if (ErpApi::enabled()) {
                 $erpCustomer = ErpApi::getCustomerDetail([
                     'customer_number' => empty($this->cart->contact_id)
@@ -97,13 +107,16 @@ class CartPricingSyncJob implements ShouldQueue
                     }
                 }
 
-            } else {
+            }
+
+            else {
                 $this->cart->sub_total = $this->cart->cartItems->sum('subtotal');
                 $this->cart->total = $this->cart->subtotal;
                 $this->cart->tax_amount = null;
                 $this->cart->ship_charge = null;
                 $this->cart->currency = config('amplify.basic.global_currency', 'USD');
             }
+
             $this->cart->save();
         }
     }
