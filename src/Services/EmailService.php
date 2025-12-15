@@ -11,7 +11,6 @@ use Amplify\System\Ticket\Models\Ticket;
 use Amplify\System\Ticket\Models\TicketDepartment;
 use Amplify\System\Traits\OrderEmailFormatingTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class EmailService
@@ -1262,16 +1261,18 @@ class EmailService
 
         $department = TicketDepartment::findOrFail($ticket->departments_name_id);
 
-        $addTicketContentWithEmailBody = str_replace(
-            '__ticket_content__',
-            $ticket->message,
-            $eventTemplate->email_body
-        );
+        $replacement_array = [
+            '__ticket_subject__' => $ticket->subject,
+            '__ticket_priority__' => Ticket::PRIORITY_LABEL[$ticket->priority] ?? 'N/A',
+            '__ticket_department__' => $department->name,
+            '__ticket_url__' => URL::to('/admin/ticket/' . $ticket->id . '/show'),
+            '__ticket_content__' => $ticket->message,
+        ];
 
         $data = [
             'ticket' => $ticket,
             'subject' => $eventTemplate->subject,
-            'email_content' => $addTicketContentWithEmailBody
+            'email_content' => str_replace(array_keys($replacement_array), array_values($replacement_array), optional($emailAction->eventTemplate)->email_body),
         ];
 
         $emails = explode(',', str_replace([' ', "\t", "\n", "\r"], '', trim($emailAction->recipient_emails)));
