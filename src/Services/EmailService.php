@@ -7,9 +7,10 @@ use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\EventAction;
 use Amplify\System\Jobs\DispatchEmailJob;
+use Amplify\System\Ticket\Models\Ticket;
+use Amplify\System\Ticket\Models\TicketDepartment;
 use Amplify\System\Traits\OrderEmailFormatingTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class EmailService
@@ -1251,6 +1252,45 @@ class EmailService
         $this->dispatchEmailJobs(
             $this->replaceMailContentProperty($data),
             $this->getRecipientsEmail($contact, $emailAction)
+        );
+    }
+
+    public function sendTicketCreatedNotificationEmail(EventAction $emailAction, Ticket $ticket)
+    {
+        $eventTemplate = $emailAction->eventTemplate;
+
+        $department = TicketDepartment::findOrFail($ticket->departments_name_id);
+        $contact = Contact::findOrFail($ticket->sender_id);
+
+        $replacement_array = [
+            '__ticket_subject__' => $ticket->subject ?? '',
+            '__ticket_priority__' => Ticket::PRIORITY_LABEL[$ticket->priority] ?? 'N/A',
+            '__ticket_department__' => $department->name,
+            '__ticket_url__' => URL::to('/admin/ticket/' . $ticket->id . '/show'),
+            '__ticket_content__' => $ticket->message,
+        ];
+
+        $button_url_admin = str_replace(
+            '__ticket_url__',
+            URL::to('/admin/ticket/' . $ticket->id . '/show'),
+            $eventTemplate->button_url
+        );
+
+        $data = [
+            'ticket' => $ticket,
+            'subject' => strtr($emailAction->eventTemplate->subject, $replacement_array),
+            'email_content' => strtr($emailAction->eventTemplate->email_body, $replacement_array),
+            'show_button' => $eventTemplate->show_button === 1,
+            'button_url' => !isset($button_url_admin) ? '' : URL::to($button_url_admin),
+            'button_text' => $eventTemplate->button_text,
+        ];
+
+        $emails = $this->getRecipientsEmail($contact, $emailAction);
+        array_push($emails, $department->email);
+
+        $this->dispatchEmailJobs(
+            $this->replaceMailContentProperty($data),
+            $emails
         );
     }
 }
