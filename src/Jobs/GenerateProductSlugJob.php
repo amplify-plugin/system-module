@@ -32,7 +32,8 @@ class GenerateProductSlugJob implements ShouldQueue
     {
         if (! empty($this->productGroups)) {
             Product::whereIn('id', $this->productGroups)->get()->each(function (Product $product) {
-                $product->product_slug = Str::slug($product->product_name);
+                $slug = Str::limit(Str::slug($product->product_name), 75).'-'.Str::random(6);
+                $product->product_slug = $slug;
                 $product->save();
             });
         }
