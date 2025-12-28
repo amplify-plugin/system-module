@@ -36,7 +36,7 @@ return [
             'priority' => 3,
             'interval' => 'daily',
             'variables' => [
-                '--updateOnly' => 'N',
+                '--updatesOnly' => 'N',
                 '--processUpdates' => 'N',
                 '--limit' => null,
             ],

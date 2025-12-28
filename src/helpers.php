@@ -116,14 +116,14 @@ if (!function_exists('public_routes')) {
     function public_routes($route = null)
     {
         $routes = [
-            'backpack',
-            'backpack.dashboard',
-            'product.status-update',
+                'backpack',
+                'backpack.dashboard',
+                'product.status-update',
         ];
 
         return $route
-            ? in_array($route, $routes)
-            : $routes;
+                ? in_array($route, $routes)
+                : $routes;
     }
 }
 
@@ -131,23 +131,23 @@ if (!function_exists('get_all_routes_name')) {
     function get_all_routes_name(...$search)
     {
         $routesName = backpack_user()
-            ->getAllPermissions()
-            ->sortBy('name')
-            ->pluck('name');
+                ->getAllPermissions()
+                ->sortBy('name')
+                ->pluck('name');
 
         return ($search
-            ? $routesName->map(function ($name) use ($search) {
-                foreach ($search as $src) {
-                    if (if_found_pos($name, $src)) {
-                        return $name;
+                ? $routesName->map(function ($name) use ($search) {
+                    foreach ($search as $src) {
+                        if (if_found_pos($name, $src)) {
+                            return $name;
+                        }
                     }
-                }
 
-                return false;
-            })->reject(function ($val) {
-                return $val == false;
-            })
-            : $routesName)->values()->toArray();
+                    return false;
+                })->reject(function ($val) {
+                    return $val == false;
+                })
+                : $routesName)->values()->toArray();
     }
 }
 
@@ -197,19 +197,19 @@ if (!function_exists('user_has_permission')) {
         }
 
         $routePost = [
-            'create' => 'create',
-            'store' => 'create',
-            'destroy' => 'destroy',
-            'edit' => 'edit',
-            'update' => 'edit',
-            'index' => 'index',
-            'search' => 'index',
-            'show' => 'index',
-            'showDetailsRow' => 'index',
-            'reorder' => 'reorder',
-            'message' => 'message',
-            'newMessage' => 'message',
-            'reset' => 'reset',
+                'create' => 'create',
+                'store' => 'create',
+                'destroy' => 'destroy',
+                'edit' => 'edit',
+                'update' => 'edit',
+                'index' => 'index',
+                'search' => 'index',
+                'show' => 'index',
+                'showDetailsRow' => 'index',
+                'reorder' => 'reorder',
+                'message' => 'message',
+                'newMessage' => 'message',
+                'reset' => 'reset',
         ];
 
         $routeArr = explode('.', $route);
@@ -226,15 +226,15 @@ if (!function_exists('url_query')) {
     {
         $query = Arr::query($params);
         $url = Str::finish(
-            url($to, $additional),
-            $query
-                ? '?'
-                : ''
+                url($to, $additional),
+                $query
+                        ? '?'
+                        : ''
         );
 
         return $query
-            ? $url . $query
-            : $url;
+                ? $url . $query
+                : $url;
     }
 }
 
@@ -242,9 +242,9 @@ if (!function_exists('listOfCrudToHideBackToButton')) {
     function listOfCrudToHideBackToButton(): array
     {
         return [
-            'searches',
-            'site pricings',
-            'core configurations',
+                'searches',
+                'site pricings',
+                'core configurations',
         ];
     }
 }
@@ -344,32 +344,32 @@ if (!function_exists('getColumnListing')) {
     {
         $columns = DB::select("DESCRIBE `{$table}`;");
         $defaultExcepts = $withoutTimestamps
-            ? ['user_id', 'has_sku', 'is_new', 'is_updated', 'created_at', 'updated_at', 'deleted_at', '`values`']
-            : [];
+                ? ['user_id', 'has_sku', 'is_new', 'is_updated', 'created_at', 'updated_at', 'deleted_at', '`values`']
+                : [];
 
         $fields = [];
         foreach ($columns as $column) {
             $fields[] = [
-                'name' => $column->Field,
-                'type' => $column->Type,
-                'is_required' => strtolower($column->Null) == 'no' && $column->Default == null && !($column->Extra == 'auto_increment' && $ignoreId),
+                    'name' => $column->Field,
+                    'type' => $column->Type,
+                    'is_required' => strtolower($column->Null) == 'no' && $column->Default == null && !($column->Extra == 'auto_increment' && $ignoreId),
             ];
         }
 
         $except = $except
-            ? array_unique(array_merge($defaultExcepts, $except))
-            : $defaultExcepts;
+                ? array_unique(array_merge($defaultExcepts, $except))
+                : $defaultExcepts;
 
         return collect($fields)
-            ->map(function ($field) use ($except) {
-                return in_array($field['name'], $except)
-                    ? false
-                    : $field;
-            })
-            ->reject(function ($rej) {
-                return $rej == false;
-            })
-            ->toArray();
+                ->map(function ($field) use ($except) {
+                    return in_array($field['name'], $except)
+                            ? false
+                            : $field;
+                })
+                ->reject(function ($rej) {
+                    return $rej == false;
+                })
+                ->toArray();
     }
 }
 
@@ -397,10 +397,10 @@ if (!function_exists('getAllAttributes')) {
         $attributes = \Amplify\System\Backend\Models\Attribute::query()->get(['name']);
 
         return collect($attributes)
-            ->map(function ($attribute) {
-                return $attribute->name;
-            })
-            ->toArray();
+                ->map(function ($attribute) {
+                    return $attribute->name;
+                })
+                ->toArray();
     }
 }
 
@@ -418,14 +418,14 @@ if (!function_exists('getCategorySlug')) {
     function getCategorySlug($slug, $id = null)
     {
         $where = !empty($id)
-            ? [['category_slug', 'like', '%' . $slug . '%'], ['id', '!=', $id]]
-            : [['category_slug', 'like', '%' . $slug . '%']];
+                ? [['category_slug', 'like', '%' . $slug . '%'], ['id', '!=', $id]]
+                : [['category_slug', 'like', '%' . $slug . '%']];
 
         $count = Category::query()->where($where)->count();
 
         return $count > 0
-            ? $slug . '-' . $count
-            : $slug;
+                ? $slug . '-' . $count
+                : $slug;
     }
 }
 
@@ -433,14 +433,14 @@ if (!function_exists('getProductSlug')) {
     function getProductSlug($slug, $id = null)
     {
         $where = !empty($id)
-            ? [['product_slug', 'like', '%' . $slug . '%'], ['id', '!=', $id]]
-            : [['product_slug', 'like', '%' . $slug . '%']];
+                ? [['product_slug', 'like', '%' . $slug . '%'], ['id', '!=', $id]]
+                : [['product_slug', 'like', '%' . $slug . '%']];
 
         $count = Product::query()->where($where)->count();
 
         return $count > 0
-            ? $slug . '-' . $count
-            : $slug;
+                ? $slug . '-' . $count
+                : $slug;
     }
 }
 
@@ -460,14 +460,14 @@ if (!function_exists('getPageSlug')) {
     function getPageSlug($slug, $id = null)
     {
         $where = $id
-            ? [['slug', 'LIKE', '%' . $slug . '%'], ['id', '!=', $id]]
-            : ['slug' => $slug];
+                ? [['slug', 'LIKE', '%' . $slug . '%'], ['id', '!=', $id]]
+                : ['slug' => $slug];
 
         $count = Page::query()->where($where)->count();
 
         return $count
-            ? "$slug-$count"
-            : $slug;
+                ? "$slug-$count"
+                : $slug;
     }
 }
 
@@ -475,14 +475,14 @@ if (!function_exists('getNavShortCode')) {
     function getNavShortCode($short_code, $id = null)
     {
         $where = $id
-            ? [['short_code', 'LIKE', '%' . $short_code . '%'], ['id', '!=', $id]]
-            : ['short_code' => $short_code];
+                ? [['short_code', 'LIKE', '%' . $short_code . '%'], ['id', '!=', $id]]
+                : ['short_code' => $short_code];
 
         $count = Page::query()->where($where)->count();
 
         return $count
-            ? "$short_code-$count"
-            : $short_code;
+                ? "$short_code-$count"
+                : $short_code;
     }
 }
 
@@ -490,14 +490,14 @@ if (!function_exists('getTemplateSlug')) {
     function getTemplateSlug($slug, $id = null)
     {
         $where = $id
-            ? [['slug', 'LIKE', '%' . $slug . '%'], ['id', '!=', $id]]
-            : ['slug' => $slug];
+                ? [['slug', 'LIKE', '%' . $slug . '%'], ['id', '!=', $id]]
+                : ['slug' => $slug];
 
         $count = Template::query()->where($where)->count();
 
         return $count
-            ? "$slug-$count"
-            : $slug;
+                ? "$slug-$count"
+                : $slug;
     }
 }
 
@@ -506,11 +506,11 @@ if (!function_exists('manageImportJobHistory')) {
      * @return Builder|Model|mixed|null
      */
     function manageImportJobHistory(
-        string $uuid,
-        int    $importJobId,
-        bool   $isFinalJob = false,
-        string $action = 'create',
-        string $status = 'failed'
+            string $uuid,
+            int    $importJobId,
+            bool   $isFinalJob = false,
+            string $action = 'create',
+            string $status = 'failed'
     )
     {
         $importJobHistory = ImportJobHistory::query();
@@ -519,17 +519,17 @@ if (!function_exists('manageImportJobHistory')) {
             case 'create':
             case 'update':
                 return $importJobHistory->updateOrCreate([
-                    'uuid' => $uuid,
-                    'import_job_id' => $importJobId,
+                        'uuid' => $uuid,
+                        'import_job_id' => $importJobId,
                 ], [
-                    'status' => $status,
-                    'is_final_job' => $isFinalJob,
+                        'status' => $status,
+                        'is_final_job' => $isFinalJob,
                 ]);
             case 'delete':
                 return $importJobHistory->where([
-                    'uuid' => $uuid,
-                    'import_job_id' => $importJobId,
-                    'status' => $status,
+                        'uuid' => $uuid,
+                        'import_job_id' => $importJobId,
+                        'status' => $status,
                 ])->delete();
             default:
                 return null;
@@ -629,13 +629,13 @@ if (!function_exists('getFileDataCount')) {
 
 if (!function_exists('readFileFromLocal')) {
     function readFileFromLocal(
-        $toCollection,
-        $filePath,
-        $readerType,
-        bool $hasColumnHeading = false,
-        string $disc = 'local',
-        $take = null,
-        array $compact = ['csvArray', 'headerRows', 'totalRow']
+            $toCollection,
+            $filePath,
+            $readerType,
+            bool $hasColumnHeading = false,
+            string $disc = 'local',
+            $take = null,
+            array $compact = ['csvArray', 'headerRows', 'totalRow']
     ): array
     {
         $fileData = getFileData($toCollection, $filePath, $readerType, $disc);
@@ -645,8 +645,8 @@ if (!function_exists('readFileFromLocal')) {
 
             // Get file data in array
             $fileData = ($take
-                ? $fileData->take(11)
-                : $fileData)->toArray();
+                    ? $fileData->take(11)
+                    : $fileData)->toArray();
             $headerRows = $fileData[0];
             unset($fileData[0]);
         } else {
@@ -654,8 +654,8 @@ if (!function_exists('readFileFromLocal')) {
 
             // Get file data in array
             $fileData = ($take
-                ? $fileData->take(10)
-                : $fileData)->toArray();
+                    ? $fileData->take(10)
+                    : $fileData)->toArray();
             $number_of_header_rows = count($fileData[0]);
             $headerData = [];
             for ($x = 1; $x <= $number_of_header_rows; $x++) {
@@ -778,19 +778,19 @@ if (!function_exists('getFullLocaleName')) {
 // get download anchor tag
 if (!function_exists('getDownloadAnchorTag')) {
     function getDownloadAnchorTag(
-        string  $filePath,
-        ?string $fileName = null,
-        string  $title = 'Click To Download'
+            string  $filePath,
+            ?string $fileName = null,
+            string  $title = 'Click To Download'
     ): string
     {
         $fileName = $fileName ?? getFileNameFromPath($filePath);
         $fileExists = File::exists($filePath);
 
         return '<a ' . ($fileExists
-                ? 'class=\'text-success\' title=\'' . $title . '\' href=\''
-                . asset($filePath) . '\'> <i class="la la-download mr-1"></i>'
-                : 'class=\'text-danger\' title=\'File Does Not Exists\' href=\'#\'>')
-            . "$fileName</a>";
+                        ? 'class=\'text-success\' title=\'' . $title . '\' href=\''
+                        . asset($filePath) . '\'> <i class="la la-download mr-1"></i>'
+                        : 'class=\'text-danger\' title=\'File Does Not Exists\' href=\'#\'>')
+                . "$fileName</a>";
     }
 }
 
@@ -806,8 +806,8 @@ if (!function_exists('getFileDetails')) {
     function getFileDetails($type, $product_code = null, $key = null, $fileExt = null)
     {
         $folderPath = config('filesystems.disks.uploads.folder_name') ? config(
-                'filesystems.disks.uploads.folder_name'
-            ) . '/' : '';
+                        'filesystems.disks.uploads.folder_name'
+                ) . '/' : '';
 
         $pathUrl = config('filesystems.disks.uploads.url');
         if (substr($pathUrl, -1) != '/') {
@@ -834,8 +834,8 @@ if (!function_exists('getFileDetails')) {
             case 'product_document':
                 $file_path = $folderPath . 'icecat_docs/' . strtolower($product_code[0]) . '/';
                 $file_url = config(
-                        'filesystems.disks.uploads.url'
-                    ) . $file_path . $product_code . '-' . $key . '.' . $fileExt;
+                                'filesystems.disks.uploads.url'
+                        ) . $file_path . $product_code . '-' . $key . '.' . $fileExt;
 
                 return ['file_path' => $file_path, 'file_url' => $file_url];
             default:
@@ -849,10 +849,10 @@ if (!function_exists('getDataTransformations')) {
      * @return bool|Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     function getDataTransformations(
-        string  $appliesTo = 'Products',
-        array   $inCategories = [],
-        ?string $runWhen = null,
-        string  $responseType = 'array'
+            string  $appliesTo = 'Products',
+            array   $inCategories = [],
+            ?string $runWhen = null,
+            string  $responseType = 'array'
     )
     {
         /* Getting applies to */
@@ -860,22 +860,22 @@ if (!function_exists('getDataTransformations')) {
 
         /* Getting all data transformations */
         $dataTransformations = DataTransformation::query()
-            ->where('run_when', 'like', '%' . ucwords(strtolower($runWhen)) . '%')
-            ->where('applies_to', 'like', $appliesTo)
-            ->orderBy('execution_sequence', 'asc')
-            ->get()
-            ->filter(function ($dataTransformation) use ($inCategories) {
-                return count(
-                        array_intersect(
-                            json_decode($dataTransformation->in_category, false, 512, JSON_THROW_ON_ERROR),
-                            $inCategories
-                        )
-                    ) > 0;
-            });
+                ->where('run_when', 'like', '%' . ucwords(strtolower($runWhen)) . '%')
+                ->where('applies_to', 'like', $appliesTo)
+                ->orderBy('execution_sequence', 'asc')
+                ->get()
+                ->filter(function ($dataTransformation) use ($inCategories) {
+                    return count(
+                                    array_intersect(
+                                            json_decode($dataTransformation->in_category, false, 512, JSON_THROW_ON_ERROR),
+                                            $inCategories
+                                    )
+                            ) > 0;
+                });
 
         return $responseType === 'boolean'
-            ? $dataTransformations->count() > 0
-            : $dataTransformations;
+                ? $dataTransformations->count() > 0
+                : $dataTransformations;
     }
 }
 
@@ -887,37 +887,37 @@ if (!function_exists('generateEACategoryList')) {
         foreach ($eacategories as $eacategory) {
             if (!empty($eacategory->subCategories) && $sub_cat !== null) {
                 $categoryList .= ($levelDepth === 1)
-                    ? "<li class='has-children'><a href='javascript:void(0)'>{$eacategory->name}</a>"
-                    : "<li><a href='" . url()->current()
-                    . "?ea_server_products={$eacategory->nodeString}'>{$eacategory->name}</a>";
+                        ? "<li class='has-children'><a href='javascript:void(0)'>{$eacategory->name}</a>"
+                        : "<li><a href='" . url()->current()
+                        . "?ea_server_products={$eacategory->nodeString}'>{$eacategory->name}</a>";
                 if (!empty($sub_cat['@attributes']['level'])) { // if level attribute found manage level
                     if ($levelDepth <= $sub_cat['@attributes']['level']) {
                         $categoryList .= "<span>({$eacategory->productCount})</span>";
                         $categoryList .= generateEACategoryList(
-                            $eacategory->subCategories,
-                            $sub_cat,
-                            $levelDepth,
-                            $eacategory->nodeString
-                            ??
-                            ''
+                                $eacategory->subCategories,
+                                $sub_cat,
+                                $levelDepth,
+                                $eacategory->nodeString
+                                ??
+                                ''
                         );
                     }
                 } else { // if there is no level attributes found show all sub-categories with their sub-categories
                     $categoryList .= generateEACategoryList(
-                        $eacategory->subCategories,
-                        $sub_cat,
-                        $levelDepth,
-                        $eacategory->nodeString
-                        ?? ''
+                            $eacategory->subCategories,
+                            $sub_cat,
+                            $levelDepth,
+                            $eacategory->nodeString
+                            ?? ''
                     );
                 }
             } else {
                 $categoryList .= '<li>';
                 $categoryList .= "<a href='" . url()->current()
-                    . "?ea_server_products={$eacategory->nodeString}'>{$eacategory->name}</a>";
+                        . "?ea_server_products={$eacategory->nodeString}'>{$eacategory->name}</a>";
                 $categoryList .= ($levelDepth === 1)
-                    ? "<span>({$eacategory->productCount})</span>"
-                    : '';
+                        ? "<span>({$eacategory->productCount})</span>"
+                        : '';
             }
             $categoryList .= '</li>';
         }
@@ -933,7 +933,7 @@ if (!function_exists('getLayoutList')) {
         $navLayouts = [];
         $rootFolder = base_path();
         $directoryFolder =
-            $rootFolder . "/themes/{$templateComponentDir}/components/{$location}";
+                $rootFolder . "/themes/{$templateComponentDir}/components/{$location}";
 
         if (file_exists($directoryFolder) && $handle = opendir($directoryFolder)) {
             $blacklist = ['.', '..'];
@@ -942,11 +942,11 @@ if (!function_exists('getLayoutList')) {
                     $fileLocation = $directoryFolder . '/' . "$folder/config.json";
                     if (file_exists($fileLocation) && $layout = json_decode(file_get_contents($fileLocation), true)) {
                         $layout['blade_folder'] =
-                            "theme::{$templateComponentDir}.components." . str_replace('/', '.', $location)
-                            . ".{$folder}.index";
+                                "theme::{$templateComponentDir}.components." . str_replace('/', '.', $location)
+                                . ".{$folder}.index";
                         !empty($layout['unique_identifier'])
-                            ? $navLayouts[$layout['unique_identifier']] = $layout
-                            : '';
+                                ? $navLayouts[$layout['unique_identifier']] = $layout
+                                : '';
                     }
                 }
             }
@@ -978,9 +978,9 @@ if (!function_exists('getActiveNavigationLayout')) {
     {
         $navigationLayouts = getNavigationLayoutList();
         $activeNavigation = Navigation::query()
-            ->where(['template_id' => (theme()->id ?? theme('fallback')->id), 'is_enabled' => 1])
-            ->with(['menu_group', 'mobile_menu', 'account_menu'])
-            ->first();
+                ->where(['template_id' => (theme()->id ?? theme('fallback')->id), 'is_enabled' => 1])
+                ->with(['menu_group', 'mobile_menu', 'account_menu'])
+                ->first();
 
         if (!empty($activeNavigation)) {
             $layout = $navigationLayouts[$activeNavigation->layout];
@@ -1042,8 +1042,8 @@ if (!function_exists('error_layout')) {
     function error_layout()
     {
         return (request()->is(config('backpack.base.route_prefix') . '/*') || request()->is('sales/*'))
-            ? 'errors.layout'
-            : theme_view('error');
+                ? 'errors.layout'
+                : theme_view('error');
     }
 }
 
@@ -1071,8 +1071,8 @@ if (!function_exists('menuContent')) {
             }
 
             return view('components.menu')
-                ->with('menu_group', $menu_group)
-                ->render();
+                    ->with('menu_group', $menu_group)
+                    ->render();
         } else {
             return '';
         }
@@ -1175,8 +1175,8 @@ if (!function_exists('frontendSingleProductURL')) {
             $seo_path = \Sayt::getDefaultCatPath();
         }
         return getIsDynamicSiteFromCache()
-            ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/shop/product/{$productSlug}/{$seo_path}"
-            : route('frontend.shop.show', ['identifier' => $productSlug, 'seo_path' => $seo_path]);
+                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/shop/product/{$productSlug}/{$seo_path}"
+                : route('frontend.shop.show', ['identifier' => $productSlug, 'seo_path' => $seo_path]);
     }
 }
 
@@ -1186,8 +1186,8 @@ if (!function_exists('frontendShopURL')) {
         $params = Arr::wrap($params);
 
         return getIsDynamicSiteFromCache()
-            ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . '/shop/'
-            : route('frontend.shop.index', $params);
+                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . '/shop/'
+                : route('frontend.shop.index', $params);
     }
 }
 
@@ -1195,8 +1195,8 @@ if (!function_exists('frontendHomeURL')) {
     function frontendHomeURL(): string
     {
         return getIsDynamicSiteFromCache()
-            ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache()
-            : route('frontend.index');
+                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache()
+                : route('frontend.index');
     }
 }
 
@@ -1249,8 +1249,8 @@ if (!function_exists('getProductsByIds')) {
             $products = collect($products->items)->map(function ($product) {
                 $product->isSkuProduct = isset($product->Sku_Id) ? true : false;
                 $product->seopath = '-' . trim(
-                        config('amplify.sayt.product_search_by_id_prefix')
-                    ) . '-=-' . $product->Product_Id;
+                                config('amplify.sayt.product_search_by_id_prefix')
+                        ) . '-=-' . $product->Product_Id;
 
                 return $product;
             });
@@ -1271,8 +1271,8 @@ if (!function_exists('getFormattedIdsForEasyAskProducts')) {
         foreach ($products as $key => $product) {
             if ($length > 1) {
                 $ids .= $key == $length - 1 ?
-                    preg_replace('/\D+/', '', optional($product)->product_id)
-                    : preg_replace('/\D+/', '', optional($product)->product_id) . ' or ';
+                        preg_replace('/\D+/', '', optional($product)->product_id)
+                        : preg_replace('/\D+/', '', optional($product)->product_id) . ' or ';
             } else {
                 $ids = preg_replace('/\D+/', '', optional($product)->product_id);
             }
@@ -1320,20 +1320,12 @@ if (!function_exists('customerCartUrl')) {
 if (!function_exists('getCart')) {
     function getCart(): ?Cart
     {
-        $contact_id = customer_check() ? customer(true)->id : null;
-
-        if ($contact_id) {
-            return Cart::where([
-                'contact_id' => $contact_id,
-                'status' => true,
-            ])->first();
+        if (customer_check()) {
+            return Cart::firstOrCreate(['contact_id' => customer(true)->id, 'status' => true]);
         }
 
         if (config('amplify.frontend.guest_add_to_cart')) {
-            return Cart::firstOrCreate([
-                'session_id' => session()->token(),
-                'status' => true,
-            ]);
+            return Cart::firstOrCreate(['session_id' => session()->token(), 'status' => true]);
         }
 
         return null;
@@ -1351,9 +1343,9 @@ if (!function_exists('getOrCreateCart')) {
         }
 
         return Cart::create([
-            'contact_id' => $contact_id,
-            'session_id' => $session_id,
-            'status' => true,
+                'contact_id' => $contact_id,
+                'session_id' => $session_id,
+                'status' => true,
         ]);
     }
 }
@@ -1427,16 +1419,16 @@ if (!function_exists('get_orders')) {
             $totalAmount = $orders->sum('total_amount');
         } elseif ($type == 'this_week') {
             $orders = CustomerOrder::whereBetween(
-                'created_at',
-                [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
+                    'created_at',
+                    [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
             )->get();
             $ordersCount = $orders->count();
             $totalAmount = $orders->sum('total_amount');
         }
 
         return [
-            'count' => $ordersCount,
-            'totalAmount' => $totalAmount,
+                'count' => $ordersCount,
+                'totalAmount' => $totalAmount,
         ];
     }
 }
@@ -1450,8 +1442,8 @@ if (!function_exists('mega_menu_columns')) {
     function mega_menu_columns($parentColumn)
     {
         $parentColumn = (int)(strpos($parentColumn, 'col-md-') !== false)
-            ? str_replace('col-md-', '', $parentColumn)
-            : $parentColumn;
+                ? str_replace('col-md-', '', $parentColumn)
+                : $parentColumn;
 
         if ($parentColumn != null && is_numeric($parentColumn)) {
             if ($parentColumn > 6) {
@@ -1493,8 +1485,8 @@ if (!function_exists('customer')) {
         }
 
         return Cache::remember(\Illuminate\Support\Facades\Session::token() . '-customer-model',
-            (\Illuminate\Support\Facades\App::environment('production')) ? HOUR : 0,
-            fn() => ($contact instanceof Contact) ? $contact->customer : null);
+                (\Illuminate\Support\Facades\App::environment('production')) ? HOUR : 0,
+                fn() => ($contact instanceof Contact) ? $contact->customer : null);
     }
 }
 
@@ -1575,8 +1567,8 @@ if (!function_exists('carbon_date')) {
         $format = $format ?? config('amplify.basic.date_format');
 
         return ($date)
-            ? \Carbon\CarbonImmutable::parse($date)->format($format)
-            : 'N/A';
+                ? \Carbon\CarbonImmutable::parse($date)->format($format)
+                : 'N/A';
     }
 }
 
@@ -1589,8 +1581,8 @@ if (!function_exists('carbon_datetime')) {
         $format = $format ?? config('amplify.basic.date_time_format');
 
         return ($date)
-            ? \Carbon\CarbonImmutable::parse($date)->format($format)
-            : 'N/A';
+                ? \Carbon\CarbonImmutable::parse($date)->format($format)
+                : 'N/A';
     }
 }
 
@@ -1628,8 +1620,8 @@ if (!function_exists('active_shop_view')) {
     function active_shop_view()
     {
         return request()->filled('view')
-            ? request('view', config('amplify.frontend.shop_page_default_view'))
-            : request()->cookie('showView', config('amplify.frontend.shop_page_default_view'));
+                ? request('view', config('amplify.frontend.shop_page_default_view'))
+                : request()->cookie('showView', config('amplify.frontend.shop_page_default_view'));
     }
 }
 
@@ -1642,8 +1634,8 @@ if (!function_exists('sort_link')) {
         $label = $label ?? ucfirst($column);
 
         $inputs['dir'] = (
-            (isset($inputs['sort']) && $inputs['sort'] == $column)
-            && (isset($inputs['dir']) && $inputs['dir'] == 'asc')
+                (isset($inputs['sort']) && $inputs['sort'] == $column)
+                && (isset($inputs['dir']) && $inputs['dir'] == 'asc')
         ) ? 'desc' : 'asc';
         $inputs['sort'] = $column;
 
@@ -1739,17 +1731,17 @@ if (!function_exists('generateInternalCategoryList')) {
         foreach ($categories as $category) {
             if (isset($category['children']) && !empty($sub_cat)) {
                 $categoryList .= ($levelDepth === 1)
-                    ? "<li class='has-children'><a href='javascript:void(0)'>{$category['label']}</a>"
-                    : "<li><a href='"
-                    . request()->fullUrlWithQuery(['internal_category_id' => $category['id'], 'page' => 1])
-                    . "'>{$category['label']}</a>";
+                        ? "<li class='has-children'><a href='javascript:void(0)'>{$category['label']}</a>"
+                        : "<li><a href='"
+                        . request()->fullUrlWithQuery(['internal_category_id' => $category['id'], 'page' => 1])
+                        . "'>{$category['label']}</a>";
                 if (!empty($sub_cat['@attributes']['level'])) { // if level attribute found manage level
                     if ($levelDepth <= $sub_cat['@attributes']['level']) {
                         $categoryList .= isset($category['children'])
-                            ? count($category['children']) > 0
-                                ? '<span>(' . count($category['children']) . ')</span>'
-                                : ''
-                            : '';
+                                ? count($category['children']) > 0
+                                        ? '<span>(' . count($category['children']) . ')</span>'
+                                        : ''
+                                : '';
                         $categoryList .= generateInternalCategoryList($category['children'] ?? [], $sub_cat, $levelDepth);
                     }
                 } else { // if there is no level attributes found show all sub-categories with their sub-categories
@@ -1759,10 +1751,10 @@ if (!function_exists('generateInternalCategoryList')) {
                 $categoryList .= '<li>';
                 $categoryList .= "<a href='javascript:void(0)'>{$category['label']}</a>";
                 $categoryList .= ($levelDepth === 1)
-                    ? isset($category['children'])
-                        ? '<span>(' . count($category['children']) . ')</span>'
-                        : ''
-                    : '';
+                        ? isset($category['children'])
+                                ? '<span>(' . count($category['children']) . ')</span>'
+                                : ''
+                        : '';
             }
             $categoryList .= '</li>';
         }
@@ -1782,11 +1774,11 @@ if (!function_exists('easyAskProductPagination')) {
         $dots = false;
 
         return view(component_view('product.product-pagination.custom-ea-pagination'), [
-            'cur_page' => $cur_page,
-            'number_of_pages' => $number_of_pages,
-            'middle_count' => $middle_count,
-            'ends_count' => $ends_count,
-            'dots' => $dots,
+                'cur_page' => $cur_page,
+                'number_of_pages' => $number_of_pages,
+                'middle_count' => $middle_count,
+                'ends_count' => $ends_count,
+                'dots' => $dots,
         ]);
     }
 }
@@ -1823,9 +1815,9 @@ if (!function_exists('t2EasyAskProductPagination')) {
                     $dots = true;
                 } else {
                     if ($i <= $ends_count
-                        || ($cur_page && $i >= $cur_page - $middle_count
-                            && $i <= $cur_page + $middle_count)
-                        || $i > $number_of_pages - $ends_count) {
+                            || ($cur_page && $i >= $cur_page - $middle_count
+                                    && $i <= $cur_page + $middle_count)
+                            || $i > $number_of_pages - $ends_count) {
                         ?>
                         <li><a class="active btn btn-light text-dark" href="<?php
                         echo request()->fullUrlWithQuery(['currentPage' => $i]); ?>"><?php
@@ -1842,8 +1834,8 @@ if (!function_exists('t2EasyAskProductPagination')) {
 
             <?php
             if ($prev_next && $cur_page
-                && ($cur_page < $number_of_pages
-                    || $number_of_pages == -1)) { // print next button?
+                    && ($cur_page < $number_of_pages
+                            || $number_of_pages == -1)) { // print next button?
                 ?>
                 <li><a class="btn btn-primary"
                        href="<?php echo request()->fullUrlWithQuery(['currentPage' => $cur_page + 1]); ?>">Next</a></li>
@@ -1877,17 +1869,17 @@ if (!function_exists('generateInternalCategoryList')) {
         foreach ($categories as $category) {
             if (isset($category['children']) && !empty($sub_cat)) {
                 $categoryList .= ($levelDepth === 1)
-                    ? "<li class='has-children'><a href='javascript:void(0)'>{$category['label']}</a>"
-                    : "<li><a href='"
-                    . request()->fullUrlWithQuery(['internal_category_id' => $category['id'], 'page' => 1])
-                    . "'>{$category['label']}</a>";
+                        ? "<li class='has-children'><a href='javascript:void(0)'>{$category['label']}</a>"
+                        : "<li><a href='"
+                        . request()->fullUrlWithQuery(['internal_category_id' => $category['id'], 'page' => 1])
+                        . "'>{$category['label']}</a>";
                 if (!empty($sub_cat['@attributes']['level'])) { // if level attribute found manage level
                     if ($levelDepth <= $sub_cat['@attributes']['level']) {
                         $categoryList .= isset($category['children'])
-                            ? count($category['children']) > 0
-                                ? '<span>(' . count($category['children']) . ')</span>'
-                                : ''
-                            : '';
+                                ? count($category['children']) > 0
+                                        ? '<span>(' . count($category['children']) . ')</span>'
+                                        : ''
+                                : '';
                         $categoryList .= generateInternalCategoryList($category['children'] ?? [], $sub_cat, $levelDepth);
                     }
                 } else { // if there is no level attributes found show all sub-categories with their sub-categories
@@ -1897,10 +1889,10 @@ if (!function_exists('generateInternalCategoryList')) {
                 $categoryList .= '<li>';
                 $categoryList .= "<a href='javascript:void(0)'>{$category['label']}</a>";
                 $categoryList .= ($levelDepth === 1)
-                    ? isset($category['children'])
-                        ? '<span>(' . count($category['children']) . ')</span>'
-                        : ''
-                    : '';
+                        ? isset($category['children'])
+                                ? '<span>(' . count($category['children']) . ')</span>'
+                                : ''
+                        : '';
             }
             $categoryList .= '</li>';
         }
@@ -1920,11 +1912,11 @@ if (!function_exists('easyAskProductPagination')) {
         $dots = false;
 
         return view(component_view('product.product-pagination.custom-ea-pagination'), [
-            'cur_page' => $cur_page,
-            'number_of_pages' => $number_of_pages,
-            'middle_count' => $middle_count,
-            'ends_count' => $ends_count,
-            'dots' => $dots,
+                'cur_page' => $cur_page,
+                'number_of_pages' => $number_of_pages,
+                'middle_count' => $middle_count,
+                'ends_count' => $ends_count,
+                'dots' => $dots,
         ]);
     }
 }

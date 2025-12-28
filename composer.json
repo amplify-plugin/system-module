@@ -78,5 +78,8 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "suggest": {
+        "ext-pcntl": "For Linux with Ext. PCNTL enabled for parallel process."
+    }
 }
