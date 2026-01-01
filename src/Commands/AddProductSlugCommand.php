@@ -40,11 +40,13 @@ class AddProductSlugCommand extends Command
      */
     public function handle()
     {
-        $productCollection = Product::whereProductSlug(null)->get()->pluck('id');
-
-        $productCollection->chunk(20)->each(function (Collection $group) {
-            GenerateProductSlugJob::dispatch(['products' => array_values($group->toArray())]);
-        });
+        Product::select('id')
+            ->whereNull('product_slug')
+            ->chunkById(1000, function ($products) {
+                $products->chunk(20)->each(function ($group) {
+                    GenerateProductSlugJob::dispatch(['products' => $group->pluck('id')->all()]);
+                });
+            });
 
         return self::SUCCESS;
     }

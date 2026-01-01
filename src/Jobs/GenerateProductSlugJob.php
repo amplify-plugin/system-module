@@ -30,10 +30,27 @@ class GenerateProductSlugJob implements ShouldQueue
      */
     public function handle()
     {
-        if (! empty($this->productGroups)) {
-            Product::whereIn('id', $this->productGroups)->get()->each(function (Product $product) {
-                $slug = Str::limit(Str::slug(strip_tags($product->product_name)), 75).'-'.Str::random(6);
+        if (!empty($this->productGroups)) {
+            Product::select('id', 'product_name', 'product_slug')->whereIn('id', $this->productGroups)->get()->each(function (Product $product) {
+                $base = Str::of(strip_tags($product->product_name))
+                    ->lower()
+                    ->replaceMatches('/\s+/', '-')        // spaces -> -
+                    ->replaceMatches('/[^a-z0-9-]+/', '') // remove everything except a-z, 0-9, -
+                    ->replaceMatches('/-+/', '-')         // collapse ---
+                    ->trim('-')                           // trim - from ends
+                    ->limit(75, '');
+
+                if (config('amplify.client_code') != "STV") {
+                    do {
+                        $slug = $base . '-' . Str::lower(Str::random(6));
+                        $exists = Product::select('id', 'product_slug')->where('product_slug', $slug)->exists();
+                    } while ($exists);
+                } else {
+                    $slug = $base . '-' . Str::lower(Str::random(6));
+                }
+
                 $product->product_slug = $slug;
+
                 $product->save();
             });
         }
