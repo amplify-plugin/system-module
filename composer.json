@@ -20,18 +20,15 @@
         "ext-pdo": "*",
         "ext-simplexml": "*",
         "ext-zip": "*",
-        "amplify/api": "*",
         "amplify/backend": "*",
         "amplify/captcha": "*",
         "amplify/cms": "*",
         "amplify/custom-item": "*",
         "amplify/erp": "*",
         "amplify/frontend": "*",
-        "amplify/marketing": "*",
         "amplify/media": "*",
         "amplify/message": "*",
         "amplify/order-rule": "*",
-        "amplify/payment": "*",
         "amplify/sayt": "*",
         "amplify/ticket": "*",
         "amplify/utility": "*",
@@ -69,7 +66,11 @@
         "laravel": {
             "providers": [
                 "Amplify\\System\\SystemServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Assets": "Amplify\\System\\Facades\\AssetsFacade",
+                "Captcha": "Amplify\\System\\Facades\\CaptchaFacade"
+            }
         }
     },
     "config": {

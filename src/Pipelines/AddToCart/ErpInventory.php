@@ -14,6 +14,8 @@ class ErpInventory implements AddToCart
      */
     public function handle(array $data, \Closure $next)
     {
+        abort_if(!ErpApi::enabled(), 500, __('ERP Service is not enabled.'));
+
         $items = collect($data['items'] ?? []);
 
         $warehouseString = $items->pluck('product_warehouse_code')->implode(',');

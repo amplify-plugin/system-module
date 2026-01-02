@@ -9,14 +9,13 @@ class OnlyStandardPackSize implements AddToCart
     public function handle(array $data, \Closure $next)
     {
         if (config('amplify.pim.use_minimum_order_quantity', false)) {
-            foreach ($data['items'] as $item) {
+            foreach ($data['items'] as $index => $item) {
                 $interval = $item['additional_info']['quantity_interval'] ?? 1;
                 $ordQty = $item['quantity'];
-                abort_if(
-                    $ordQty % $interval != 0,
-                    500,
-                    __('Product :code requires a order pack(s) of :interval. You entered :ordQty.', ['code' => $item['product_code'], 'interval' => $interval, 'ordQty' => $ordQty])
-                );
+
+                if ($ordQty % $interval != 0) {
+                    $data['errors'][$index][] = __('Product :code requires a order pack(s) of :interval. You entered :ordQty.', ['code' => $item['product_code'], 'interval' => $interval, 'ordQty' => $ordQty]);
+                }
             }
         }
 
