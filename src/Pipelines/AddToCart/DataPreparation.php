@@ -46,7 +46,7 @@ class DataPreparation implements AddToCart
                 if ($dbProduct) {
                     $product['product_id'] = $dbProduct->getKey();
                     $product['product_code'] = $dbProduct->product_code;
-                    $product['quantity'] = $item['qty'] ?? $dbProduct->min_order_qty;
+                    $product['quantity'] = $item['qty'] ?? $item['quantity'] ?? $dbProduct->min_order_qty;
                     $product['uom'] = $dbProduct->uom ?? 'EA';
                     $product['unitprice'] = null;
                     $product['subtotal'] = null;
