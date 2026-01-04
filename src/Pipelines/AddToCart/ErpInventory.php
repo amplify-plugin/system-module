@@ -14,6 +14,8 @@ class ErpInventory implements AddToCart
      */
     public function handle(array $data, \Closure $next)
     {
+        abort_if(!ErpApi::enabled(), 500, __('ERP Service is not enabled.'));
+
         $items = collect($data['items'] ?? []);
 
         $warehouseString = $items->pluck('product_warehouse_code')->implode(',');
@@ -40,8 +42,8 @@ class ErpInventory implements AddToCart
                 ->first();
 
             if ($inventory) {
-                $item['uom'] = $inventory->UnitOfMeasure;
-                $item['unitprice'] = $inventory->Price;
+                $item['uom'] = $inventory->UnitOfMeasure ?? 'EA';
+                $item['unitprice'] = $inventory->OrderPrice;
                 $item['subtotal'] = $inventory->ExtendedPrice;
                 $item['product_back_order'] = $inventory->AllowBackOrder ?? $item['product_back_order'] ?? false;
                 $item['additional_info']['minimum_quantity'] = $inventory->MinOrderQuantity ?? $item['additional_info']['minimum_quantity'];

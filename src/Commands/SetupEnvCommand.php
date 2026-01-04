@@ -107,7 +107,10 @@ class SetupEnvCommand extends Command
             return in_array($item['type'], ['composer', 'vcs']);
         });
 
-        foreach ($this->packages as $package) {
+        foreach (scandir(base_path('packages')) as $package) {
+            if ($package === '.' || $package === '..')
+                continue;
+
             $repositories[] = [
                 "type" => "path",
                 "url" => "./packages/{$package}",
