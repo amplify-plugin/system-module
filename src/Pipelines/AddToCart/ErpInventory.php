@@ -43,8 +43,8 @@ class ErpInventory implements AddToCart
 
             if ($inventory) {
                 $item['uom'] = $inventory->UnitOfMeasure ?? 'EA';
-                $item['unitprice'] = $inventory->Price / $inventory->QuantityOnOrder;
-                $item['subtotal'] = $inventory->Price;
+                $item['unitprice'] = $inventory->OrderPrice;
+                $item['subtotal'] = $inventory->ExtendedPrice;
                 $item['product_back_order'] = $inventory->AllowBackOrder ?? $item['product_back_order'] ?? false;
                 $item['additional_info']['minimum_quantity'] = $inventory->MinOrderQuantity ?? $item['additional_info']['minimum_quantity'];
                 $item['additional_info']['quantity_interval'] = $inventory->QuantityInterval ?? $item['additional_info']['quantity_interval'];
