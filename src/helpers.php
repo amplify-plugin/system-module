@@ -1170,6 +1170,10 @@ if (!function_exists('returnProductSlug')) {
 if (!function_exists('frontendSingleProductURL')) {
     function frontendSingleProductURL($product, $seo_path = null): string
     {
+        if ($product instanceof Product && config('amplify.frontend.show_parent_product_for_sku', true) && $product->parent_id) {
+            $product = Product::find($product->parent_id) ?? $product;
+        }
+
         $productSlug = returnProductSlug($product);
         if (empty($seo_path)) {
             $seo_path = \Sayt::getDefaultCatPath();
