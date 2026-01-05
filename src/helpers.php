@@ -1179,7 +1179,7 @@ if (!function_exists('frontendSingleProductURL')) {
             $seo_path = \Sayt::getDefaultCatPath();
         }
         return getIsDynamicSiteFromCache()
-                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/shop/product/{$productSlug}/{$seo_path}"
+                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/product/{$productSlug}?seo_path={$seo_path}"
                 : route('frontend.shop.show', ['identifier' => $productSlug, 'seo_path' => $seo_path]);
     }
 }
@@ -1187,10 +1187,12 @@ if (!function_exists('frontendSingleProductURL')) {
 if (!function_exists('frontendShopURL')) {
     function frontendShopURL($params = null): string
     {
+        $shopRoutePrefix = config('amplify.frontend.shop_page_prefix');
+
         $params = Arr::wrap($params);
 
         return getIsDynamicSiteFromCache()
-                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . '/shop/'
+                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/{$shopRoutePrefix}/"
                 : route('frontend.shop.index', $params);
     }
 }
