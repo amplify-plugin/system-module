@@ -22,8 +22,17 @@ class DataPreparation implements AddToCart
     {
         try {
 
+            $items = collect($data['items']);
+
+            $firstItem = $items->first();
+
             $dbProducts = Product::with('productImage')
-                ->whereIn('product_code', collect($data['items'])->pluck('product_code')->toArray())
+                ->when(!empty($firstItem['product_id']),
+                    function ($query) use ($items) {
+                        return $query->whereIn('products.id', $items->pluck('product_id')->toArray());
+                    }, function ($query) use ($items) {
+                        return $query->whereIn('products.product_code', $items->pluck('product_code')->toArray());
+                    })
                 ->get();
 
             $data['meta']['products'] = $dbProducts;
@@ -41,7 +50,7 @@ class DataPreparation implements AddToCart
                 /**
                  * @var Product $dbProduct
                  */
-                $dbProduct = $dbProducts->firstWhere('product_code', $item['product_code']);
+                $dbProduct = $dbProducts->firstWhere('product_code', '=', $item['product_code']);
 
                 if ($dbProduct) {
                     $product['product_id'] = $dbProduct->getKey();
@@ -75,6 +84,7 @@ class DataPreparation implements AddToCart
 
                     $data['items'][$index] = $product;
                 } else {
+                    unset($data['items'][$index]);
                     $data['errors'][$index][] = __('The product :code does not exist in system.', ['code' => $item['product_code']]);
                 }
             }
