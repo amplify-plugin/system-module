@@ -1175,12 +1175,16 @@ if (!function_exists('frontendSingleProductURL')) {
         }
 
         $productSlug = returnProductSlug($product);
-        if (empty($seo_path)) {
-            $seo_path = \Sayt::getDefaultCatPath();
+
+        $params['identifier'] =  $productSlug;
+
+        if (!empty($seo_path)) {
+           $params['seo_path'] = $seo_path;
         }
+
         return getIsDynamicSiteFromCache()
                 ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/product/{$productSlug}?seo_path={$seo_path}"
-                : route('frontend.shop.show', ['identifier' => $productSlug, 'seo_path' => $seo_path]);
+                : route('frontend.shop.show',$params);
     }
 }
 
