@@ -42,7 +42,8 @@ class AddProductSlugCommand extends Command
     {
         Product::select('id')
             ->whereNull('product_slug')
-            ->chunkById(2000, function ($products) {
+            ->limit(100)
+            ->chunkById(100, function ($products) {
                 $products->chunk(50)->each(function ($group) {
                     GenerateProductSlugJob::dispatch(['products' => $group->pluck('id')->all()]);
                 });
