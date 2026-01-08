@@ -2131,3 +2131,18 @@ if (!function_exists('unit_of_measurement')) {
         return $options;
     }
 }
+
+if (!function_exists('generate_product_slug')) {
+    function generate_product_slug(string $value = null): string
+    {
+        $slug = strip_tags($value);
+        $slug = Str::lower($slug);
+        $slug = Str::slug($slug);
+        $slug = Str::replaceMatches('/[^A-Za-z0-9]/', '', $slug);
+        $slug = Str::replaceMatches('/-+/', '', $slug);
+        $slug = Str::limit($slug, 65, '');
+        $slug = trim($slug, '-');
+
+        return trim($slug);
+    }
+}

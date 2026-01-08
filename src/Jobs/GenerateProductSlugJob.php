@@ -32,13 +32,7 @@ class GenerateProductSlugJob implements ShouldQueue
     {
         if (!empty($this->productGroups)) {
             Product::select('id', 'product_name', 'product_slug')->whereIn('id', $this->productGroups)->get()->each(function (Product $product) {
-                $base = Str::of(strip_tags($product->product_name))
-                    ->lower()
-                    ->replaceMatches('/\s+/', '-')        // spaces -> -
-                    ->replaceMatches('/[^a-z0-9-]+/', '') // remove everything except a-z, 0-9, -
-                    ->replaceMatches('/-+/', '-')         // collapse ---
-                    ->trim('-')                           // trim - from ends
-                    ->limit(75, '');
+                $base = generate_product_slug($product->product_name);
 
                 if (config('amplify.client_code') != "STV") {
                     do {
