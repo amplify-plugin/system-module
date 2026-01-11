@@ -6,6 +6,7 @@ use Amplify\ErpApi\Collections\WarehouseCollection;
 use Amplify\ErpApi\Facades\ErpApi;
 use Amplify\System\Backend\Models\Product;
 use Amplify\System\Contracts\AddToCart;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DataPreparation implements AddToCart
@@ -22,17 +23,20 @@ class DataPreparation implements AddToCart
     {
         try {
 
-            $items = collect($data['items']);
+            $uniqueCodes = [];
 
-            $firstItem = $items->first();
+            foreach ($data['items'] as $product) {
+                if (!empty($product['product_code'])) {
+                    $uniqueCodes[$product['product_code']] = true;
+                }
+            }
 
-            $dbProducts = Product::with('productImage')
-                ->when(!empty($firstItem['product_id']),
-                    function ($query) use ($items) {
-                        return $query->whereIn('products.id', $items->pluck('product_id')->toArray());
-                    }, function ($query) use ($items) {
-                        return $query->whereIn('products.product_code', $items->pluck('product_code')->toArray());
-                    })
+            $productCodes = array_keys($uniqueCodes);
+
+            $dbProducts = Product::select(['products.*', DB::raw('`product__images`.`main` as `product_image`')])
+                ->leftJoin('product__images', 'products.id', '=', 'product__images.product_id')
+                ->whereNotIn('products.status', ['archived'])
+                ->whereIn('products.product_code', $productCodes)
                 ->get();
 
             $data['meta']['products'] = $dbProducts;
@@ -62,7 +66,7 @@ class DataPreparation implements AddToCart
                     $product['address_id'] = customer_check() ? customer(true)->customer_address_id : null;
                     $product['product_name'] = $dbProduct->product_name;
                     $product['product_back_order'] = $dbProduct->allow_back_order ?? false;
-                    $product['product_image'] = $dbProduct->productImage?->main ?? $fallbackImage;
+                    $product['product_image'] = $dbProduct->product_image ?? $fallbackImage;
                     $product['source_type'] = $item['source_type'] ?? 'Default';
                     $product['source'] = $item['source'] ?? 'Default';
                     $product['expiry_date'] = $item['expiry_date'] ?? null;
