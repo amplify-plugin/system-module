@@ -1998,9 +1998,6 @@ if (!function_exists('cacheAll')) {
         Artisan::call('optimize');
         Log::debug(Artisan::output());
 
-        Artisan::call('view:cache');
-        Log::debug(Artisan::output());
-
         Artisan::call('event:cache');
         Log::debug(Artisan::output());
     }
