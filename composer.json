@@ -26,7 +26,6 @@
         "amplify/custom-item": "*",
         "amplify/erp": "*",
         "amplify/frontend": "*",
-        "amplify/media": "*",
         "amplify/message": "*",
         "amplify/order-rule": "*",
         "amplify/sayt": "*",

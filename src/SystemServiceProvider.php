@@ -15,6 +15,7 @@ use Amplify\System\Providers\CommandServiceProvider;
 use Amplify\System\Providers\EventServiceProvider;
 use Amplify\System\Providers\HealthCheckServiceProvider;
 use Amplify\System\Providers\ValidationServiceProvider;
+use Amplify\System\Providers\FileManagerServiceProvider;
 use Amplify\System\Support\AssetsLoader;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
@@ -45,6 +46,8 @@ class SystemServiceProvider extends ServiceProvider
         $this->app->register(HealthCheckServiceProvider::class);
 
         $this->app->register(ValidationServiceProvider::class);
+
+        $this->app->register(FileManagerServiceProvider::class);
 
         $this->app->singleton(AssetsLoader::class, fn() => new AssetsLoader);
     }
