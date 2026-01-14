@@ -18,7 +18,7 @@ use Amplify\System\Media\Events\Rename;
 use Amplify\System\Media\Events\Unzip as UnzipEvent;
 use Amplify\System\Media\Events\Zip as ZipEvent;
 use Amplify\System\Media\FileManager;
-use Amplify\System\Media\Requests\RequestValidator;
+use Amplify\System\Media\Http\Requests\RequestValidator;
 use Amplify\System\Media\Services\Zip;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

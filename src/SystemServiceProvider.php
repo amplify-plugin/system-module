@@ -65,6 +65,8 @@ class SystemServiceProvider extends ServiceProvider
 
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
+        $this->loadRoutesFrom(__DIR__ . '/../routes/backend.php');
+
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/amplify/system'),
         ], 'system-view');
