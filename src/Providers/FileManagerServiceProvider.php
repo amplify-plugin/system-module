@@ -18,7 +18,7 @@ class FileManagerServiceProvider extends ServiceProvider
     public function boot()
     {
         // views
-        $this->loadViewsFrom(__DIR__.'/resources/views', 'file-manager');
+        $this->loadViewsFrom(__DIR__.'/../../resources/file-manager', 'file-manager');
 
         // publish config
         $this->publishes([
