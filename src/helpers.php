@@ -1182,9 +1182,13 @@ if (!function_exists('frontendSingleProductURL')) {
            $params['seo_path'] = $seo_path;
         }
 
-        return getIsDynamicSiteFromCache()
-                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/product/{$productSlug}?seo_path={$seo_path}"
-                : route('frontend.shop.show',$params);
+        return (!empty($params['identifier']))
+                ? \route('frontend.shop.show', $params)
+                : '#';
+
+//        return getIsDynamicSiteFromCache()
+//                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/product/{$productSlug}?seo_path={$seo_path}"
+//                : route('frontend.shop.show',$params);
     }
 }
 
