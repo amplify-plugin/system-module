@@ -5,6 +5,7 @@ return [
     'log_payment' => false,
     'log_erp_api' => false,
     'log_email' => false,
+    'log_trace_parts_api' => false,
 
     /*
     |--------------------------------------------------------------------------
