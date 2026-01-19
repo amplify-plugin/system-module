@@ -116,7 +116,7 @@ class HealthCheckServiceProvider extends ServiceProvider
                     ->if(class_exists('Redis')),
 
                 ScheduleCheck::new()
-                    ->heartbeatMaxAgeInMinutes(2),
+                    ->heartbeatMaxAgeInMinutes(12),
 
                 SslCertificateValidityCheck::new()
                     ->if(Str::contains(config('app.url'), 'https://'))
