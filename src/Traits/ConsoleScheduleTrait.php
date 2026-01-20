@@ -30,8 +30,8 @@ trait ConsoleScheduleTrait
 
         //Health Check Job
         if(app()->environment('production', 'staging')) {
-            $schedule->command(DispatchQueueCheckJobsCommand::class)->everyMinute();
-            $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+            $schedule->command(DispatchQueueCheckJobsCommand::class)->everyTenMinutes();
+            $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyTenMinutes();
         }
     }
 

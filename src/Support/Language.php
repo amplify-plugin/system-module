@@ -17,6 +17,7 @@ class Language extends Collection
 
             $code = match($code) {
                 'en' => 'us',
+                'bn' => 'bd',
                 default => $code
             };
 
