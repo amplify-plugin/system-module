@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Traits;
 
+use Amplify\System\Commands\CsdErpTokenRefreshCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use \Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
@@ -28,10 +29,21 @@ trait ConsoleScheduleTrait
             );
         }
 
-        //Health Check Job
-        if(app()->environment('production', 'staging')) {
-            $schedule->command(DispatchQueueCheckJobsCommand::class)->everyTenMinutes();
-            $schedule->command(ScheduleCheckHeartbeatCommand::class)->everyTenMinutes();
+        if (app()->environment('production', 'staging')) {
+            $schedule->command(CsdErpTokenRefreshCommand::class)
+                ->everyThirtyMinutes()
+                ->when(fn() => config('amplify.erp.default', 'default') == 'csd-erp')
+                ->withoutOverlapping()
+                ->onOneServer();
+
+            //Health Check Job
+            $schedule->command(DispatchQueueCheckJobsCommand::class)
+                ->everyTenMinutes()
+                ->onOneServer();
+
+            $schedule->command(ScheduleCheckHeartbeatCommand::class)
+                ->everyTenMinutes()
+                ->onOneServer();
         }
     }
 
@@ -49,6 +61,7 @@ trait ConsoleScheduleTrait
         $schedule->command($command, $this->prepareVariables($variables))
             ->timezone($timeZone)
             ->{$interval}($this->getScheduleTime($interval, $time))
+            ->onOneServer()
             ->appendOutputTo(storage_path('logs/scheduler.log'));
     }
 
