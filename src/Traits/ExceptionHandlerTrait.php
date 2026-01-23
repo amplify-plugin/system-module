@@ -3,6 +3,7 @@
 namespace Amplify\System\Traits;
 
 use Amplify\System\Utility\Mails\ExceptionReportMail;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -54,5 +55,12 @@ trait ExceptionHandlerTrait
         } finally {
             logger()->error($throwable);
         }
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return $this->shouldReturnJson($request, $exception)
+            ? response()->json(['message' => 'You need to be logged in to access this feature.'], 401)
+            : redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 }
