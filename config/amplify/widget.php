@@ -918,8 +918,8 @@ return [
         '@nestedItems' => [],
         'description' => '',
     ],
-    Amplify\Widget\Components\Customer\Favourite\Index::class => [
-        'name' => 'customer.favourite.list',
+    Amplify\Widget\Components\Customer\Favourites::class => [
+        'name' => 'customer.favourites',
         'reserved' => true,
         'internal' => false,
         '@inside' => null,
@@ -950,24 +950,56 @@ return [
         '@nestedItems' => [],
         'description' => '',
     ],
-    Amplify\Widget\Components\Customer\Favourite\Details::class => [
-        'name' => 'customer.favourite.details',
+    Amplify\Widget\Components\Customer\OrderList\Index::class => [
+        'name' => 'customer.order-list.list',
         'reserved' => true,
         'internal' => false,
         '@inside' => null,
         '@client' => null,
-        'model' => ['favourite_detail'],
+        'model' => ['order_list'],
+        '@attributes' => [
+            [
+                'name' => 'name-label',
+                'type' => 'text',
+                'value' => 'Name',
+            ],
+            [
+                'name' => 'list-type-label',
+                'type' => 'text',
+                'value' => 'Type',
+            ],
+            [
+                'name' => 'description-label',
+                'type' => 'text',
+                'value' => 'Description',
+            ],
+            [
+                'name' => 'product-count-label',
+                'type' => 'text',
+                'value' => 'Product',
+            ],
+        ],
+        '@nestedItems' => [],
+        'description' => '',
+    ],
+    Amplify\Widget\Components\Customer\OrderList\Details::class => [
+        'name' => 'customer.order-list.details',
+        'reserved' => true,
+        'internal' => false,
+        '@inside' => null,
+        '@client' => null,
+        'model' => ['order_list_detail'],
         '@attributes' => [],
         '@nestedItems' => [],
         'description' => '',
     ],
-    Amplify\Widget\Components\Customer\Favourite\Form::class => [
-        'name' => 'customer.favourite.form',
+    Amplify\Widget\Components\Customer\OrderList\Form::class => [
+        'name' => 'customer.order-list.form',
         'reserved' => true,
         'internal' => false,
         '@inside' => null,
         '@client' => null,
-        'model' => ['favourite_edit'],
+        'model' => ['order_list_edit'],
         '@attributes' => [
             [
                 'name' => 'editable',
