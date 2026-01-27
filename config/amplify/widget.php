@@ -548,6 +548,11 @@ return [
                 'type' => 'text',
                 'value' => 'Create Favourite List',
             ],
+            [
+                'name' => 'shopping-list-label',
+                'type' => 'text',
+                'value' => 'Shopping List',
+            ],
 
         ],
         '@nestedItems' => [
