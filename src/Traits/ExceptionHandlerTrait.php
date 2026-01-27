@@ -5,7 +5,9 @@ namespace Amplify\System\Traits;
 use Amplify\System\Utility\Mails\ExceptionReportMail;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -27,6 +29,29 @@ trait ExceptionHandlerTrait
                 return response()->json(['message' => 'Not Found.'], 404);
             }
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof TokenMismatchException) {
+
+            // Return JSON for API / AJAX requests
+            if ($request->expectsJson()) {
+                return response()->json(
+                    ['message' => 'Please refresh the page and try again.'],
+                    419);
+            }
+
+            // Optional: fallback for web requests
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'message' => 'Please refresh the page and try again.',
+                ]);
+        }
+
+        return parent::render($request, $exception);
     }
 
     /**
