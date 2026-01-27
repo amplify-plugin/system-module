@@ -534,7 +534,7 @@ return [
                 ],
             ],
             [
-                'name' => ':create-favorite-from-cart',
+                'name' => ':create-order-list-from-cart',
                 'type' => 'boolean',
                 'value' => true,
             ],
@@ -544,12 +544,7 @@ return [
                 'value' => true,
             ],
             [
-                'name' => 'create-favorite-label',
-                'type' => 'text',
-                'value' => 'Create Favourite List',
-            ],
-            [
-                'name' => 'shopping-list-label',
+                'name' => 'order-list-label',
                 'type' => 'text',
                 'value' => 'Shopping List',
             ],
