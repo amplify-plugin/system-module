@@ -31,6 +31,7 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\CustomerRegisteredReportCommand::class,
                 \Amplify\System\Commands\WidgetMakeCommand::class,
                 \Amplify\System\Commands\CsdErpTokenRefreshCommand::class,
+                \Amplify\System\Commands\AddProductThumbnailCommand::class,
             ]);
 
             if (class_exists('Backpack\Generators\Services\BackpackCommand')) {

@@ -4,37 +4,35 @@ namespace Amplify\System\Commands;
 
 use Amplify\System\Backend\Models\Product;
 use Amplify\System\Jobs\GenerateProductSlugJob;
+use Amplify\System\Jobs\GenerateProductThumbnailJob;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 
-class AddProductSlugCommand extends Command
+class AddProductThumbnailCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'amplify:create-product-slug';
+    protected $signature = 'amplify:create-product-thumbnail';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'create product slug from product name if slug field is empty.';
+    protected $description = 'create product thumbnail from product main image if thumbnail field is empty.';
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle()
     {
         Product::select('id')
-            ->whereNull('product_slug')
+            ->whereNull('thumbnail')
             ->chunkById(2000, function ($products) {
                 $products->chunk(50)->each(function ($group) {
-                    GenerateProductSlugJob::dispatch(['products' => $group->pluck('id')->all()]);
+                    GenerateProductThumbnailJob::dispatch(['products' => $group->pluck('id')->all()]);
                 });
             });
 
