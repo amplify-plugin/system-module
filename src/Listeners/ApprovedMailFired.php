@@ -8,16 +8,6 @@ use Amplify\System\Events\OrderApproved;
 class ApprovedMailFired
 {
     /**
-     * Create the event listener.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Handle the event.
      *
      * @return void

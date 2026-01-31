@@ -8,14 +8,6 @@ use Illuminate\Support\Facades\DB;
 class QueueAfterListener
 {
     /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Handle the event.
      */
     public function handle(JobProcessed $event)

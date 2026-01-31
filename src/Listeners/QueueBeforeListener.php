@@ -7,14 +7,6 @@ use Illuminate\Queue\Events\JobProcessing;
 class QueueBeforeListener
 {
     /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Handle the event.
      */
     public function handle(JobProcessing $event): void

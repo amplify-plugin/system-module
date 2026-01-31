@@ -7,14 +7,6 @@ use Illuminate\Queue\Events\JobFailed;
 class QueueFailedListener
 {
     /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Handle the event.
      */
     public function handle(JobFailed $event)
