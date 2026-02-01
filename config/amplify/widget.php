@@ -2197,6 +2197,15 @@ return [
                 'type' => 'boolean',
                 'value' => false,
             ],
+            [
+                'name' => 'back-to-url',
+                'type' => 'select',
+                'value' => 'shop',
+                'options' => [
+                    'home' => 'Home',
+                    'shop' => 'Shop (All Products)',
+                ],
+            ]
         ],
         '@nestedItems' => [],
         'description' => 'Checkout widget',
