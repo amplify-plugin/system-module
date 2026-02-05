@@ -16,7 +16,7 @@ class WishlistProductRestockedJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, NotificationEventTrait, Queueable, SerializesModels;
 
-    public $data;
+    public $productCodes;
 
     /**
      * Create a new job instance.
@@ -26,7 +26,7 @@ class WishlistProductRestockedJob implements ShouldQueue
     public function __construct($event_code, $args)
     {
         $this->eventCode = $event_code;
-        $this->data = $args;
+        $this->productCodes = $args;
     }
 
     /**
@@ -36,13 +36,15 @@ class WishlistProductRestockedJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->getNecessaryItems();
-        $contact = Contact::where('id', $this->data['contact_id'])->first();
+        logger()->debug('In Stock Products', [$this->productCodes]);
 
-        foreach ($this->eventInfo->eventActions as $eventAction) {
-            if ($eventAction->eventTemplate->notification_type == 'emailable') {
-                $this->emailService->sendWishlistProductRestockedEmail($eventAction, $contact);
-            }
-        }
+//        $this->getNecessaryItems();
+//        $contact = Contact::where('id', $this->data['contact_id'])->first();
+//
+//        foreach ($this->eventInfo->eventActions as $eventAction) {
+//            if ($eventAction->eventTemplate->notification_type == 'emailable') {
+//                $this->emailService->sendWishlistProductRestockedEmail($eventAction, $contact);
+//            }
+//        }
     }
 }
