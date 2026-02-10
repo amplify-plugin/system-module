@@ -13,6 +13,7 @@ use Amplify\System\Cms\Models\Navigation;
 use Amplify\System\Cms\Models\Page;
 use Amplify\System\Cms\Models\Template;
 use Amplify\System\Facades\AssetsFacade;
+use Amplify\System\Sayt\Classes\ItemRow;
 use Amplify\System\Support\AssetsLoader;
 use Amplify\System\Utility\Models\DataTransformation;
 use Amplify\System\Utility\Models\ImportJobHistory;
@@ -1141,26 +1142,22 @@ if (!function_exists('getDynamicSiteSlugFromCache')) {
 if (!function_exists('returnProductSlug')) {
     function returnProductSlug($product): string
     {
+        if (gettype($product) == 'string') {
+            return $product;
+        }
+
         $column = config('amplify.frontend.easyask_single_product_index');
+
+        if ($product instanceof ItemRow) {
+            return match ($column) {
+                'product_code' => $product->Product_Code,
+                'product_slug' => $product->Product_Slug,
+                default => $product->Product_Id
+            };
+        }
 
         if (!empty($column) && !empty($product->{$column})) {
             return $product->{$column};
-        }
-
-        if ($column == 'product_slug' && !empty($product->Product_Slug)) {
-            return $product->Product_Slug;
-        }
-
-        if ($column == 'id' && !empty($product->Product_Id)) {
-            return $product->Product_Id;
-        }
-
-        if (!empty($product->id)) {
-            return $product->id;
-        }
-
-        if (gettype($product) == 'string') {
-            return $product;
         }
 
         return '';
@@ -1174,12 +1171,16 @@ if (!function_exists('frontendSingleProductURL')) {
             $product = Product::find($product->parent_id) ?? $product;
         }
 
-        $productSlug = returnProductSlug($product);
+        $identifier = returnProductSlug($product);
 
-        $params['identifier'] =  $productSlug;
+        if (config('amplify.frontend.easyask_single_product_index') == 'product_code') {
+            $identifier = urlencode($identifier);
+        }
+
+        $params['identifier'] = $identifier;
 
         if (!empty($seo_path)) {
-           $params['seo_path'] = $seo_path;
+            $params['ref'] = $seo_path;
         }
 
         return (!empty($params['identifier']))
