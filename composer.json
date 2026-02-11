@@ -21,7 +21,6 @@
         "ext-simplexml": "*",
         "ext-zip": "*",
         "amplify/backend": "*",
-        "amplify/captcha": "*",
         "amplify/cms": "*",
         "amplify/custom-item": "*",
         "amplify/erp": "*",
