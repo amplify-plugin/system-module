@@ -1173,11 +1173,13 @@ if (!function_exists('frontendSingleProductURL')) {
 
         $identifier = returnProductSlug($product);
 
-        if (config('amplify.frontend.easyask_single_product_index') == 'product_code') {
-            $identifier = urlencode($identifier);
-        }
+        $params['identifier'] = (config('amplify.frontend.easyask_single_product_index') == 'product_code')
+                ? urlencode($identifier)
+                : $identifier;
 
-        $params['identifier'] = $identifier;
+        if (config('amplify.frontend.easyask_single_product_index') != 'product_slug') {
+            $params['slug'] = $product instanceof ItemRow ? $product->Product_Slug : $product->product_slug;
+        }
 
         if (!empty($seo_path)) {
             $params['ref'] = $seo_path;
