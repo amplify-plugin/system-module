@@ -28,6 +28,7 @@ return [
         // 'backup_table' => 'Backup Table',
         'incremental-catalog' => 'Incremental Catalog Update',
         'customer-report' => 'Customer Registration Report',
+        'sitemap_generate' => 'Generate Scheduled Sitemap',
     ],
     'commands' => [
         'product_sync' => [
@@ -204,6 +205,20 @@ return [
             'priority' => 2,
             'interval' => 'monthly',
             'variables' => ['--days' => 30],
+            'time' => [
+                'minute' => '0',
+                'hour' => '0',
+                'day' => '1',
+                'month' => '*',
+                'weekday' => '*',
+            ],
+        ],
+        'sitemap_generate' => [
+            'command' => 'amplify:sitemap-generate',
+            'enabled' => true,
+            'priority' => 2,
+            'interval' => 'weekly',
+            'variables' => [],
             'time' => [
                 'minute' => '0',
                 'hour' => '0',

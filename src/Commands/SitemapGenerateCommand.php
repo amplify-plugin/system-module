@@ -24,7 +24,7 @@ class SitemapGenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:sitemap';
+    protected $signature = 'amplify:sitemap-generate';
 
     /**
      * The console command description.
