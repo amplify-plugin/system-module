@@ -43,7 +43,6 @@
         "laravel/framework": "^10.48.14",
         "league/flysystem": "^3.28",
         "league/flysystem-aws-s3-v3": "^3.28",
-        "league/flysystem-ftp": "^3.28",
         "maatwebsite/excel": "^3.1.55",
         "owen-it/laravel-auditing": "^13.6.7",
         "spatie/laravel-backup": "^8.8.1",
@@ -79,6 +78,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "suggest": {
-        "ext-pcntl": "For Linux with Ext. PCNTL enabled for parallel process."
+        "ext-pcntl": "For Linux with Ext. PCNTL enabled for parallel process.",
+        "league/flysystem-ftp": "^3.28 To allow amplify to push database to easyask."
     }
 }
