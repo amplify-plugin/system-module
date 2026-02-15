@@ -41,7 +41,7 @@ class SitemapGenerateCommand extends Command
         try {
 
             $jobs = [
-                new CategoryGenerateJob(3),
+                new CategoryGenerateJob(2),
                 new PageGenerateJob(),
             ];
 
