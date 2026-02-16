@@ -1238,9 +1238,11 @@ class EmailService
         return $shippingAddress;
     }
 
-    public function sendWishlistProductRestockedEmail(EventAction $emailAction, $contact)
+    public function sendWishlistProductRestockedEmail(EventAction $emailAction, $wishlist)
     {
         $eventTemplate = $emailAction->eventTemplate;
+
+        $contact = $wishlist->contact;
 
         $data = [
             'contact' => $contact,
@@ -1248,6 +1250,9 @@ class EmailService
             'email_content' => $eventTemplate->email_body,
             'is_customer_mail' => true,
         ];
+
+        $wishlist->last_notified_at = now();
+        $wishlist->save();
 
         $this->dispatchEmailJobs(
             $this->replaceMailContentProperty($data),
