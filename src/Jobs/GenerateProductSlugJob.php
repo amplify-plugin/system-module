@@ -40,7 +40,7 @@ class GenerateProductSlugJob implements ShouldQueue
                         $exists = Product::select('id', 'product_slug')->where('product_slug', $slug)->exists();
                     } while ($exists);
                 } else {
-                    $slug = $base . '-' . Str::lower(Str::random(6));
+                    $slug = $base;
                 }
 
                 $product->product_slug = $slug;
