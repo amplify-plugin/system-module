@@ -1752,8 +1752,8 @@ return [
         '@nestedItems' => [],
         'description' => 'Login widget',
     ],
-    Amplify\Widget\Components\Product\FavouriteManageButton::class => [
-        'name' => 'product.favourite-manage-button',
+    Amplify\Widget\Components\Product\FavouriteManage::class => [
+        'name' => 'favourite-manage',
         'reserved' => true,
         'internal' => true,
         'model' => [],
@@ -1859,7 +1859,7 @@ return [
         '@nestedItems' => [],
         'description' => '',
     ],
-    Amplify\Widget\Components\Product\ShoppingList::class => [
+    Amplify\Widget\Components\Product\OrderListManage::class => [
         'name' => 'product-shopping-list',
         'reserved' => true,
         'internal' => true,
