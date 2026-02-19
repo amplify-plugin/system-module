@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\HigherOrderBuilderProxy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
@@ -1405,6 +1406,7 @@ if (!function_exists('getFileFromS3')) {
         return config('filesystems.disks.uploads.url') . $attachment;
     }
 }
+
 if (!function_exists('fileUploads')) {
     function fileUploads(?UploadedFile $file = null, $dir = '/')
     {
@@ -2149,5 +2151,25 @@ if (!function_exists('generate_product_slug')) {
         $slug = trim($slug, '-');
 
         return trim($slug);
+    }
+}
+
+if (!function_exists('route_uri')) {
+    /**
+     * Get URI from route name.
+     *
+     * @param string $name
+     * @return string
+     * @throws UrlGenerationException
+     */
+    function route_uri(string $name): string
+    {
+        $route = Route::getRoutes()->getByName($name);
+
+        if (!$route) {
+            throw new UrlGenerationException("Route with name '{$name}' does not exist.");
+        }
+
+        return $route->uri();
     }
 }
