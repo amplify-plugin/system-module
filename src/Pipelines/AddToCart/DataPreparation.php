@@ -47,6 +47,7 @@ class DataPreparation implements AddToCart
                 $fallbackImage = asset($fallbackImage);
             }
 
+            $invalidProducts = [];
             foreach ($data['items'] ?? [] as $index => $item) {
                 if (!isset($item['additional_info'])) {
                     $item['additional_info'] = [];
@@ -88,6 +89,7 @@ class DataPreparation implements AddToCart
 
                     $data['items'][$index] = $product;
                 } else {
+                    $invalidProducts[] = $item['product_code'];
                     unset($data['items'][$index]);
                     $data['errors'][$index][] = __('Part number :code is not available on our website. Please contact your representative, email us at <a href="mailto::email">:email</a> , or call us at <a href="tel::phone">:phone.', [
                         'code' => $item['product_code'],
@@ -95,6 +97,14 @@ class DataPreparation implements AddToCart
                         'phone' => config('amplify.cms.phone'),
                     ]);
                 }
+            }
+
+            if(empty($data['items'])) {
+                throw new \Exception( __('Part number :code is not available on our website. Please contact your representative, email us at <a href="mailto::email">:email</a> , or call us at <a href="tel::phone">:phone.', [
+                    'code' => implode(', ', $invalidProducts),
+                    'email' => config('amplify.cms.email'),
+                    'phone' => config('amplify.cms.phone'),
+                ]));
             }
 
         } catch (\Exception $exception) {
