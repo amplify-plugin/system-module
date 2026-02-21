@@ -31,7 +31,7 @@ trait ConsoleScheduleTrait
 
         if (app()->environment('production', 'staging')) {
             $schedule->command(CsdErpTokenRefreshCommand::class)
-                ->everyThirtyMinutes()
+                ->hourly()
                 ->when(fn() => config('amplify.erp.default', 'default') == 'csd-erp')
                 ->withoutOverlapping()
                 ->onOneServer();

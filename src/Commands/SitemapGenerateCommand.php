@@ -89,6 +89,7 @@ HTML
                     }
                     $sitemapIndex->writeToFile(public_path('sitemap.xml'));
                 })
+                ->onQueue('production')
                 ->dispatch();
 
             return self::SUCCESS;
@@ -99,36 +100,5 @@ HTML
 
             return self::FAILURE;
         }
-    }
-
-    private function createSitemapForStaticContent()
-    {
-        $sitemap = Sitemap::create();
-
-        $entries = \Amplify\System\Cms\Models\Sitemap::all();
-
-        foreach ($entries as $cat) {
-            $sitemap->add(
-                Url::create(frontendShopURL($cat['path']))
-                    ->addImage(url: asset($cat['image']), caption: $cat['name'], title: $cat['name'], license: 'MIT')
-                    ->setLastModificationDate(now())
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setPriority(0.5)
-            );
-        }
-
-//        $sitemap->writeToFile($this->sitemapDirectoryPath .
-//            DIRECTORY_SEPARATOR .
-//            'sitemap-static-content.xml');
-    }
-
-    private function createSitemapForProducts(): void
-    {
-        Product::select('id')
-            ->chunkById(5000, function ($products) {
-                $products->chunk(1000)->each(function ($group) {
-                    GenerateProductSlugJob::dispatch(['products' => $group->pluck('id')->all()]);
-                });
-            });
     }
 }
