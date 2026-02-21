@@ -70,9 +70,6 @@ HTML
                         );
                     }
                 })
-                ->progress(function (Batch $batch) {
-                    logger()->debug('Single Job', $batch->toArray());
-                })
                 ->then(function (Batch $batch) {
                     //Task Are Done
                 })
