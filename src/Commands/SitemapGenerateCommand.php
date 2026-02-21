@@ -5,7 +5,7 @@ namespace Amplify\System\Commands;
 use Amplify\System\Backend\Models\Product;
 use Amplify\System\Jobs\GenerateProductSlugJob;
 use Amplify\System\Jobs\Sitemap\CategoryGenerateJob;
-use Amplify\System\Jobs\Sitemap\PageGenerateJob;
+use Amplify\System\Jobs\Sitemap\StaticSitemapGenerateJob;
 use Amplify\System\Jobs\Sitemap\ProductGenerateJob;
 use Amplify\System\Sitemap\SitemapIndex;
 use Amplify\System\Sitemap\Tags\Url;
@@ -24,7 +24,7 @@ class SitemapGenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:sitemap-generate';
+    protected $signature = 'amplify:sitemap-generate  {--category-depth=1} {--product-chunk-size=1000}';
 
     /**
      * The console command description.
@@ -38,12 +38,24 @@ class SitemapGenerateCommand extends Command
      */
     public function handle()
     {
+        $categoryDepth = $this->option('category-depth');
+
+        $productChunkSize = $this->option('product-chunk-size');
+
         try {
 
             $jobs = [
-                new CategoryGenerateJob(2),
-                new PageGenerateJob(),
+                new CategoryGenerateJob($categoryDepth),
+                new StaticSitemapGenerateJob(),
             ];
+
+            $chunkIndex = 0;
+
+            Product::select('id')
+                ->chunkById($productChunkSize, function ($products) use (&$jobs, &$chunkIndex) {
+                    $chunkIndex++;
+                    $jobs[] = new ProductGenerateJob($chunkIndex, $products->pluck('id')->toArray());
+                });
 
             Bus::batch($jobs)
                 ->before(function (Batch $batch) {

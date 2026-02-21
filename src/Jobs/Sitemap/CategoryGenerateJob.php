@@ -59,7 +59,7 @@ class CategoryGenerateJob implements ShouldQueue
             );
         }
 
-        $sitemap->writeToFile(public_path('sitemaps' . DIRECTORY_SEPARATOR . 'sitemap-categories.xml'));
+        $sitemap->writeToFile(public_path('sitemaps' . DIRECTORY_SEPARATOR . 'categories.xml'));
     }
 
     private function collectCategories($nodes, &$cat = []): void

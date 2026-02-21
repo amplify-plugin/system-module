@@ -23,16 +23,16 @@ class Url extends Tag
 
     public ?float $priority = null;
 
-    /** @var \Amplify\System\Support\Sitemap\Alternate[] */
+    /** @var Alternate[] */
     public array $alternates = [];
 
-    /** @var \Amplify\System\Support\Sitemap\Image[] */
+    /** @var Image[] */
     public array $images = [];
 
-    /** @var \Amplify\System\Support\Sitemap\Video[] */
+    /** @var Video[] */
     public array $videos = [];
 
-    /** @var \Amplify\System\Support\Sitemap\News[] */
+    /** @var News[] */
     public array $news = [];
 
     public static function create(string $url): static
