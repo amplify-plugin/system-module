@@ -8,7 +8,6 @@ use Amplify\System\Factories\NotificationFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
-use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class CustomerRegisteredReportCommand extends Command
 {

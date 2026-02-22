@@ -3,7 +3,6 @@
 namespace Amplify\System\Commands;
 
 use Amplify\System\Backend\Models\Product;
-use Amplify\System\Jobs\GenerateProductSlugJob;
 use Amplify\System\Jobs\GenerateProductThumbnailJob;
 use Illuminate\Console\Command;
 

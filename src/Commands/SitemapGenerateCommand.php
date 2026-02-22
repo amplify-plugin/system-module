@@ -3,17 +3,14 @@
 namespace Amplify\System\Commands;
 
 use Amplify\System\Backend\Models\Product;
-use Amplify\System\Jobs\GenerateProductSlugJob;
 use Amplify\System\Jobs\Sitemap\CategoryGenerateJob;
-use Amplify\System\Jobs\Sitemap\StaticSitemapGenerateJob;
 use Amplify\System\Jobs\Sitemap\ProductGenerateJob;
+use Amplify\System\Jobs\Sitemap\StaticSitemapGenerateJob;
 use Amplify\System\Sitemap\SitemapIndex;
-use Amplify\System\Sitemap\Tags\Url;
 use Amplify\System\Sitemap\Tags\Sitemap as SitemapTag;
-use Amplify\System\Support\Sitemap;
+use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Throwable;
 
