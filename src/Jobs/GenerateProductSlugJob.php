@@ -13,14 +13,11 @@ class GenerateProductSlugJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
-    public $productGroups = [];
-
     /**
      * Create a new job instance.
      */
-    public function __construct($productGroups)
+    public function __construct(public array $ids = [])
     {
-        $this->productGroups = $productGroups['products'];
     }
 
     /**
@@ -30,8 +27,9 @@ class GenerateProductSlugJob implements ShouldQueue
      */
     public function handle()
     {
-        if (!empty($this->productGroups)) {
-            Product::select('id', 'product_name', 'product_slug')->whereIn('id', $this->productGroups)->get()->each(function (Product $product) {
+        if (!empty($this->ids)) {
+            foreach (Product::select('id', 'product_name', 'product_slug')->whereIn('id', $this->ids)->cursor() as $product) {
+
                 $base = generate_product_slug($product->product_name);
 
                 if (config('amplify.client_code') != "STV") {
@@ -46,7 +44,7 @@ class GenerateProductSlugJob implements ShouldQueue
                 $product->product_slug = $slug;
 
                 $product->save();
-            });
+            }
         }
     }
 }

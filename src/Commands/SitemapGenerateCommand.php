@@ -70,11 +70,9 @@ HTML
                         );
                     }
                 })
-                ->then(function (Batch $batch) {
-                    //Task Are Done
-                })
                 ->catch(function (Batch $batch, Throwable $e) {
                     logger()->error($e);
+                    throw_if(!app()->isProduction(), $e);
                 })
                 ->finally(function (Batch $batch) {
                     $sitemapIndex = SitemapIndex::create();
@@ -95,9 +93,7 @@ HTML
             return self::SUCCESS;
 
         } catch (\Exception $exception) {
-
             $this->error($exception);
-
             return self::FAILURE;
         }
     }

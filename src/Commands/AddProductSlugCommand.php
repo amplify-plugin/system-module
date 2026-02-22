@@ -4,8 +4,17 @@ namespace Amplify\System\Commands;
 
 use Amplify\System\Backend\Models\Product;
 use Amplify\System\Jobs\GenerateProductSlugJob;
+use Amplify\System\Jobs\Sitemap\CategoryGenerateJob;
+use Amplify\System\Jobs\Sitemap\ProductGenerateJob;
+use Amplify\System\Jobs\Sitemap\StaticSitemapGenerateJob;
+use Amplify\System\Sitemap\SitemapIndex;
+use Amplify\System\Sitemap\Tags\Sitemap as SitemapTag;
+use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
 class AddProductSlugCommand extends Command
 {
@@ -14,7 +23,7 @@ class AddProductSlugCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:create-product-slug';
+    protected $signature = 'amplify:create-product-slug {--chunk=1000}';
 
     /**
      * The console command description.
@@ -27,17 +36,33 @@ class AddProductSlugCommand extends Command
      * Execute the console command.
      *
      * @return int
+     * @throws \Throwable
      */
     public function handle()
     {
-        Product::select('id')
-            ->whereNull('product_slug')
-            ->chunkById(2000, function ($products) {
-                $products->chunk(50)->each(function ($group) {
-                    GenerateProductSlugJob::dispatch(['products' => $group->pluck('id')->all()]);
-                });
-            });
+        $chunkSize = $this->option('chunk');
 
-        return self::SUCCESS;
+        try {
+            $jobs = [];
+
+            Product::select('id')
+                ->whereNull('product_slug')
+                ->chunkById($chunkSize, function ($products) use (&$jobs) {
+                    $jobs[] = new GenerateProductSlugJob($products->pluck('id')->toArray());
+                });
+
+            Bus::batch($jobs)
+                ->catch(function (Batch $batch, Throwable $e) {
+                    logger()->error($e);
+                    throw_if(!app()->isProduction(), $e);
+                })
+                ->onQueue('worker')
+                ->dispatch();
+
+            return self::SUCCESS;
+        } catch (\Exception $exception) {
+            $this->error($exception);
+            return self::FAILURE;
+        }
     }
 }
