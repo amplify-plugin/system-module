@@ -2,7 +2,6 @@
 
 namespace Amplify\System\Commands;
 
-use Amplify\ErpApi\Facades\ErpApi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -29,9 +28,9 @@ class CsdErpTokenRefreshCommand extends Command
     {
         if (config('amplify.erp.default', 'default') == 'csd-erp') {
             try {
-                ErpApi::refreshToken();
+                \Amplify\ErpApi\Facades\ErpApi::refreshToken(true);
 
-                Log::debug("CSD-ERP Token refresh successful at [" . now()->format('r') . "]");
+                Log::debug("CSD-ERP token refreshed successful");
 
                 return self::SUCCESS;
             } catch (\Exception $e) {
