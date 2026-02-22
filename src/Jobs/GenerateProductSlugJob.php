@@ -3,6 +3,7 @@
 namespace Amplify\System\Jobs;
 
 use Amplify\System\Backend\Models\Product;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,7 +12,7 @@ use Illuminate\Support\Str;
 
 class GenerateProductSlugJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * Create a new job instance.
