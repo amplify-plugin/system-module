@@ -16,7 +16,7 @@ class AddProductSlugCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:create-product-slug {--chunk=1000}';
+    protected $signature = 'amplify:create-product-slug {--chunk=500}';
 
     /**
      * The console command description.
