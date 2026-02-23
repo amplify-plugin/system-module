@@ -49,6 +49,7 @@ class SitemapGenerateCommand extends Command
             $chunkIndex = 0;
 
             Product::select('id')
+                ->whereNotIn('status', ['draft', 'archived'])
                 ->chunkById($productChunkSize, function ($products) use (&$jobs, &$chunkIndex) {
                     $chunkIndex++;
                     $jobs[] = new ProductGenerateJob($chunkIndex, $products->pluck('id')->toArray());
@@ -65,6 +66,11 @@ class SitemapGenerateCommand extends Command
 
 HTML
                         );
+                    } else {
+                        $files = glob(public_path('sitemaps'. DIRECTORY_SEPARATOR . '*.xml'));
+                        foreach ($files as $file) {
+                            @unlink($file);
+                        }
                     }
                 })
                 ->catch(function (Batch $batch, Throwable $e) {

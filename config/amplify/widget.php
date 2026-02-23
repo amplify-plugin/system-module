@@ -2309,17 +2309,6 @@ return [
         '@nestedItems' => [],
         'description' => 'Login widget',
     ],
-    Amplify\Widget\Components\CartTopMenu::class => [
-        'name' => 'site.cart-top-menu',
-        'reserved' => true,
-        'internal' => true,
-        '@inside' => null,
-        '@client' => null,
-        'model' => ['static_page'],
-        '@attributes' => [],
-        '@nestedItems' => [],
-        'description' => 'Login widget',
-    ],
     Amplify\Widget\Components\LanguageChange::class => [
         'name' => 'site.language-change',
         'reserved' => true,
