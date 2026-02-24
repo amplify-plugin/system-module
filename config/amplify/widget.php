@@ -2626,7 +2626,7 @@ return [
         ],
         'description' => 'Product details widget',
     ],
-    Amplify\Widget\Components\Shop\ProductSkuTable::class => [
+    Amplify\Widget\Components\Product\ProductSkuTable::class => [
         'name' => 'product-sku-table',
         'reserved' => true,
         'internal' => true,
