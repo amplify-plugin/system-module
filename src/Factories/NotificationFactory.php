@@ -62,7 +62,11 @@ class NotificationFactory
     {
         switch ($event_code) {
             case Event::REGISTRATION_REQUEST_RECEIVED:
-                RegistrationRequestReceivedJob::dispatch($event_code, $args['customer_id']);
+                RegistrationRequestReceivedJob::dispatch($event_code, $args);
+                break;
+
+            case Event::REGISTRATION_REQUEST_ACCEPTED:
+                RegistrationRequestAcceptedJob::dispatch($event_code, $args['customer_id']);
                 break;
 
             case Event::CONTACT_ACCOUNT_REQUEST_RECEIVED:
@@ -75,10 +79,6 @@ class NotificationFactory
 
             case Event::ORDER_NOTES_UPDATED:
                 OrderNotesUpdatedJob::dispatch($event_code, $args['customer_order_note_id']);
-                break;
-
-            case Event::REGISTRATION_REQUEST_ACCEPTED:
-                RegistrationRequestAcceptedJob::dispatch($event_code, $args['customer_id']);
                 break;
 
             case Event::ORDER_RECEIVED:

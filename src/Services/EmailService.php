@@ -350,6 +350,13 @@ class EmailService
                 $data = $this->replaceContentsForOrder($data, $key);
             }
 
+            if (isset($data['product'])) {
+                $data[$key] = strtr($data[$key], [
+                    '__product_name__' => $data['product']->product_name ?? null,
+                    '__product_code__' => $data['product']->product_code ?? null,
+                ]);
+            }
+
             if (isset($data['customer_order_rule_track'])) {
                 $data[$key] = str_replace(
                     '__approver_name__',
@@ -595,6 +602,13 @@ class EmailService
                 );
             }
 
+            //common fields
+            $data[$key] = strtr(
+                $data[$key], [
+                '__company_name__' => config('app.name'),
+                '__timestamp__' => now(config('app.timezone'))
+                    ->format(config('amplify.basic.date_time_format', 'D MMM YYYY, HH:mm'))
+            ]);
         }
 
         return $data;
@@ -827,7 +841,7 @@ class EmailService
         );
     }
 
-    public function registrationRequestEmailToCustomer(EventAction $email_action, $customer)
+    public function registrationRequestEmailToCustomer(EventAction $email_action, $customer, $contact)
     {
         $eventTemplate = $email_action->eventTemplate;
 
@@ -844,6 +858,7 @@ class EmailService
          * Preparing email data
          */
         $data = [
+            'contact' => $contact,
             'customer' => $customer,
             'subject' => $eventTemplate->subject,
             'email_content' => $eventTemplate->email_body,
@@ -911,6 +926,7 @@ class EmailService
         */
         $data = [
             'customer' => $customer,
+            'contact' => $customer->contact,
             'subject' => $email_data->subject,
             'email_content' => $email_data->email_body,
             'show_button' => $email_data->show_button === 1,
@@ -1246,8 +1262,12 @@ class EmailService
 
         $data = [
             'contact' => $contact,
+            'product' => $wishlist->product,
             'subject' => $eventTemplate->subject,
             'email_content' => $eventTemplate->email_body,
+            'show_button' => $eventTemplate->show_button == 1,
+            'button_url' => frontendSingleProductURL($wishlist->product),
+            'button_text' => $eventTemplate->button_text,
             'is_customer_mail' => true,
         ];
 

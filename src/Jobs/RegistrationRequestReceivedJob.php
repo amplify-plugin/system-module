@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\Event;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
@@ -23,16 +24,23 @@ class RegistrationRequestReceivedJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, NotificationEventTrait, Queueable, SerializesModels;
 
     public $customerId;
+    public $contactId;
 
     /**
      * Create a new job instance.
      *
      * @return void
+     * @throws \Exception
      */
-    public function __construct($event_code, $customer_id)
+    public function __construct($event_code, $args = [])
     {
         $this->eventCode = $event_code;
-        $this->customerId = $customer_id;
+        $this->customerId = $args['customer_id'] ?? null;
+        $this->contactId = $args['contact_id'] ?? null;
+
+        if (empty($this->customerId) || empty($this->contactId)) {
+            throw new \Exception("Customer ID or Contact ID is required");
+        }
     }
 
     /**
@@ -44,14 +52,15 @@ class RegistrationRequestReceivedJob implements ShouldQueue
     {
         $this->getNecessaryItems();
         $customer = Customer::with('addresses', 'industryClassification')->find($this->customerId);
+        $contact = Contact::find($this->contactId);
 
         foreach ($this->eventInfo?->eventActions ?? [] as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
-                $this->emailService->registrationRequestEmailToCustomer($eventAction, $customer);
+                $this->emailService->registrationRequestEmailToCustomer($eventAction, $customer, $contact);
             }
 
             if ($eventAction->eventTemplate->notification_type == 'messageable') {
-                $this->messageService->registrationRequestMessageToCustomer($eventAction->eventTemplate, $customer);
+                $this->messageService->registrationRequestMessageToCustomer($eventAction->eventTemplate, $customer, $contact);
             }
         }
     }

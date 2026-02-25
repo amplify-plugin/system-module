@@ -212,12 +212,13 @@ class MessageService
         return $data;
     }
 
-    public function registrationRequestMessageToCustomer($message_data, $customer)
+    public function registrationRequestMessageToCustomer($message_data, $customer, $contact)
     {
         /*
          * Preparing message data
          */
         $data = [
+            'contact' => $contact,
             'customer' => $customer,
             'subject' => 'Customer Registration Request Received',
             'message_content' => $message_data->email_body,
@@ -232,11 +233,10 @@ class MessageService
          */
         $response = $this->replaceMessageContentProperty($data);
         $sender = User::where('is_admin', 1)->first();
-        $receiver = $customer->contact;
         $msg = $response['message_content'];
 
         Messenger::from($sender)
-            ->to($receiver)
+            ->to($contact)
             ->message($msg)
             ->send();
     }
