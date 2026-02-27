@@ -13,4 +13,5 @@ return [
                 </p>
 HTML,
     'skip_contact_approval' => true,
+    'verification_method' => 'email'
 ];

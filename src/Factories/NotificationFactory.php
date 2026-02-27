@@ -7,6 +7,7 @@ use Amplify\System\Cms\Jobs\SendFormResponse;
 use Amplify\System\Jobs\CatalogChangedJob;
 use Amplify\System\Jobs\ContactAccountRequestAcceptedJob;
 use Amplify\System\Jobs\ContactAccountRequestReceivedJob;
+use Amplify\System\Jobs\ContactAccountRequestVerificationJob;
 use Amplify\System\Jobs\CreateOrderFromQuotation;
 use Amplify\System\Jobs\CustomerPartNumberDeletedJob;
 use Amplify\System\Jobs\CustomerRegistrationReportGeneratedJob;
@@ -71,6 +72,10 @@ class NotificationFactory
 
             case Event::CONTACT_ACCOUNT_REQUEST_RECEIVED:
                 ContactAccountRequestReceivedJob::dispatch($event_code, $args['contact_id']);
+                break;
+
+            case Event::CONTACT_ACCOUNT_REQUEST_VERIFICATION:
+                ContactAccountRequestVerificationJob::dispatch($event_code, $args['contact_id']);
                 break;
 
             case Event::CONTACT_ACCOUNT_REQUEST_ACCEPTED:

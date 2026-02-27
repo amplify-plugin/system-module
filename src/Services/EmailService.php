@@ -6,6 +6,7 @@ use Amplify\ErpApi\Wrappers\Customer as ErpCustomer;
 use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\EventAction;
+use Amplify\System\Backend\Models\Product;
 use Amplify\System\Jobs\DispatchEmailJob;
 use Amplify\System\Ticket\Models\Ticket;
 use Amplify\System\Ticket\Models\TicketDepartment;
@@ -809,6 +810,38 @@ class EmailService
         );
     }
 
+    public function contactAccountRequestVerificationEmail(EventAction $email_action, $contact)
+    {
+        $eventTemplate = $email_action->eventTemplate;
+
+        /*
+         *  Generate customer button url
+         */
+        $button_url = str_replace(
+            '__contacts_details_url_for_account_request_accepted__',
+            '/admin/contact/' . $contact->id . '/show',
+            $eventTemplate->button_url
+        );
+
+        /*
+         * Preparing email data
+         */
+        $data = [
+            'contact' => $contact,
+            'subject' => $eventTemplate->subject,
+            'email_content' => $eventTemplate->email_body,
+            'show_button' => $eventTemplate->show_button === 1,
+            'button_url' => URL::to($button_url),
+            'button_text' => $eventTemplate->button_text,
+            'is_customer_mail' => true,
+        ];
+
+        $this->dispatchEmailJobs(
+            $this->replaceMailContentProperty($data),
+            $this->getRecipientsEmail($contact, $email_action)
+        );
+    }
+
     public function contactAccountRegistrationRequestAcceptedEmail(EventAction $email_action, $contact)
     {
         $eventTemplate = $email_action->eventTemplate;
@@ -1058,17 +1091,31 @@ class EmailService
     {
         $email_data = $email_action->eventTemplate;
 
+        $records = array_filter($productSyncInfo['products'], fn($item) => !empty($item));
+
+        unset($productSyncInfo['products']);
+
+        $productSyncInfo['__records__'] = empty($records) ? '-' : json_encode($records);
+
         /*
          * Preparing email data
          */
         $data = [
-            'subject' => $email_data->subject,
-            'email_content' => $email_data->email_body,
+            ...$productSyncInfo,
+            'subject' => strtr($email_data->subject, $productSyncInfo),
+            'email_content' => strtr($email_data->email_body, $productSyncInfo),
+            'show_button' => $email_data->show_button === 1,
+            'button_url' => URL::to($email_data->button_url),
+            'button_text' => $email_data->button_text,
+            'is_customer_mail' => false,
         ];
         /*
          * Sending email
          */
-        DispatchEmailJob::dispatch($this->replaceMailContentProperty($data), $this->getRecipientsEmail(null, $email_action));
+        DispatchEmailJob::dispatch(
+            $this->replaceMailContentProperty($data),
+            $this->getRecipientsEmail(null, $email_action)
+        );
     }
 
     public function coilQuoteRequestEmailToAdmin($email_action, $coilData, $customer)
