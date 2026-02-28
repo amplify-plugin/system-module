@@ -6,13 +6,14 @@ use Amplify\ErpApi\Wrappers\Customer as ErpCustomer;
 use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\EventAction;
-use Amplify\System\Backend\Models\Product;
 use Amplify\System\Jobs\DispatchEmailJob;
 use Amplify\System\Ticket\Models\Ticket;
 use Amplify\System\Ticket\Models\TicketDepartment;
 use Amplify\System\Traits\OrderEmailFormatingTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class EmailService
 {
@@ -814,14 +815,13 @@ class EmailService
     {
         $eventTemplate = $email_action->eventTemplate;
 
-        /*
-         *  Generate customer button url
-         */
-        $button_url = str_replace(
-            '__contacts_details_url_for_account_request_accepted__',
-            '/admin/contact/' . $contact->id . '/show',
-            $eventTemplate->button_url
-        );
+        $token = Str::random(32);
+
+        $hash = Hash::make($token);
+
+        $contact->update(['otp' => $token]);
+
+        $button_url = URL::to(str_replace([':id', ':hash'], [$contact->id, base64_encode($hash)], $eventTemplate->button_url));
 
         /*
          * Preparing email data
@@ -829,9 +829,12 @@ class EmailService
         $data = [
             'contact' => $contact,
             'subject' => $eventTemplate->subject,
-            'email_content' => $eventTemplate->email_body,
+            'email_content' => strtr($eventTemplate->email_body, [
+                '__email_verification_url__'
+                => "<a href='{$button_url}' target='_blank'>{$button_url}</a>",
+            ]),
             'show_button' => $eventTemplate->show_button === 1,
-            'button_url' => URL::to($button_url),
+            'button_url' => $button_url,
             'button_text' => $eventTemplate->button_text,
             'is_customer_mail' => true,
         ];

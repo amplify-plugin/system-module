@@ -52,7 +52,7 @@ class ContactAccountRequestAcceptedJob implements ShouldQueue
             }
 
             if ($eventAction->eventTemplate->notification_type == 'messageable') {
-                $this->messageService->registrationRequestMessageToCustomer($eventAction->eventTemplate, $contact);
+                $this->messageService->registrationRequestMessageToCustomer($eventAction->eventTemplate, $contact->customer, $contact);
             }
         }
     }
