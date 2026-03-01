@@ -222,17 +222,6 @@ class EmailService
         );
     }
 
-    protected function replaceOTPMailContentProperty($data): array
-    {
-        $data['email_content'] = str_replace(
-            '__code__',
-            $data['otp'],
-            $data['email_content']
-        );
-
-        return $data;
-    }
-
     protected function replaceMailContentProperty($data): array
     {
         foreach ($this->replaceAbleKeys as $key) {
@@ -344,6 +333,12 @@ class EmailService
                 $data[$key] = str_replace(
                     '__otp__',
                     $data['otp'],
+                    $data[$key]
+                );
+
+                $data[$key] = str_replace(
+                    '__otp_duration__',
+                    $data['otp_duration'],
                     $data[$key]
                 );
             }
@@ -616,21 +611,25 @@ class EmailService
         return $data;
     }
 
-    public function resetPasswordEmailToCustomer(EventAction $email_action, $otp, $customer)
+    public function resetPasswordEmailToContact(EventAction $email_action, $otp, $contact)
     {
         $eventTemplate = $email_action->eventTemplate;
 
         $data = [
-            'contact' => $customer,
+            'contact' => $contact,
             'otp' => $otp,
+            'otp_duration' => "30 minutes",
             'email_content' => $eventTemplate->email_body,
-            'subject' => 'Password Reset OTP',
+            'subject' => $eventTemplate->subject,
+            'show_button' => $eventTemplate->show_button == 1,
+            'button_url' => URL::to($eventTemplate->button_url),
+            'button_text' => $eventTemplate->button_text,
             'is_customer_mail' => true,
         ];
 
         $this->dispatchEmailJobs(
             $this->replaceMailContentProperty($data),
-            $this->getRecipientsEmail($customer, $email_action)
+            $this->getRecipientsEmail($contact, $email_action)
         );
     }
 

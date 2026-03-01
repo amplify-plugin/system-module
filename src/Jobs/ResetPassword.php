@@ -39,10 +39,14 @@ class ResetPassword implements ShouldQueue
     public function handle()
     {
         $this->getNecessaryItems();
+
+        $contact = Contact::find($this->contactId);
+
         foreach ($this->eventInfo->eventActions as $eventAction) {
-            $contact = Contact::find($this->contactId);
+
+
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
-                $this->emailService->resetPasswordEmailToCustomer($eventAction, $this->otp, $contact);
+                $this->emailService->resetPasswordEmailToContact($eventAction, $this->otp, $contact);
             }
 
             if ($eventAction->eventTemplate->notification_type == 'messageable') {
