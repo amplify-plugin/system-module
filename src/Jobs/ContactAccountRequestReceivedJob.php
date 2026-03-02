@@ -44,8 +44,6 @@ class ContactAccountRequestReceivedJob implements ShouldQueue
     {
         $this->getNecessaryItems();
         $contact = Contact::with('customer')->find($this->contactId);
-        // Merge Customer code to Contact->customer_code
-        $contact->customer_code = $contact->customer->customer_code;
 
         foreach ($this->eventInfo?->eventActions ?? [] as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {

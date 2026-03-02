@@ -234,99 +234,34 @@ class EmailService
             if (isset($data['customer'])) {
                 $customer = $data['customer'] instanceof Customer
                     ? $data['customer']
-                    : Customer::with('addresses', 'industryClassification')->find($data['customer']->id);
+                    : Customer::with('industryClassification')->find($data['customer']->id);
 
-                // Customer-related replacements
-                $data[$key] = str_replace(
-                    '__customer_name__',
-                    $customer->customer_name ?? '',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__customer_code__',
-                    $customer->customer_code ?? '',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__email_address__',
-                    $customer->email ?? '',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__phone_no__',
-                    $customer->phone ?? '',
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__industry_classification__',
-                    $customer->industryClassification->name ?? '',
-                    $data[$key]
-                );
-
-                // Address-related replacements (using the first address as an example)
-                $address = $customer->addresses->first();
-
-                if ($address) {
-                    $data[$key] = str_replace(
-                        '__address_name__',
-                        $address->address_name ?? '',
-                        $data[$key]
-                    );
-
-                    $data[$key] = str_replace(
-                        '__address_1__',
-                        $address->address_1 ?? '',
-                        $data[$key]
-                    );
-
-                    $data[$key] = str_replace(
-                        '__country_code__',
-                        $address->country_code ?? '',
-                        $data[$key]
-                    );
-
-                    $data[$key] = str_replace(
-                        '__city__',
-                        $address->city ?? '',
-                        $data[$key]
-                    );
-
-                    $data[$key] = str_replace(
-                        '__state__',
-                        $address->state ?? '',
-                        $data[$key]
-                    );
-
-                    $data[$key] = str_replace(
-                        '__zip_code__',
-                        $address->zip_code ?? '',
-                        $data[$key]
-                    );
-                }
+                //using billing address insist of shipping address
+                $data[$key] = strtr($data[$key], [
+                    '__customer_name__' => $customer->customer_name ?? '',
+                    '__customer_code__' => $customer->customer_code ?? '',
+                    '__customer_email__' => $customer->email ?? '',
+                    '__customer_phone__' => $customer->phone ?? '',
+                    '__industry_classification__' => $customer->industryClassification->name ?? '',
+                    '__address_1__' => $customer->address_1 ?? '',
+                    '__address_2__' => $customer->address_2 ?? '',
+                    '__address_3__' => $customer->address_3 ?? '',
+                    '__country_code__' => $customer->country_code ?? '',
+                    '__country_name__' => $customer?->billingCountry?->name ?? '',
+                    '__city__' => $customer->city ?? '',
+                    '__zip_code__' => $customer->zip_code ?? '',
+                    '__state_name__' => $customer?->billingState?->name ?? '',
+                    '__state_code__' => $customer->state ?? '',
+                ]);
             }
 
             if (isset($data['contact'])) {
-                $data[$key] = str_replace(
-                    '__account_number__',
-                    $data['contact']->customer_code,
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__email_address__',
-                    $data['contact']->email,
-                    $data[$key]
-                );
-
-                $data[$key] = str_replace(
-                    '__full_name__',
-                    $data['contact']->name,
-                    $data[$key]
-                );
+                $data[$key] = strtr($data[$key], [
+                    '__account_number__' => $data['contact']->contact_code ?? '',
+                    '__email_address__' => $data['contact']->email ?? '',
+                    '__full_name__' => $data['contact']->name ?? '',
+                    '__phone_no__' => $data['contact']->phone ?? '',
+                ]);
             }
 
             if (isset($data['otp'])) {
@@ -785,17 +720,14 @@ class EmailService
         /*
          *  Generate customer button url
          */
-        $button_url = str_replace(
-            '__contacts_details_url_for_account_request_received__',
-            '/admin/contact/' . $contact->id . '/edit',
-            $eventTemplate->button_url
-        );
+        $button_url = str_replace(':id', $contact->id, $eventTemplate->button_url);
 
         /*
          * Preparing email data
          */
         $data = [
             'contact' => $contact,
+            'customer' => $contact->customer,
             'subject' => $eventTemplate->subject,
             'email_content' => $eventTemplate->email_body,
             'show_button' => $eventTemplate->show_button === 1,
@@ -810,6 +742,11 @@ class EmailService
         );
     }
 
+    /**
+     * @param EventAction $email_action
+     * @param Contact $contact
+     * @return void
+     */
     public function contactAccountRequestVerificationEmail(EventAction $email_action, $contact)
     {
         $eventTemplate = $email_action->eventTemplate;
@@ -827,6 +764,7 @@ class EmailService
          */
         $data = [
             'contact' => $contact,
+            'customer' => $contact->customer,
             'subject' => $eventTemplate->subject,
             'email_content' => strtr($eventTemplate->email_body, [
                 '__email_verification_url__'

@@ -3,6 +3,7 @@
 namespace Amplify\System\Traits;
 
 use Amplify\System\Backend\Models\Event;
+use Amplify\System\Backend\Models\EventAction;
 use Amplify\System\Backend\Models\EventRecipent;
 use Amplify\System\Backend\Models\EventTemplate;
 use Amplify\System\Backend\Models\EventVariable;
@@ -37,6 +38,7 @@ trait EventSeedTrait
             EventVariable::truncate();
             EventRecipent::truncate();
             EventTemplate::truncate();
+            EventAction::truncate();
         }
 
 
@@ -49,9 +51,9 @@ trait EventSeedTrait
             unset($event['eventTemplates']);
 
             $eventModel = Event::create($event);
-            $eventModel->eventVariables()->saveMany($eventVariables);
-            $eventModel->eventRecipents()->saveMany($eventRecipents);
-            $eventModel->eventTemplate()->saveMany($eventTemplates);
+            $eventModel->eventVariables()->createMany($eventVariables);
+            $eventModel->eventRecipents()->createMany($eventRecipents);
+            $eventModel->eventTemplate()->createMany($eventTemplates);
         }
     }
 }
