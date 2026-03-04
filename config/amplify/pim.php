@@ -21,6 +21,13 @@ return [
 
     'pim_db_enabled' => env('DB_PIM_ENABLED', false),
     'document_type' => null,
+    'default_status' => 'draft',
+    'product_statuses' => [
+        'incomplete' => 'Incomplete',
+        'draft' => 'Draft',
+        'published' => 'Published',
+        'archived' => 'Archived',
+    ],
     'unit_of_measurements' => [
         ['code' => 'ea', 'label' => 'Each']
     ]
