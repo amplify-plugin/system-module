@@ -1,3 +1,0 @@
-<div {!! $htmlAttributes !!}>
-
-</div>

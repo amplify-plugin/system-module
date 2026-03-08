@@ -29,7 +29,6 @@ class CommandServiceProvider extends ServiceProvider
                 \Amplify\System\Commands\TransformProduct::class,
                 \Amplify\System\Commands\UpgradeIssueFix::class,
                 \Amplify\System\Commands\CustomerRegisteredReportCommand::class,
-                \Amplify\System\Commands\WidgetMakeCommand::class,
                 \Amplify\System\Commands\CsdErpTokenRefreshCommand::class,
                 \Amplify\System\Commands\AddProductThumbnailCommand::class,
                 \Amplify\System\Commands\SitemapGenerateCommand::class,
