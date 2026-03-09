@@ -1532,10 +1532,16 @@ return [
                 'hint' => 'During placing order should it check quantity availability in warehouse',
             ],
             [
-                'name' => ':widget-title',
+                'name' => 'widget-title',
                 'type' => 'text',
                 'value' => 'Quick Order',
             ],
+            [
+                'name' => ':default-product-rows',
+                'type' => 'number',
+                'value' => 1,
+                'hint' => 'Default number of product rows shown when Quick Order loads',
+            ]
         ],
         '@nestedItems' => [],
         'description' => '',
