@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Providers;
 
+use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -23,19 +24,26 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::before(function ($user, $ability) {
-            // Allow Backend User Model Only Permission
+
             if ($user instanceof User) {
-                setPermissionsTeamId(0);
-                if ($user->hasRole('Super Admin')) {
+                // Allow Everything
+                if ($user->is_admin == 1) {
                     return true;
                 }
 
-                return false;
+                //Continue Check
+                setPermissionsTeamId(User::SYSTEM_TEAM_ID);
+                return null;
             }
 
-            // check frontend role feature is enabled or not
-            if (! config('amplify.basic.is_permission_system_enabled')) {
-                return true;
+            if ($user instanceof Contact) {
+                // Allow Everything
+                if (!config('amplify.basic.is_permission_system_enabled')) {
+                    return true;
+                }
+                //Continue Check
+                setPermissionsTeamId($user->customer()->id);
+                return null;
             }
 
             return null;
