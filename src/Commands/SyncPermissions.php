@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Commands;
 
-use Backpack\PermissionManager\app\Models\Permission;
+use Amplify\System\Backend\Models\Permission;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
