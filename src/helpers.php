@@ -2141,7 +2141,7 @@ if (! function_exists('unit_of_measurement')) {
     }
 }
 
-if (!function_exists('generate_product_slug')) {
+if (! function_exists('generate_product_slug')) {
     function generate_product_slug(string $value): string
     {
         $slug = strip_tags($value);
