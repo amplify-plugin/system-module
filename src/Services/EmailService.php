@@ -1149,7 +1149,7 @@ class EmailService
                 $emails[] = $customer->email;
             }
 
-            if ($email_action->is_get_business_contact) {
+            if ($email_action->is_get_customer_business_contact) {
                 $emails[] = $customer->business_contact;
             }
 
@@ -1163,8 +1163,8 @@ class EmailService
                 $emails[] = ! empty($customer->customer) ? $customer->customer->email : '';
             }
 
-            if ($email_action->is_get_business_contact) {
-                $emails[] = ! empty($customer->customer) ? $customer->customer->business_contact : '';
+            if ($email_action->is_get_customer_business_contact) {
+                $emails[] = !empty($customer->customer) ? $customer->customer->business_contact : '';
             }
 
             if ($email_action->is_get_contact) {
