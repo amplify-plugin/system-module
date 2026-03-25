@@ -34,7 +34,7 @@ class StaticSitemapGenerateJob implements ShouldQueue
 
             $urlTag = Url::create($url)
                 ->setLastModificationDate($sitemap->updated_at)
-                ->setChangeFrequency($sitemap->changefreq ?? URL::CHANGE_FREQUENCY_MONTHLY)
+                ->setChangeFrequency($sitemap->changefreq ?? Url::CHANGE_FREQUENCY_MONTHLY)
                 ->setPriority($sitemap->priority ?? 0.5);
 
             if ($sitemap->sitemapTags()->exists()) {
@@ -42,16 +42,15 @@ class StaticSitemapGenerateJob implements ShouldQueue
                     $fields = $sitemapTag->fields;
                     switch ($sitemapTag->type) {
                         case 'image':
-                        {
+
                             $urlTag = $urlTag->addImage(
                                 url: $fields['url'] ?? '',
                                 caption: $fields['description'] ?? '',
                                 title: $fields['title'] ?? '');
                             break;
-                        }
 
                         case 'video':
-                        {
+
                             $urlTag = $urlTag->addVideo(
                                 thumbnailLoc: $fields['url'] ?? '',
                                 title: $fields['title'] ?? '',
@@ -64,13 +63,12 @@ class StaticSitemapGenerateJob implements ShouldQueue
                                 ]
                             );
                             break;
-                        }
 
                         case 'news':
-                        {
-//                        $urlTag = $urlTag->addNews(url: $fields['url'] ?? '', caption: $fields['description'] ?? '', title: $fields['title'] ?? '');
+
+                            //                        $urlTag = $urlTag->addNews(url: $fields['url'] ?? '', caption: $fields['description'] ?? '', title: $fields['title'] ?? '');
                             break;
-                        }
+
                     }
                 }
             }
@@ -78,7 +76,7 @@ class StaticSitemapGenerateJob implements ShouldQueue
             $sitemapFile->add($urlTag);
         }
 
-        $sitemapFile->writeToFile(public_path('sitemaps' . DIRECTORY_SEPARATOR . 'customs.xml'));
+        $sitemapFile->writeToFile(public_path('sitemaps'.DIRECTORY_SEPARATOR.'customs.xml'));
 
     }
 }

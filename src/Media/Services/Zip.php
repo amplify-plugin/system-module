@@ -95,7 +95,7 @@ class Zip
         // create or overwrite archive
         if ($this->zip->open(
             $this->createName(),
-            ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE
+            ZipArchive::OVERWRITE | ZipArchive::CREATE
         ) === true
         ) {
             // files processing

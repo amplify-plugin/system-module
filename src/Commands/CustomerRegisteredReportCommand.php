@@ -27,6 +27,7 @@ class CustomerRegisteredReportCommand extends Command
 
     /**
      * Execute the console command.
+     *
      * @throws \Exception
      */
     public function handle()
@@ -50,10 +51,10 @@ class CustomerRegisteredReportCommand extends Command
 
             NotificationFactory::call(Event::CUSTOMER_REGISTRATION_REPORT_GENERATED, [
                 'interval' => $interval,
-                'filepath' => Storage::disk('public')->path($filename)
+                'filepath' => Storage::disk('public')->path($filename),
             ]);
 
-            $this->info("Customer Registration From {$start} to {$end} generated on [". Storage::disk('public')->path($filename). "] completed.");
+            $this->info("Customer Registration From {$start} to {$end} generated on [".Storage::disk('public')->path($filename).'] completed.');
 
             return self::SUCCESS;
 
@@ -61,6 +62,7 @@ class CustomerRegisteredReportCommand extends Command
             $this->error($exception->getMessage());
             throw new \Exception($exception->getMessage(), $exception->getCode(), $exception);
         }
+
         return self::FAILURE;
     }
 }

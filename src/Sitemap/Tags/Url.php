@@ -8,11 +8,17 @@ use DateTimeInterface;
 class Url extends Tag
 {
     const CHANGE_FREQUENCY_ALWAYS = 'always';
+
     const CHANGE_FREQUENCY_HOURLY = 'hourly';
+
     const CHANGE_FREQUENCY_DAILY = 'daily';
+
     const CHANGE_FREQUENCY_WEEKLY = 'weekly';
+
     const CHANGE_FREQUENCY_MONTHLY = 'monthly';
+
     const CHANGE_FREQUENCY_YEARLY = 'yearly';
+
     const CHANGE_FREQUENCY_NEVER = 'never';
 
     public string $url;

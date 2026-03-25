@@ -203,8 +203,8 @@ trait OrderEmailFormatingTrait
             view(
                 'system::email.order.details',
                 [
-                    'details' => !empty($data['order']->erp_details) ? $data['order']->erp_details['OrderDetail'] : [],
-                    'warehouseCode' => $data['order']->erp_details['WarehouseID']
+                    'details' => ! empty($data['order']->erp_details) ? $data['order']->erp_details['OrderDetail'] : [],
+                    'warehouseCode' => $data['order']->erp_details['WarehouseID'],
                 ]
             )->render(),
             $data[$key]
@@ -246,13 +246,14 @@ trait OrderEmailFormatingTrait
 
         return $data;
     }
+
     private function getOrderDataByKey(array $data, $key, $fallBackKey = null): string
     {
         if (! empty($data[$key])) {
             return $data[$key];
         }
 
-        if (!empty($fallBackKey) && ! empty($data[$fallBackKey])) {
+        if (! empty($fallBackKey) && ! empty($data[$fallBackKey])) {
             return $data[$fallBackKey];
         }
 
@@ -261,8 +262,7 @@ trait OrderEmailFormatingTrait
 
     private function getOrderNote(array $data): string
     {
-        if (! empty($data['notes']))
-        {
+        if (! empty($data['notes'])) {
             return $data['notes'];
         }
 
@@ -283,6 +283,7 @@ trait OrderEmailFormatingTrait
 
                     $parsedNote = trim($text);
                 }
+
                 return $parsedNote;
             }
         } catch (\Exception $e) {
@@ -292,5 +293,3 @@ trait OrderEmailFormatingTrait
         return '';
     }
 }
-
-

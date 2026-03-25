@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 /**
  * @property EmailService $emailService
  * @property MessageService $messageService
- * @property \Amplify\System\Backend\Models\Event $eventInfo
+ * @property Event $eventInfo
  */
 class ContactAccountRequestReceivedJob implements ShouldQueue
 {

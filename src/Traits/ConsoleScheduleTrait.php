@@ -2,15 +2,19 @@
 
 namespace Amplify\System\Traits;
 
+use Amplify\System\Commands\CsdErpTokenRefreshCommand;
+use Illuminate\Console\Scheduling\Schedule;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 
 trait ConsoleScheduleTrait
 {
     /**
      * Define the application's command schedule.
      *
-     * @var \Illuminate\Console\Scheduling\Schedule $schedule
+     * @var Schedule
      */
-    protected function schedule(\Illuminate\Console\Scheduling\Schedule $schedule): void
+    protected function schedule(Schedule $schedule): void
     {
         $commands = config('amplify.schedule.commands', []);
 
@@ -28,23 +32,22 @@ trait ConsoleScheduleTrait
         }
 
         if (app()->environment('production', 'staging')) {
-            $schedule->command(\Amplify\System\Commands\CsdErpTokenRefreshCommand::class)
+            $schedule->command(CsdErpTokenRefreshCommand::class)
                 ->hourly()
-                ->when(fn() => config('amplify.erp.default', 'default') == 'csd-erp')
+                ->when(fn () => config('amplify.erp.default', 'default') == 'csd-erp')
                 ->withoutOverlapping()
                 ->onOneServer();
 
-            //Health Check Job
-            $schedule->command(\Spatie\Health\Commands\DispatchQueueCheckJobsCommand::class)
+            // Health Check Job
+            $schedule->command(DispatchQueueCheckJobsCommand::class)
                 ->everyTenMinutes()
                 ->onOneServer();
 
-            $schedule->command(\Spatie\Health\Commands\ScheduleCheckHeartbeatCommand::class)
+            $schedule->command(ScheduleCheckHeartbeatCommand::class)
                 ->everyTenMinutes()
                 ->onOneServer();
         }
     }
-
 
     private function getEnabledCommands(array $commands): array
     {

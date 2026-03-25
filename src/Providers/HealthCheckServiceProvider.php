@@ -42,7 +42,7 @@ class HealthCheckServiceProvider extends ServiceProvider
                         'indexed' => '1',
                         'ie' => 'utf-8',
                         'disp' => 'json',
-                        'dct' => config('amplify.sayt.dictionary.dictionary')
+                        'dct' => config('amplify.sayt.dictionary.dictionary'),
                     ]);
 
                 $port = config('amplify.sayt.dictionary.port');
@@ -51,7 +51,7 @@ class HealthCheckServiceProvider extends ServiceProvider
                     $url = $url->withPort($port);
                 }
 
-                return $this->url((string)$url);
+                return $this->url((string) $url);
             });
 
             Health::checks([
@@ -71,7 +71,7 @@ class HealthCheckServiceProvider extends ServiceProvider
                     ->driver('file'),
 
                 CpuLoadCheck::new()
-                    ->if(PHP_OS === "Linux"),
+                    ->if(PHP_OS === 'Linux'),
 
                 DatabaseCheck::new(),
 
@@ -124,7 +124,7 @@ class HealthCheckServiceProvider extends ServiceProvider
 
                 SslCertificateExpiredCheck::new()
                     ->if(Str::contains(config('app.url'), 'https://'))
-                    ->url(config('app.url'))
+                    ->url(config('app.url')),
 
             ]);
         }

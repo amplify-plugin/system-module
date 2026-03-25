@@ -31,18 +31,20 @@ class AuthServiceProvider extends ServiceProvider
                     return true;
                 }
 
-                //Continue Check
+                // Continue Check
                 setPermissionsTeamId(User::SYSTEM_TEAM_ID);
+
                 return null;
             }
 
             if ($user instanceof Contact) {
                 // Allow Everything
-                if (!config('amplify.basic.is_permission_system_enabled')) {
+                if (! config('amplify.basic.is_permission_system_enabled')) {
                     return true;
                 }
-                //Continue Check
+                // Continue Check
                 setPermissionsTeamId($user->customer()->id);
+
                 return null;
             }
 

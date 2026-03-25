@@ -2,6 +2,8 @@
 
 namespace Amplify\System\Jobs;
 
+use Amplify\ErpApi\Facades\ErpApi;
+use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\CustomerOrder;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
@@ -10,8 +12,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Amplify\System\Backend\Models\Contact;
-use Amplify\ErpApi\Facades\ErpApi;
 
 class QuotationReceivedJob implements ShouldQueue
 {

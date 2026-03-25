@@ -2,12 +2,14 @@
 
 namespace Amplify\System\Commands;
 
+use Backpack\CRUD\app\Console\Commands\Traits\PrettyCommandOutput;
+use Backpack\Generators\Services\BackpackCommand;
 use Illuminate\Support\Str;
 
 if (class_exists('Backpack\Generators\Services\BackpackCommand')) {
-    class CrudControllerBackpackCommand extends \Backpack\Generators\Services\BackpackCommand
+    class CrudControllerBackpackCommand extends BackpackCommand
     {
-        use \Backpack\CRUD\app\Console\Commands\Traits\PrettyCommandOutput;
+        use PrettyCommandOutput;
 
         /**
          * The console command name.

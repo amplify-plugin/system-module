@@ -56,13 +56,13 @@ class SetupEnvCommand extends Command
                 $this->packages = $this->modules;
             }
 
-            if (!is_dir(base_path($this->rootDir))) {
+            if (! is_dir(base_path($this->rootDir))) {
                 mkdir(base_path($this->rootDir));
             }
 
             $this->runGitOperation();
 
-            $this->info('[' . implode(',', $this->packages) . '] module(s) configured. Run `composer update` command to update class autoloader.');
+            $this->info('['.implode(',', $this->packages).'] module(s) configured. Run `composer update` command to update class autoloader.');
 
             return self::SUCCESS;
 
@@ -78,9 +78,9 @@ class SetupEnvCommand extends Command
     {
         foreach ($this->packages as $package) {
 
-            $directory = base_path($this->rootDir . DIRECTORY_SEPARATOR . $package);
+            $directory = base_path($this->rootDir.DIRECTORY_SEPARATOR.$package);
 
-            $this->info('Configuring: ' . Str::studly($package) . ' module into [.' . str_replace('\\', '/', str_replace(base_path(), '', $directory)) . ']');
+            $this->info('Configuring: '.Str::studly($package).' module into [.'.str_replace('\\', '/', str_replace(base_path(), '', $directory)).']');
 
             if (is_dir($directory) && $this->option('force', false)) {
                 $this->removeDir($directory);
@@ -92,7 +92,7 @@ class SetupEnvCommand extends Command
 
         $this->updateComposerFile();
 
-        shell_exec("composer update --no-cache");
+        shell_exec('composer update --no-cache');
     }
 
     private function updateComposerFile()
@@ -103,20 +103,21 @@ class SetupEnvCommand extends Command
 
         $repositories = $composer['repositories'] ?? [];
 
-        $repositories = array_filter($repositories, function ($item){
+        $repositories = array_filter($repositories, function ($item) {
             return in_array($item['type'], ['composer', 'vcs']);
         });
 
         foreach (scandir(base_path('packages')) as $package) {
-            if ($package === '.' || $package === '..')
+            if ($package === '.' || $package === '..') {
                 continue;
+            }
 
             $repositories[] = [
-                "type" => "path",
-                "url" => "./packages/{$package}",
-                "options" => [
-                    "symlink" => true
-                ]
+                'type' => 'path',
+                'url' => "./packages/{$package}",
+                'options' => [
+                    'symlink' => true,
+                ],
             ];
         }
 

@@ -132,13 +132,13 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
                 }
             });
 
-//        if ($this->product_id && $this->product_code) {
-//            $pExtsts = Product::where('product_code', $this->product_code)->where('id', '!=', $this->product_id)->exists();
-//
-//            if ($pExtsts) {
-//                throw new ErrorException('Product code can not be duplicated.');
-//            }
-//        }
+        //        if ($this->product_id && $this->product_code) {
+        //            $pExtsts = Product::where('product_code', $this->product_code)->where('id', '!=', $this->product_id)->exists();
+        //
+        //            if ($pExtsts) {
+        //                throw new ErrorException('Product code can not be duplicated.');
+        //            }
+        //        }
     }
 
     protected function handleCreateOperation($aCsv): void

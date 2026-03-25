@@ -5,13 +5,12 @@ namespace Amplify\System\Checks\SslCertificate;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
 use Spatie\SslCertificate\SslCertificate;
+
 class SslCertificateValidityCheck extends Check
 {
     public ?string $url = null;
 
     /**
-     * @param string $url
-     *
      * @return $this
      */
     public function url(string $url): self
@@ -21,9 +20,6 @@ class SslCertificateValidityCheck extends Check
         return $this;
     }
 
-    /**
-     * @return Result
-     */
     public function run(): Result
     {
         if ($this->url === null) {

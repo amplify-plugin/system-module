@@ -61,7 +61,7 @@ trait ExceptionHandlerTrait
         try {
             if (app()->environment('production')) {
                 $support_mails = config('amplify.developer.bug_recipient', []);
-                if (!empty($support_mails)) {
+                if (! empty($support_mails)) {
 
                     $content['message'] = $throwable->getMessage();
                     $content['file'] = $throwable->getFile();

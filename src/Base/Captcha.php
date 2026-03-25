@@ -11,7 +11,6 @@ use Illuminate\Session\Store as Session;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 use Intervention\Image\Gd\Font;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
@@ -201,7 +200,7 @@ class Captcha
             }, $this->fonts);
         }
 
-        $this->fonts = array_values($this->fonts); //reset fonts array index
+        $this->fonts = array_values($this->fonts); // reset fonts array index
 
         $this->configure($config);
 
@@ -484,7 +483,7 @@ class Captcha
         $attrs['class'] = 'img-fluid rounded';
         foreach ($attrs as $attr => $value) {
             if ($attr == 'src') {
-                //Neglect src attribute
+                // Neglect src attribute
                 continue;
             }
 

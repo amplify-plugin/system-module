@@ -1,5 +1,7 @@
 <?php
 
+use Amplify\System\Backend\Services\PunchOutApi\TradeCentricApiService;
+
 return [
     'default' => env('DEFAULT_PUNCHOUT', 'default'),
     'enabled' => true,
@@ -9,14 +11,14 @@ return [
     ],
     'configurations' => [
         'default' => [
-            'adapter' => \Amplify\System\Backend\Services\PunchOutApi\TradeCentricApiService::class,
+            'adapter' => TradeCentricApiService::class,
             'url' => '',
             'username' => '',
             'password' => '',
             'enabled' => true,
         ],
         'trade-centric' => [
-            'adapter' => \Amplify\System\Backend\Services\PunchOutApi\TradeCentricApiService::class,
+            'adapter' => TradeCentricApiService::class,
             'url' => 'https://connect.tradecentric.com',
             'username' => '',
             'password' => '',

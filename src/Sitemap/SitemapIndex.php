@@ -6,20 +6,21 @@ use Amplify\System\Sitemap\Tags\Sitemap;
 use Amplify\System\Sitemap\Tags\Tag;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
-class SitemapIndex implements Responsable, Renderable
+class SitemapIndex implements Renderable, Responsable
 {
-    /** @var \Amplify\System\Sitemap\Tags\Sitemap[] */
+    /** @var Sitemap[] */
     protected array $tags = [];
 
     public static function create(): static
     {
-        return new static();
+        return new static;
     }
 
-    public function add(string | Sitemap $tag): static
+    public function add(string|Sitemap $tag): static
     {
         if (is_string($tag)) {
             $tag = Sitemap::create($tag);
@@ -70,7 +71,7 @@ class SitemapIndex implements Responsable, Renderable
     /**
      * Create an HTTP response that represents the object.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function toResponse($request)

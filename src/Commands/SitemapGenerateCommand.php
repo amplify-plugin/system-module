@@ -43,7 +43,7 @@ class SitemapGenerateCommand extends Command
 
             $jobs = [
                 new CategoryGenerateJob($categoryDepth),
-                new StaticSitemapGenerateJob(),
+                new StaticSitemapGenerateJob,
             ];
 
             $chunkIndex = 0;
@@ -57,17 +57,17 @@ class SitemapGenerateCommand extends Command
 
             Bus::batch($jobs)
                 ->before(function (Batch $batch) {
-                    $gitIgnoreFile = public_path('sitemaps' . DIRECTORY_SEPARATOR . '.gitignore');
-                    if (!file_exists($gitIgnoreFile)) {
+                    $gitIgnoreFile = public_path('sitemaps'.DIRECTORY_SEPARATOR.'.gitignore');
+                    if (! file_exists($gitIgnoreFile)) {
                         mkdir(dirname($gitIgnoreFile), 777, true);
-                        file_put_contents($gitIgnoreFile, <<<HTML
+                        file_put_contents($gitIgnoreFile, <<<'HTML'
 *
 !.gitignore
 
 HTML
                         );
                     } else {
-                        $files = glob(public_path('sitemaps'. DIRECTORY_SEPARATOR . '*.xml'));
+                        $files = glob(public_path('sitemaps'.DIRECTORY_SEPARATOR.'*.xml'));
                         foreach ($files as $file) {
                             @unlink($file);
                         }
@@ -75,14 +75,14 @@ HTML
                 })
                 ->catch(function (Batch $batch, Throwable $e) {
                     logger()->error($e);
-                    throw_if(!app()->isProduction(), $e);
+                    throw_if(! app()->isProduction(), $e);
                 })
                 ->finally(function (Batch $batch) {
                     $sitemapIndex = SitemapIndex::create();
-                    $entries = glob(public_path('sitemaps' . DIRECTORY_SEPARATOR . '*.xml'));
+                    $entries = glob(public_path('sitemaps'.DIRECTORY_SEPARATOR.'*.xml'));
                     foreach ($entries as $entry) {
                         $sitemapIndex->add(
-                            SitemapTag::create(\url('sitemaps/' . basename($entry)))
+                            SitemapTag::create(\url('sitemaps/'.basename($entry)))
                                 ->setLastModificationDate(
                                     Carbon::createFromTimestamp(filemtime($entry))
                                 )
@@ -97,6 +97,7 @@ HTML
 
         } catch (\Exception $exception) {
             $this->error($exception);
+
             return self::FAILURE;
         }
     }

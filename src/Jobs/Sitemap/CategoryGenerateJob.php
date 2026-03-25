@@ -19,9 +19,7 @@ class CategoryGenerateJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public int $depth = 1)
-    {
-    }
+    public function __construct(public int $depth = 1) {}
 
     /**
      * Execute the job.
@@ -39,10 +37,10 @@ class CategoryGenerateJob implements ShouldQueue
             $categories[] = [
                 'name' => $node->getName(),
                 'path' => $node->getSEOPath(),
-                'image' => $node->getImage()
+                'image' => $node->getImage(),
             ];
             $subs = $node->getSubCategories();
-            if (!empty($subs)) {
+            if (! empty($subs)) {
                 $this->collectCategories($subs, $categories);
             }
         }
@@ -59,20 +57,20 @@ class CategoryGenerateJob implements ShouldQueue
             );
         }
 
-        $sitemap->writeToFile(public_path('sitemaps' . DIRECTORY_SEPARATOR . 'categories.xml'));
+        $sitemap->writeToFile(public_path('sitemaps'.DIRECTORY_SEPARATOR.'categories.xml'));
     }
 
     private function collectCategories($nodes, &$cat = []): void
     {
-        if (!empty($nodes)) {
+        if (! empty($nodes)) {
             foreach ($nodes as $node) {
                 $cat[] = [
                     'name' => $node->getName(),
                     'path' => $node->getSEOPath(),
-                    'image' => $node->getImage()
+                    'image' => $node->getImage(),
                 ];
                 $subs = $node->getSubCategories();
-                if (!empty($subs)) {
+                if (! empty($subs)) {
                     $this->collectCategories($node->getSubCategories(), $cat);
                 }
             }

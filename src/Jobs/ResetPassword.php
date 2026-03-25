@@ -44,7 +44,6 @@ class ResetPassword implements ShouldQueue
 
         foreach ($this->eventInfo->eventActions as $eventAction) {
 
-
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
                 $this->emailService->resetPasswordEmailToContact($eventAction, $this->otp, $contact);
             }

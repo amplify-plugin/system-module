@@ -19,9 +19,7 @@ class ProductGenerateJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public int $chunk = 1, public array $ids = [])
-    {
-    }
+    public function __construct(public int $chunk = 1, public array $ids = []) {}
 
     /**
      * Execute the job.
@@ -34,23 +32,23 @@ class ProductGenerateJob implements ShouldQueue
 
             $urlTag = Url::create(frontendSingleProductURL($product));
 
-            if (!empty($product?->productImage?->main)) {
+            if (! empty($product?->productImage?->main)) {
                 $urlTag = $urlTag->addImage(url: $product->productImage->main, caption: "{$product->product_name} View Image", title: $product->product_name);
             }
 
-            if (!empty($product?->productImage?->thumbnail)) {
+            if (! empty($product?->productImage?->thumbnail)) {
                 $urlTag = $urlTag->addImage(url: $product->productImage->thumbnail, caption: "{$product->product_name} Thumbnail Image", title: $product->product_name);
             }
 
-            if (!empty($product?->productImage?->small)) {
+            if (! empty($product?->productImage?->small)) {
                 $urlTag = $urlTag->addImage(url: $product->productImage->small, caption: "{$product->product_name} Small Image", title: $product->product_name);
             }
 
-            if (!empty($product?->productImage?->medium)) {
+            if (! empty($product?->productImage?->medium)) {
                 $urlTag = $urlTag->addImage(url: $product->productImage->medium, caption: "{$product->product_name} Medium Image", title: $product->product_name);
             }
 
-            if (!empty($product?->productImage?->large)) {
+            if (! empty($product?->productImage?->large)) {
                 $urlTag = $urlTag->addImage(url: $product->productImage->large, caption: "{$product->product_name} Large Image", title: $product->product_name);
             }
 
@@ -61,6 +59,6 @@ class ProductGenerateJob implements ShouldQueue
             $sitemapFile->add($urlTag);
         }
 
-        $sitemapFile->writeToFile(public_path('sitemaps' . DIRECTORY_SEPARATOR . "products-{$this->chunk}.xml"));
+        $sitemapFile->writeToFile(public_path('sitemaps'.DIRECTORY_SEPARATOR."products-{$this->chunk}.xml"));
     }
 }

@@ -9,7 +9,6 @@ use Illuminate\Support\ServiceProvider;
 
 class ValidationServiceProvider extends ServiceProvider
 {
-
     public function register()
     {
         $this->app->bind('captcha', function ($app) {
@@ -17,6 +16,7 @@ class ValidationServiceProvider extends ServiceProvider
         });
 
     }
+
     public function boot(): void
     {
         Validator::extend('phone_number', function ($attribute, $value, $parameters, $validator) {
@@ -36,7 +36,6 @@ class ValidationServiceProvider extends ServiceProvider
          * | 00150      | 🇮🇹 Italy       |
          * | 110001     | 🇮🇳 India       |
          */
-
         Validator::extend('postal_code', function ($attribute, $value, $parameters, $validator) {
             return preg_match('/^(?:[A-Z]{2,3}[\-\s])?[A-Za-z0-9][A-Za-z0-9\s\-]{2,10}[A-Za-z0-9]$/i', $value);
         }, 'The :attribute must be a valid postal code.');

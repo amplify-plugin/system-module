@@ -14,9 +14,7 @@ trait Overwritable
     /**
      * Register a custom overwrite.
      *
-     * @param string $name
-     * @param $overwrite
-     * @return void
+     * @param  string  $name
      */
     public static function overwrite($name, $overwrite): void
     {
@@ -33,5 +31,4 @@ trait Overwritable
 
         return $overwrite(...$parameters);
     }
-
 }

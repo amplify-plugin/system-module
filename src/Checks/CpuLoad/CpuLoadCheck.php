@@ -8,7 +8,9 @@ use Spatie\Health\Checks\Result;
 class CpuLoadCheck extends Check
 {
     protected ?float $failWhenLoadIsHigherInTheLastMinute = null;
+
     protected ?float $failWhenLoadIsHigherInTheLast5Minutes = null;
+
     protected ?float $failWhenLoadIsHigherInTheLast15Minutes = null;
 
     public function failWhenLoadIsHigherInTheLastMinute(float $load): self

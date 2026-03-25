@@ -26,13 +26,13 @@ class UpgradeIssueFix extends Command
      */
     public function handle()
     {
-        $this->components->task("Fixing Placeholder Image Issue", function () {
+        $this->components->task('Fixing Placeholder Image Issue', function () {
             DB::table('system_configurations')->where('name', '=', 'frontend')
                 ->where('option', '=', 'fallback_image_path')
                 ->delete();
         });
 
-        $this->components->task("Fixing Permission Model Namespace Issue", function () {
+        $this->components->task('Fixing Permission Model Namespace Issue', function () {
             DB::table('model_has_roles')
                 ->where('model_type', 'App\\Models\\User')
                 ->update(['model_type' => 'Amplify\\System\\Backend\\Models\\User']);
@@ -50,37 +50,37 @@ class UpgradeIssueFix extends Command
                 ->update(['model_type' => 'Amplify\\System\\Backend\\Models\\Contact']);
         });
 
-        if ($this->components->confirm("Did you Setup the Storage Configuration in .Env", true)) {
-            $this->components->task("Removing Storage Configuration from DB", function () {
+        if ($this->components->confirm('Did you Setup the Storage Configuration in .Env', true)) {
+            $this->components->task('Removing Storage Configuration from DB', function () {
                 DB::table('system_configurations')->where('name', '=', 'storage')
                     ->delete();
             });
         } else {
-            $this->components->info("Please Configure the storage configuration in .env and remove it from `system_configurations` table.");
+            $this->components->info('Please Configure the storage configuration in .env and remove it from `system_configurations` table.');
         }
 
-        if ($this->components->confirm("Did you Setup the Email Configuration in .Env", true)) {
-            $this->components->task("Removing Email Configuration from DB", function () {
+        if ($this->components->confirm('Did you Setup the Email Configuration in .Env', true)) {
+            $this->components->task('Removing Email Configuration from DB', function () {
                 DB::table('system_configurations')
                     ->where('name', '=', 'email')
                     ->delete();
             });
         } else {
-            $this->components->info("Please Configure the storage configuration in .env and remove it from `system_configurations` table.");
+            $this->components->info('Please Configure the storage configuration in .env and remove it from `system_configurations` table.');
         }
 
-        $this->components->task("Removing Goggle, Icecat,Incremental Update,Messages,prop65,punchout,Report Configuration from DB", function () {
-            DB::table('system_configurations')->whereIn('name',  ['google', 'icecat', 'icu', 'messages', 'prop65', 'punchout', 'report'])
+        $this->components->task('Removing Goggle, Icecat,Incremental Update,Messages,prop65,punchout,Report Configuration from DB', function () {
+            DB::table('system_configurations')->whereIn('name', ['google', 'icecat', 'icu', 'messages', 'prop65', 'punchout', 'report'])
                 ->delete();
         });
 
-        if ($this->components->confirm("Did you Setup the EasyAsk Search Configuration in .Env", true)) {
-            $this->components->task("Configuration Search Configuration", function () {
+        if ($this->components->confirm('Did you Setup the EasyAsk Search Configuration in .Env', true)) {
+            $this->components->task('Configuration Search Configuration', function () {
                 DB::table('system_configurations')->whereIn('name', ['search', 'sayt'])
                     ->delete();
             });
         } else {
-            $this->components->info("Please Configure the EasyAsk Search configuration in .env and remove it from `system_configurations` table.");
+            $this->components->info('Please Configure the EasyAsk Search configuration in .env and remove it from `system_configurations` table.');
         }
     }
 }

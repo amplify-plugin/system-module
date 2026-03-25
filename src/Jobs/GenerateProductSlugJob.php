@@ -17,9 +17,7 @@ class GenerateProductSlugJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public array $ids = [])
-    {
-    }
+    public function __construct(public array $ids = []) {}
 
     /**
      * Execute the job.
@@ -28,14 +26,14 @@ class GenerateProductSlugJob implements ShouldQueue
      */
     public function handle()
     {
-        if (!empty($this->ids)) {
+        if (! empty($this->ids)) {
             foreach (Product::select('id', 'product_name', 'product_slug')->whereIn('id', $this->ids)->cursor() as $product) {
 
                 $base = generate_product_slug($product->product_name);
 
-                if (config('amplify.client_code') != "STV") {
+                if (config('amplify.client_code') != 'STV') {
                     do {
-                        $slug = $base . '-' . Str::lower(Str::random(6));
+                        $slug = $base.'-'.Str::lower(Str::random(6));
                         $exists = Product::select('id', 'product_slug')->where('product_slug', $slug)->exists();
                     } while ($exists);
                 } else {

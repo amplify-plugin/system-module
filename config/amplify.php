@@ -14,5 +14,5 @@ return [
         AddToCart\MinOrderQuantity::class,
         AddToCart\OnlyStandardPackSize::class,
         AddToCart\AllowBackOrder::class,
-    ]
+    ],
 ];

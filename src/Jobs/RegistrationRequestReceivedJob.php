@@ -24,12 +24,14 @@ class RegistrationRequestReceivedJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, NotificationEventTrait, Queueable, SerializesModels;
 
     public $customerId;
+
     public $contactId;
 
     /**
      * Create a new job instance.
      *
      * @return void
+     *
      * @throws \Exception
      */
     public function __construct($event_code, $args = [])
@@ -39,7 +41,7 @@ class RegistrationRequestReceivedJob implements ShouldQueue
         $this->contactId = $args['contact_id'] ?? null;
 
         if (empty($this->customerId) || empty($this->contactId)) {
-            throw new \Exception("Customer ID or Contact ID is required");
+            throw new \Exception('Customer ID or Contact ID is required');
         }
     }
 

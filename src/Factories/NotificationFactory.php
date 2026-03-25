@@ -25,13 +25,14 @@ use Amplify\System\Jobs\RegistrationRequestAcceptedJob;
 use Amplify\System\Jobs\RegistrationRequestReceivedJob;
 use Amplify\System\Jobs\ResetPassword;
 use Amplify\System\Jobs\TicketCreatedNotifyJob;
+use Amplify\Wishlist\Jobs\WishlistProductRestockedJob;
 use Illuminate\Support\Facades\Log;
 
 class NotificationFactory
 {
     /**
-     * @param array|string $e_code
-     * @param mixed $args
+     * @param  array|string  $e_code
+     * @param  mixed  $args
      * @return void
      */
     public static function call($e_code, $args)
@@ -46,7 +47,7 @@ class NotificationFactory
     }
 
     /**
-     * @param mixed $args
+     * @param  mixed  $args
      * @return void
      */
     public static function callIf(bool $condition, $event_code, $args)
@@ -177,8 +178,8 @@ class NotificationFactory
                 break;
 
             case Event::WISHLIST_PRODUCT_RESTOCKED:
-                if (class_exists(\Amplify\Wishlist\Jobs\WishlistProductRestockedJob::class)) {
-                    \Amplify\Wishlist\Jobs\WishlistProductRestockedJob::dispatch($event_code, $args);
+                if (class_exists(WishlistProductRestockedJob::class)) {
+                    WishlistProductRestockedJob::dispatch($event_code, $args);
                 } else {
                     Log::error('Wishlist Plugin Not Installed');
                 }

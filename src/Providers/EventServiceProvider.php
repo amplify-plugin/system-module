@@ -17,17 +17,17 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array
      */
-        protected $listen = [
-            JobProcessing::class => [
-                QueueBeforeListener::class,
-            ],
-            JobProcessed::class => [
-                QueueAfterListener::class,
-            ],
-            JobFailed::class => [
-                QueueFailedListener::class,
-            ],
-        ];
+    protected $listen = [
+        JobProcessing::class => [
+            QueueBeforeListener::class,
+        ],
+        JobProcessed::class => [
+            QueueAfterListener::class,
+        ],
+        JobFailed::class => [
+            QueueFailedListener::class,
+        ],
+    ];
 
     /**
      * Register any events for your application.

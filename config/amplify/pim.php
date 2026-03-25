@@ -29,6 +29,6 @@ return [
         'archived' => 'Archived',
     ],
     'unit_of_measurements' => [
-        ['code' => 'ea', 'label' => 'Each']
-    ]
+        ['code' => 'ea', 'label' => 'Each'],
+    ],
 ];

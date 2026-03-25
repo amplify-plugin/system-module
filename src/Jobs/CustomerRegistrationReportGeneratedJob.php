@@ -2,8 +2,6 @@
 
 namespace Amplify\System\Jobs;
 
-use Amplify\System\Backend\Models\Customer;
-use Amplify\System\Backend\Models\Product;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,7 +34,7 @@ class CustomerRegistrationReportGeneratedJob implements ShouldQueue
             '__interval_in_days__' => $this->data['interval'],
             '__report_start_date__' => now()->subDays($this->data['interval'])->format(config('amplify.basic.date_time_format')),
             '__report_end_date__' => now()->format(config('amplify.basic.date_time_format')),
-            'attachments' => [$this->data['filepath']]
+            'attachments' => [$this->data['filepath']],
         ];
 
         foreach ($this->eventInfo->eventActions as $eventAction) {

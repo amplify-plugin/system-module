@@ -2,22 +2,29 @@
 
 namespace Amplify\System\Marketing\Http\Controllers;
 
-use Amplify\System\Marketing\Http\Request\SubscriberRequest;
 use Amplify\System\Abstracts\BackpackCustomCrudController;
+use Amplify\System\Marketing\Http\Request\SubscriberRequest;
+use Amplify\System\Marketing\Models\Subscriber;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
  * Class SubscriberCrudController
  *
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ * @property-read CrudPanel $crud
  */
 class SubscriberCrudController extends BackpackCustomCrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use CreateOperation;
+    use DeleteOperation;
+    use ListOperation;
+    use ShowOperation;
+    use UpdateOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -26,7 +33,7 @@ class SubscriberCrudController extends BackpackCustomCrudController
      */
     public function setup()
     {
-        CRUD::setModel(\Amplify\System\Marketing\Models\Subscriber::class);
+        CRUD::setModel(Subscriber::class);
         CRUD::setRoute(config('backpack.base.route_prefix').'/subscriber');
         CRUD::setEntityNameStrings('subscriber', 'subscribers');
     }
