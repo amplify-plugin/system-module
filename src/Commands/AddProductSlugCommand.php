@@ -29,7 +29,8 @@ class AddProductSlugCommand extends Command
      * Execute the console command.
      *
      * @return int
-     * @throws \Throwable
+     *
+     * @throws Throwable
      */
     public function handle()
     {
@@ -47,7 +48,7 @@ class AddProductSlugCommand extends Command
             Bus::batch($jobs)
                 ->catch(function (Batch $batch, Throwable $e) {
                     logger()->error($e);
-                    throw_if(!app()->isProduction(), $e);
+                    throw_if(! app()->isProduction(), $e);
                 })
                 ->onQueue('worker')
                 ->dispatch();
@@ -55,6 +56,7 @@ class AddProductSlugCommand extends Command
             return self::SUCCESS;
         } catch (\Exception $exception) {
             $this->error($exception);
+
             return self::FAILURE;
         }
     }

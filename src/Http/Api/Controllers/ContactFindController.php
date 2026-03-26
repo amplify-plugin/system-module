@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Http\Api\Controllers;
 
-use Amplify\System\Http\Api\Resources\ContactResource;
 use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Http\Api\Resources\ContactResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;

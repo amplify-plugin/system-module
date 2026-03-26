@@ -26,7 +26,7 @@ class DataPreparation implements AddToCart
             $uniqueCodes = [];
 
             foreach ($data['items'] as $product) {
-                if (!empty($product['product_code'])) {
+                if (! empty($product['product_code'])) {
                     $uniqueCodes[$product['product_code']] = true;
                 }
             }
@@ -43,13 +43,13 @@ class DataPreparation implements AddToCart
 
             $fallbackImage = config('amplify.frontend.fallback_image_path');
 
-            if (!Str::contains($fallbackImage, 'http')) {
+            if (! Str::contains($fallbackImage, 'http')) {
                 $fallbackImage = asset($fallbackImage);
             }
 
             $invalidProducts = [];
             foreach ($data['items'] ?? [] as $index => $item) {
-                if (!isset($item['additional_info'])) {
+                if (! isset($item['additional_info'])) {
                     $item['additional_info'] = [];
                 }
                 /**
@@ -124,11 +124,11 @@ class DataPreparation implements AddToCart
     {
         $warehouseCode = $item['product_warehouse_code'] ?? '';
 
-        if (!empty($warehouseCode)) {
+        if (! empty($warehouseCode)) {
             return $warehouseCode;
         }
 
-        if (!customer_check()) {
+        if (! customer_check()) {
             return config('amplify.frontend.guest_checkout_warehouse');
         }
 

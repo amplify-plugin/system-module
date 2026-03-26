@@ -92,4 +92,3 @@ Route::group([
     Route::get('fm-button', 'FileManagerController@fmButton')
         ->name('fm.fm-button');
 });
-

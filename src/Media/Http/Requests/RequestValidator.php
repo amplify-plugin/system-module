@@ -3,6 +3,7 @@
 namespace Amplify\System\Media\Http\Requests;
 
 use Amplify\System\Media\Services\ConfigService\ConfigRepository;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Foundation\Http\FormRequest;
 use Storage;
 
@@ -58,7 +59,7 @@ class RequestValidator extends FormRequest
     /**
      * Not found message
      *
-     * @return array|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|Translator|string|null
      */
     public function message()
     {

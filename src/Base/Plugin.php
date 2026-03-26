@@ -4,8 +4,8 @@ namespace Amplify\System\Base;
 
 use Illuminate\Support\ServiceProvider;
 
-class Plugin extends ServiceProvider {
-
+class Plugin extends ServiceProvider
+{
     public function widgets(): array
     {
         return [];
@@ -16,10 +16,7 @@ class Plugin extends ServiceProvider {
         return [];
     }
 
-    public function permissions()
-    {
-
-    }
+    public function permissions() {}
 
     public function schedules()
     {
@@ -33,17 +30,9 @@ class Plugin extends ServiceProvider {
         return [];
     }
 
-    public function routes($route) : void
-    {
+    public function routes($route): void {}
 
-    }
+    public function register() {}
 
-    public function register()
-    {
-
-    }
-    public function boot()
-    {
-
-    }
+    public function boot() {}
 }

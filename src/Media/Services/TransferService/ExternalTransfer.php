@@ -3,6 +3,7 @@
 namespace Amplify\System\Media\Services\TransferService;
 
 use Amplify\System\Media\Traits\PathTrait;
+use League\Flysystem\FileExistsException;
 use League\Flysystem\MountManager;
 use Storage;
 
@@ -31,7 +32,7 @@ class ExternalTransfer extends Transfer
     /**
      * Copy files and folders
      *
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      */
     protected function copy()
     {
@@ -52,7 +53,7 @@ class ExternalTransfer extends Transfer
     /**
      * Cut files and folders
      *
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      */
     protected function cut()
     {
@@ -78,7 +79,7 @@ class ExternalTransfer extends Transfer
      * Copy directory to another disk
      *
      *
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      */
     protected function copyDirectoryToDisk($directory)
     {
@@ -110,7 +111,7 @@ class ExternalTransfer extends Transfer
      * Copy files to disk
      *
      *
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      */
     protected function copyToDisk($filePath, $newPath)
     {

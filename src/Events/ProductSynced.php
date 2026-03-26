@@ -10,8 +10,6 @@ class ProductSynced
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public array $syncData = [])
-    {
-    }
+    public function __construct(public array $syncData = []) {}
 
 }

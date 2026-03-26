@@ -6,20 +6,21 @@ use Amplify\System\Contracts\Sitemapable;
 use Amplify\System\Sitemap\Tags\Url;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
-class Sitemap implements Responsable, Renderable
+class Sitemap implements Renderable, Responsable
 {
     /** @var Url[] */
     protected array $tags = [];
 
     public static function create(): static
     {
-        return new static();
+        return new static;
     }
 
-    public function add(string | Url | Sitemapable | iterable $tag): static
+    public function add(string|Url|Sitemapable|iterable $tag): static
     {
         if (is_object($tag) && array_key_exists(Sitemapable::class, class_implements($tag))) {
             $tag = $tag->toSitemapTag();
@@ -93,7 +94,7 @@ class Sitemap implements Responsable, Renderable
     /**
      * Create an HTTP response that represents the object.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function toResponse($request)

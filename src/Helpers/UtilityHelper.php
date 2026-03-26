@@ -5,6 +5,8 @@ namespace Amplify\System\Helpers;
 use Amplify\System\Backend\Models\Category;
 use Amplify\System\Backend\Models\CategoryProduct;
 use Amplify\System\Backend\Models\Product;
+use Illuminate\Support\Facades\App;
+use Spatie\Honeypot\Honeypot;
 
 class UtilityHelper
 {
@@ -99,7 +101,7 @@ class UtilityHelper
 
     public static function honeypot(): array
     {
-        return \Illuminate\Support\Facades\App::make(\Spatie\Honeypot\Honeypot::class)->toArray();
+        return App::make(Honeypot::class)->toArray();
     }
 
     /**
@@ -376,7 +378,7 @@ class UtilityHelper
                             $attributeIds[] = (int) $attrId;
                         }
                     }
-                } //only for first time
+                } // only for first time
 
                 $skuUrl = $itemNode->getAttribute('URL');
                 $skuProductCodes[] = collect(explode('/', $skuUrl))->last();

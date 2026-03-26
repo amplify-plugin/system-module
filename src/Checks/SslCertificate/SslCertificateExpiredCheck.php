@@ -5,15 +5,16 @@ namespace Amplify\System\Checks\SslCertificate;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
 use Spatie\SslCertificate\SslCertificate;
+
 class SslCertificateExpiredCheck extends Check
 {
     public ?string $url = null;
+
     protected int $warningThreshold = 20;
+
     protected int $errorThreshold = 14;
 
     /**
-     * @param int $day
-     *
      * @return $this
      */
     public function warnWhenSslCertificationExpiringDay(int $day): self
@@ -24,8 +25,6 @@ class SslCertificateExpiredCheck extends Check
     }
 
     /**
-     * @param int $day
-     *
      * @return $this
      */
     public function failWhenSslCertificationExpiringDay(int $day): self
@@ -36,8 +35,6 @@ class SslCertificateExpiredCheck extends Check
     }
 
     /**
-     * @param string $url
-     *
      * @return $this
      */
     public function url(string $url): self
@@ -47,9 +44,6 @@ class SslCertificateExpiredCheck extends Check
         return $this;
     }
 
-    /**
-     * @return Result
-     */
     public function run(): Result
     {
         if ($this->url === null) {
@@ -61,7 +55,7 @@ class SslCertificateExpiredCheck extends Check
 
         $result = Result::make()
             ->meta(['days_until_expired' => $daysUntilExpired])
-            ->shortSummary($daysUntilExpired . ' days until');
+            ->shortSummary($daysUntilExpired.' days until');
 
         if ($certificate->isExpired()) {
             return $result->failed('The certificate has expired');

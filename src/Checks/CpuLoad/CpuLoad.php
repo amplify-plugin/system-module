@@ -28,6 +28,5 @@ class CpuLoad
         public float $lastMinute,
         public float $last5Minutes,
         public float $last15Minutes,
-    ) {
-    }
+    ) {}
 }

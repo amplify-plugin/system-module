@@ -13,9 +13,9 @@ use Amplify\System\Providers\AuthServiceProvider;
 use Amplify\System\Providers\BladeServiceProvider;
 use Amplify\System\Providers\CommandServiceProvider;
 use Amplify\System\Providers\EventServiceProvider;
+use Amplify\System\Providers\FileManagerServiceProvider;
 use Amplify\System\Providers\HealthCheckServiceProvider;
 use Amplify\System\Providers\ValidationServiceProvider;
-use Amplify\System\Providers\FileManagerServiceProvider;
 use Amplify\System\Support\AssetsLoader;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
@@ -29,10 +29,10 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/amplify.php', 'amplify');
+        $this->mergeConfigFrom(__DIR__.'/../config/amplify.php', 'amplify');
 
-        foreach (glob(__DIR__ . '/../config/amplify/*.php') as $file) {
-            $this->mergeConfigFrom($file, "amplify.".basename($file, '.php'));
+        foreach (glob(__DIR__.'/../config/amplify/*.php') as $file) {
+            $this->mergeConfigFrom($file, 'amplify.'.basename($file, '.php'));
         }
 
         $this->app->register(AuthServiceProvider::class);
@@ -49,7 +49,7 @@ class SystemServiceProvider extends ServiceProvider
 
         $this->app->register(FileManagerServiceProvider::class);
 
-        $this->app->singleton(AssetsLoader::class, fn() => new AssetsLoader);
+        $this->app->singleton(AssetsLoader::class, fn () => new AssetsLoader);
     }
 
     /**
@@ -59,26 +59,26 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'system');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'system');
 
-        $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
-        $this->loadRoutesFrom(__DIR__ . '/../routes/backend.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/backend.php');
 
         $this->publishes([
-            __DIR__ . '/../resources/views' => resource_path('views/vendor/amplify/system'),
+            __DIR__.'/../resources/views' => resource_path('views/vendor/amplify/system'),
         ], 'system-view');
 
         $this->publishes([
-            __DIR__ . '/../config/amplify.php' => config_path('amplify.php'),
+            __DIR__.'/../config/amplify.php' => config_path('amplify.php'),
         ], 'amplify-config');
 
-        foreach (glob(__DIR__ . '/../config/amplify/*.php') as $file) {
+        foreach (glob(__DIR__.'/../config/amplify/*.php') as $file) {
             $this->publishes([
-                $file => config_path('amplify/'. basename($file)),
-            ], "amplify-". basename($file, '.php')."-config");
+                $file => config_path('amplify/'.basename($file)),
+            ], 'amplify-'.basename($file, '.php').'-config');
         }
 
         AliasLoader::getInstance()->alias('Asset', AssetsFacade::class);
@@ -93,5 +93,4 @@ class SystemServiceProvider extends ServiceProvider
         Category::observe(CategoryObserver::class);
         Attribute::observe(AttributeObserver::class);
     }
-
 }

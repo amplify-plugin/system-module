@@ -2,7 +2,9 @@
 
 namespace Amplify\System\Marketing\Models;
 
+use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Backend\Models\Product;
+use Amplify\System\Cms\Models\BannerZone;
 use Amplify\System\Cms\Models\Page;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -94,7 +96,7 @@ class Campaign extends Model implements Auditable
 
     public function customers(): BelongsToMany
     {
-        return $this->belongsToMany(\Amplify\System\Backend\Models\Customer::class, CampaignProduct::class)
+        return $this->belongsToMany(Customer::class, CampaignProduct::class)
             ->withTimestamps();
     }
 
@@ -105,7 +107,7 @@ class Campaign extends Model implements Auditable
 
     public function bannerZone(): BelongsTo
     {
-        return $this->belongsTo(\Amplify\System\Cms\Models\BannerZone::class);
+        return $this->belongsTo(BannerZone::class);
     }
 
     /*

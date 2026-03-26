@@ -5,6 +5,7 @@ namespace Amplify\System\Jobs;
 use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Event;
 use Amplify\System\Backend\Traits\NotificationEventTrait;
+use Amplify\System\Services\EmailService;
 use Amplify\System\Services\MessageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,9 +14,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * @property \Amplify\System\Services\EmailService $emailService
+ * @property EmailService $emailService
  * @property MessageService $messageService
- * @property \Amplify\System\Backend\Models\Event $eventInfo
+ * @property Event $eventInfo
  */
 class ContactAccountRequestVerificationJob implements ShouldQueue
 {

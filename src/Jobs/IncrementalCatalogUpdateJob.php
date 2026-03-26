@@ -189,7 +189,7 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
 
         return [
             'product_name' => $jsonData['name'] ?? $this->getFallBackProductNameOrShortDescription($jsonData),
-            //'short_description' => $jsonData['short_description'] ?? $this->getFallBackProductNameOrShortDescription($jsonData),
+            // 'short_description' => $jsonData['short_description'] ?? $this->getFallBackProductNameOrShortDescription($jsonData),
             'description' => $jsonData['long_description'] ?? null,
             'features' => isset($jsonData['features']) ? json_encode($jsonData['features']) : null,
             'specifications' => isset($jsonData['specifications']) ? json_encode($jsonData['specifications']) : null,
@@ -200,7 +200,7 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
             'selling_price' => $jsonData['list_price'] ?? null,
             'prop65_message' => $jsonData['prop_65_message'] ?? null,
             'product_classification_id' => $productClassificationId,
-            'brand_id'  => $brand['id'] ?? null,
+            'brand_id' => $brand['id'] ?? null,
             'brand_name' => $brand['name'] ?? null,
         ];
     }
@@ -485,7 +485,7 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
             }
         }
 
-        if ( empty($brandName)) {
+        if (empty($brandName)) {
             return null; // no brand found
         }
 
@@ -499,18 +499,16 @@ class IncrementalCatalogUpdateJob implements ShouldQueue
             ) ?? null;
         }
 
-
         $brand = Brand::updateOrCreate(
             ['title' => $brandName],
             ['image' => $imgPath]
         );
 
         return [
-            'id'   => $brand->id,
+            'id' => $brand->id,
             'name' => $brandName,
         ];
     }
-
 
     public function getManufacturerNumber($manufacturer): ?string
     {

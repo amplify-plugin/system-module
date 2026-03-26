@@ -35,7 +35,7 @@ class CustomerPartNumberDeletedJob implements ShouldQueue
         $data = [
             'customer' => Customer::find($this->data['customer_id']),
             'product' => Product::find($this->data['product_id']),
-            ...$this->data
+            ...$this->data,
         ];
 
         foreach ($this->eventInfo->eventActions as $eventAction) {

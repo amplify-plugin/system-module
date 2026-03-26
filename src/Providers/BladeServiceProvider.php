@@ -31,6 +31,7 @@ class BladeServiceProvider extends ServiceProvider
 
             $bladeCompiler->directive('uom', function ($expression) {
                 dd($expression);
+
                 return "<?php e(uom({$expression})); ?>";
             });
         });

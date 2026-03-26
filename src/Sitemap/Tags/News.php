@@ -8,13 +8,19 @@ use DateTimeInterface;
 class News
 {
     public const OPTION_ACCESS_SUB = 'Subscription';
+
     public const OPTION_ACCESS_REG = 'Registration';
 
     public const OPTION_GENRES_PR = 'PressRelease';
+
     public const OPTION_GENRES_SATIRE = 'Satire';
+
     public const OPTION_GENRES_BLOG = 'Blog';
+
     public const OPTION_GENRES_OPED = 'OpEd';
+
     public const OPTION_GENRES_OPINION = 'Opinion';
+
     public const OPTION_GENRES_UG = 'UserGenerated';
 
     public string $name;

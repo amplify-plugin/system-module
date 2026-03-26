@@ -8,13 +8,11 @@ use Amplify\System\Contracts\AddToCart;
 class ErpInventory implements AddToCart
 {
     /**
-     * @param array $data
-     * @param \Closure $next
      * @return mixed
      */
     public function handle(array $data, \Closure $next)
     {
-        abort_if(!ErpApi::enabled(), 500, __('ERP Service is not enabled.'));
+        abort_if(! ErpApi::enabled(), 500, __('ERP Service is not enabled.'));
 
         $items = collect($data['items'] ?? []);
 
@@ -22,11 +20,12 @@ class ErpInventory implements AddToCart
 
         $productPriceAvailability = ErpApi::getProductPriceAvailability([
             'warehouse' => $warehouseString,
-            'items' => $items->map(fn($i) => ['item' => $i['product_code'], 'uom' => $i['uom'], 'qty' => $i['quantity']])->toArray()
+            'items' => $items->map(fn ($i) => ['item' => $i['product_code'], 'uom' => $i['uom'], 'qty' => $i['quantity']])->toArray(),
         ]);
 
         $data['meta']['inventories'] = $productPriceAvailability->map(function ($p) {
             unset($p->Warehouses);
+
             return $p;
         });
 
@@ -57,8 +56,7 @@ class ErpInventory implements AddToCart
             }
         }
 
-        abort_if(!empty($missingEntries), 500, product_not_avail_message());
-
+        abort_if(! empty($missingEntries), 500, product_not_avail_message());
 
         return $next($data);
     }

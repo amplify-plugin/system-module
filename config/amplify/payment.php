@@ -1,5 +1,7 @@
 <?php
 
+use Amplify\System\Payment\Services\CentPosPayService;
+
 return [
     'labels' => [
         'default' => 'Default',
@@ -12,14 +14,14 @@ return [
     'logger_enabled' => true,
     'gateways' => [
         'default' => [
-            'adapter' => \Amplify\System\Payment\Services\CentPosPayService::class,
+            'adapter' => CentPosPayService::class,
             'payment_url' => '',
             'merchant_id' => '',
             'cenpos_encrypted_mid' => '',
             'secret_key' => '',
         ],
         'cenpos' => [
-            'adapter' => \Amplify\System\Payment\Services\CentPosPayService::class,
+            'adapter' => CentPosPayService::class,
             'payment_url' => 'https://www.cenpos.net/simplewebpay/cards/',
             'ach_payment_url' => 'https://www.cenpos.net/simplewebpay/checks/',
             'merchant_id' => '400002917',

@@ -4,7 +4,6 @@ namespace Amplify\System\Jobs;
 
 use Amplify\System\Backend\Traits\NotificationEventTrait;
 use Amplify\System\Ticket\Models\Ticket;
-use Amplify\System\Ticket\Models\TicketDepartment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class TicketCreatedNotifyJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, NotificationEventTrait;
+    use Dispatchable, InteractsWithQueue, NotificationEventTrait, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.

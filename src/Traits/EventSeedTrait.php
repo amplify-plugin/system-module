@@ -16,11 +16,11 @@ trait EventSeedTrait
         return false;
     }
 
-
     /**
      * Run the database seeds.
      *
      * @return void
+     *
      * @throws \Exception
      */
     public function run()
@@ -28,7 +28,7 @@ trait EventSeedTrait
         $tables = ['events', 'event_templates', 'event_variables', 'event_recipents'];
 
         foreach ($tables as $table) {
-            if (!Schema::hasTable($table)) {
+            if (! Schema::hasTable($table)) {
                 throw new \Exception("Table {$table} required and does not exist");
             }
         }
@@ -40,7 +40,6 @@ trait EventSeedTrait
             EventTemplate::truncate();
             EventAction::truncate();
         }
-
 
         foreach ($this->data() as $event) {
             $eventVariables = $event['eventVariables'] ?? [];

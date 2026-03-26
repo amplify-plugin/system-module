@@ -15,16 +15,16 @@ class Language extends Collection
 
         foreach ($locales as $code => $name) {
 
-            $code = match($code) {
+            $code = match ($code) {
                 'en' => 'us',
                 'bn' => 'bd',
                 default => $code
             };
 
-            $items[] = (object)[
+            $items[] = (object) [
                 'name' => $name,
                 'code' => $code,
-                'flag' => "https://flagsapi.com/".Str::upper($code)."/flat/64.png"
+                'flag' => 'https://flagsapi.com/'.Str::upper($code).'/flat/64.png',
             ];
         }
 

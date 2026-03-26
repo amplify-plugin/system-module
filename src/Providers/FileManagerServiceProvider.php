@@ -22,7 +22,7 @@ class FileManagerServiceProvider extends ServiceProvider
 
         // publish config
         $this->publishes([
-            __DIR__ .'/../../config/file-manager.php' => config_path('file-manager.php'),
+            __DIR__.'/../../config/file-manager.php' => config_path('file-manager.php'),
         ], 'fm-config');
 
         // publish js and css files - vue-file-manager module
@@ -42,7 +42,7 @@ class FileManagerServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ .'/../../config/file-manager.php',
+            __DIR__.'/../../config/file-manager.php',
             'file-manager'
         );
 

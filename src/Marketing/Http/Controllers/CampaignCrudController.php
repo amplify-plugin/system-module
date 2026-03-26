@@ -9,6 +9,12 @@ use Amplify\System\Cms\Models\BannerZone;
 use Amplify\System\Cms\Models\Page;
 use Amplify\System\Marketing\Http\Request\CampaignRequest;
 use Amplify\System\Marketing\Models\Campaign;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -20,16 +26,16 @@ use Prologue\Alerts\Facades\Alert;
 /**
  * Class CampaignCrudController
  *
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ * @property-read CrudPanel $crud
  */
 class CampaignCrudController extends BackpackCustomCrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use CreateOperation;
+    use CreateOperation;
+    use DeleteOperation;
+    use ListOperation;
+    use ShowOperation;
+    use UpdateOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.

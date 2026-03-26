@@ -3,6 +3,7 @@
 namespace Amplify\System\Media\Events;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class FilesUploading
 {
@@ -17,7 +18,7 @@ class FilesUploading
     private $path;
 
     /**
-     * @var \Illuminate\Http\UploadedFile
+     * @var UploadedFile
      */
     private $files;
 

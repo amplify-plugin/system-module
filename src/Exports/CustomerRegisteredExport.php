@@ -12,9 +12,7 @@ class CustomerRegisteredExport implements FromView, ShouldAutoSize
 {
     use Exportable;
 
-    public function __construct(public int $interval = 30)
-    {
-    }
+    public function __construct(public int $interval = 30) {}
 
     public function view(): View
     {
@@ -25,7 +23,7 @@ class CustomerRegisteredExport implements FromView, ShouldAutoSize
         return \view('system::report.customer', [
             'startDate' => now()->subDays($this->interval),
             'endDate' => now(),
-            'customers' => $customers
+            'customers' => $customers,
         ]);
     }
 }

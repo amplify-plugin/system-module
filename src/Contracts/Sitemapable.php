@@ -6,5 +6,5 @@ use Amplify\System\Support\Sitemap\Url;
 
 interface Sitemapable
 {
-    public function toSitemapTag(): Url | string | array;
+    public function toSitemapTag(): Url|string|array;
 }

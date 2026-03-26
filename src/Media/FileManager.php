@@ -8,6 +8,8 @@ use Amplify\System\Media\Services\TransferService\TransferFactory;
 use Amplify\System\Media\Traits\CheckTrait;
 use Amplify\System\Media\Traits\ContentTrait;
 use Amplify\System\Media\Traits\PathTrait;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Image;
@@ -283,9 +285,9 @@ class FileManager
      * Create thumbnails
      *
      *
-     * @return \Illuminate\Http\Response|mixed
+     * @return Response|mixed
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function thumbnails($disk, $path)
     {
@@ -314,7 +316,7 @@ class FileManager
      *
      * @return mixed
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function preview($disk, $path)
     {

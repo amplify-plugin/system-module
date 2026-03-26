@@ -6,6 +6,7 @@ use Amplify\System\Media\Services\ACLService\ACL;
 use Amplify\System\Media\Services\ConfigService\ConfigRepository;
 use Amplify\System\Media\Traits\PathTrait;
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -71,7 +72,7 @@ class FileManagerACL
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -96,7 +97,7 @@ class FileManagerACL
     /**
      * ACL Error message
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function errorMessage()
     {

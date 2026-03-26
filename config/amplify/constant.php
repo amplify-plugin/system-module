@@ -1,14 +1,18 @@
 <?php
 
+use Amplify\System\OrderRule\Rules\CartItemCountRule;
+use Amplify\System\OrderRule\Rules\ForbiddenProductRule;
+use Amplify\System\OrderRule\Rules\SubTotalRule;
+
 return [
 
     /**
      * Add the rule class with key for booting your rule class
      */
     'order-rules' => [
-        'sub-total-rule' => \Amplify\System\OrderRule\Rules\SubTotalRule::class,
-        'forbidden-product-rule' => \Amplify\System\OrderRule\Rules\ForbiddenProductRule::class,
-        'cart-item-count-rule' => \Amplify\System\OrderRule\Rules\CartItemCountRule::class,
+        'sub-total-rule' => SubTotalRule::class,
+        'forbidden-product-rule' => ForbiddenProductRule::class,
+        'cart-item-count-rule' => CartItemCountRule::class,
     ],
 
     /**
