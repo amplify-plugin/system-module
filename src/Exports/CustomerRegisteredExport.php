@@ -12,17 +12,20 @@ class CustomerRegisteredExport implements FromView, ShouldAutoSize
 {
     use Exportable;
 
-    public function __construct(public int $interval = 30) {}
+    public function __construct(public $startOfLastDay, public $endOfLastDay)
+    {
+    }
 
     public function view(): View
     {
-        $customers = Customer::query()->whereDate('customers.created_at', '>=', now()->subDays($this->interval))
-            ->whereDate('customers.created_at', '<=', now())
+        $customers = Customer::query()
+            ->whereDate('customers.created_at', '>=', $this->startOfLastDay)
+            ->whereDate('customers.created_at', '<=', $this->endOfLastDay)
             ->get();
 
         return \view('system::report.customer', [
-            'startDate' => now()->subDays($this->interval),
-            'endDate' => now(),
+            'startDate' => $this->startOfLastDay,
+            'endDate' => $this->endOfLastDay,
             'customers' => $customers,
         ]);
     }

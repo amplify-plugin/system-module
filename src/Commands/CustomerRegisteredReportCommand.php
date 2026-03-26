@@ -5,6 +5,7 @@ namespace Amplify\System\Commands;
 use Amplify\System\Backend\Models\Event;
 use Amplify\System\Exports\CustomerRegisteredExport;
 use Amplify\System\Factories\NotificationFactory;
+use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -16,7 +17,7 @@ class CustomerRegisteredReportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:customer-registered-report {--days=30 : The interval each report sent}';
+    protected $signature = 'amplify:customer-registered-report {--interval=monthly : The interval each report sent}';
 
     /**
      * The console command description.
@@ -32,18 +33,31 @@ class CustomerRegisteredReportCommand extends Command
      */
     public function handle()
     {
+        $interval = $this->option('interval');
+
+        abort_unless(in_array($interval, ["monthly", "daily", 'weekly', 'yearly', 'quarterly']), 500, 'Invalid value given. Correct values are: monthly, daily, weekly, yearly, quarterly');
 
         try {
-            $interval = intval($this->option('days') ?? 30);
 
-            $start = now()->subDays($interval)->format('Y-m-d');
+            $endOfLastDate = now()->startOfDay()->subSecond();
 
-            $end = now()->format('Y-m-d');
+            $std = now()->startOfDay()->subSecond();
 
-            $filename = "customers-from-{$start}-to-{$end}.xlsx";
+            $startOfLastDate = match ($interval) {
+
+                'daily' => $std->startOfDay(),
+                'weekly' => $std->startOfWeek(),
+                'quarterly' => $std->startOfQuarter(),
+                'yearly' => $std->startOfYear(),
+                default => $std->startOfMonth(),
+            };
+
+            $filename = ($interval == 'daily')
+                ? "customers-of-{$startOfLastDate->format('Y-m-d')}.xlsx"
+                : "customers-from-{$startOfLastDate->format('Y-m-d')}-to-{$endOfLastDate->format('Y-m-d')}.xlsx";
 
             Excel::store(
-                new CustomerRegisteredExport($interval),
+                new CustomerRegisteredExport($startOfLastDate, $endOfLastDate),
                 $filename,
                 'public',
                 \Maatwebsite\Excel\Excel::XLSX
@@ -54,7 +68,7 @@ class CustomerRegisteredReportCommand extends Command
                 'filepath' => Storage::disk('public')->path($filename),
             ]);
 
-            $this->info("Customer Registration From {$start} to {$end} generated on [".Storage::disk('public')->path($filename).'] completed.');
+            $this->info("Customer Registration From {$startOfLastDate} to {$endOfLastDate} generated on [" . Storage::disk('public')->path($filename) . '] completed.');
 
             return self::SUCCESS;
 

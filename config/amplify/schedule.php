@@ -26,7 +26,7 @@ return [
         'permission_sync' => 'Permission Synchronization',
         'audit_clean' => 'Clean Activity Log Data',
         // 'backup_table' => 'Backup Table',
-        'incremental-catalog' => 'Incremental Catalog Update',
+//        'incremental-catalog' => 'Incremental Catalog Update',
         'customer-report' => 'Customer Registration Report',
         'sitemap_generate' => 'Generate Scheduled Sitemap',
     ],
@@ -169,7 +169,8 @@ return [
             ],
         ],
 
-        'incremental-catalog' => [
+        //@TODO will enabled when cal-tool migrated
+/*        'incremental-catalog' => [
             'command' => 'amplify:incremental-catalog-update',
             'enabled' => true,
             'priority' => 2,
@@ -197,7 +198,7 @@ return [
                 'month' => '*',
                 'weekday' => '*',
             ],
-        ],
+        ],*/
 
         'customer-report' => [
             'command' => 'amplify:customer-registered-report',
