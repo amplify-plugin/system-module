@@ -64,7 +64,9 @@ class CustomerRegisteredReportCommand extends Command
             );
 
             NotificationFactory::call(Event::CUSTOMER_REGISTRATION_REPORT_GENERATED, [
-                'interval' => $interval,
+                'interval' => ucfirst($interval),
+                'start_date' => $startOfLastDate,
+                'end_date' => $endOfLastDate,
                 'filepath' => Storage::disk('public')->path($filename),
             ]);
 

@@ -32,8 +32,8 @@ class CustomerRegistrationReportGeneratedJob implements ShouldQueue
         $this->getNecessaryItems();
         $data = [
             '__interval_in_days__' => $this->data['interval'],
-            '__report_start_date__' => now()->subDays($this->data['interval'])->format(config('amplify.basic.date_time_format')),
-            '__report_end_date__' => now()->format(config('amplify.basic.date_time_format')),
+            '__report_start_date__' => $this->data['start_date']->format(config('amplify.basic.date_time_format')),
+            '__report_end_date__' =>$this->data['end_date']->format(config('amplify.basic.date_time_format')),
             'attachments' => [$this->data['filepath']],
         ];
 
