@@ -55,7 +55,9 @@ class DataPreparation implements AddToCart
                 /**
                  * @var Product $dbProduct
                  */
-                $dbProduct = $dbProducts->firstWhere('product_code', '=', $item['product_code']);
+                $dbProduct = $dbProducts->first(function ($product) use ($item) {
+                    return strtolower($product->product_code) === strtolower($item['product_code']);
+                });
 
                 if ($dbProduct) {
                     $product['product_id'] = $dbProduct->getKey();
@@ -100,11 +102,15 @@ class DataPreparation implements AddToCart
             }
 
             if (empty($data['items'])) {
-                throw new \Exception(__('Part number :code is not available on our website. Please contact your representative, email us at <a href="mailto::email">:email</a> , or call us at <a href="tel::phone">:phone.', [
-                    'code' => implode(', ', $invalidProducts),
-                    'email' => config('amplify.cms.email'),
-                    'phone' => config('amplify.cms.phone'),
-                ]));
+                throw new \Exception(trans_choice(
+                    'Part number is invalid. Please contact your representative, email us at <a href="mailto::email">:email</a>, or call us at <a href="tel::phone">:phone</a>.|
+                    Part numbers are invalid. Please contact your representative, email us at <a href="mailto::email">:email</a>, or call us at <a href="tel::phone">:phone</a>.',
+                    count($invalidProducts ?? []),
+                    [
+                        'email' => config('amplify.cms.email'),
+                        'phone' => config('amplify.cms.phone'),
+                    ]
+                ));
             }
 
         } catch (\Exception $exception) {
@@ -116,7 +122,7 @@ class DataPreparation implements AddToCart
 
     private function getProductWarehouse(array $item = [])
     {
-        $warehouseCode = $item['product_warehouse_code'];
+        $warehouseCode = $item['product_warehouse_code'] ?? '';
 
         if (! empty($warehouseCode)) {
             return $warehouseCode;

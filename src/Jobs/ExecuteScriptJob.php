@@ -431,8 +431,6 @@ class ExecuteScriptJob implements ShouldQueue
                     'is_new',
                     'is_updated',
                     'manufacturer',
-                    'model_code',
-                    'model_name',
                     'msrp',
                     'parent_id',
                     'sku_id',
