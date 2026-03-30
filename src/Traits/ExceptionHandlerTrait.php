@@ -2,10 +2,12 @@
 
 namespace Amplify\System\Traits;
 
-use Amplify\System\Utility\Mails\ExceptionReportMail;
+use Amplify\System\Exceptions\SystemException;
+use Amplify\System\Mail\ExceptionReportMail;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -18,6 +20,11 @@ trait ExceptionHandlerTrait
     public function register(): void
     {
         $this->reportable(function (Throwable $exception) {
+            if ($exception instanceof SystemException || Cache::has($this->exceptionSignature($exception))) {
+                logger()->error($exception);
+                return;
+            }
+
             if ($exception instanceof \Error) {
                 $this->notifyException($exception);
             }
@@ -28,6 +35,11 @@ trait ExceptionHandlerTrait
                 return response()->json(['message' => 'Not Found.'], 404);
             }
         });
+    }
+
+    private function exceptionSignature($exception): string
+    {
+        return sha1(get_class($exception) . "|{$exception->getFile()}|{$exception->getLine()}");
     }
 
     public function render($request, Throwable $exception)
@@ -55,32 +67,47 @@ trait ExceptionHandlerTrait
 
     /**
      * Write code on Method
+     * @throws SystemException
      */
     private function notifyException(Throwable $throwable): void
     {
         try {
+
             if (app()->environment('production')) {
+
                 $support_mails = config('amplify.developer.bug_recipient', []);
-                if (! empty($support_mails)) {
+
+                if (!empty($support_mails)) {
 
                     $content['message'] = $throwable->getMessage();
                     $content['file'] = $throwable->getFile();
                     $content['line'] = $throwable->getLine();
                     $content['trace'] = $throwable->getTrace();
-                    $content['url'] = request()->url();
+                    $content['previous'] = $throwable->getPrevious();
+                    $content['url'] = request()->fullUrl();
                     $content['body'] = request()->all();
-                    $content['ip'] = request()->ip();
+                    $content['ip'] = (app()->runningInConsole()) ? 'console' : request()->ip();
+                    $content['title'] = get_class($throwable);
 
                     Mail::to($support_mails)->send(new ExceptionReportMail($content));
+
                 }
+
+                Cache::put($this->exceptionSignature($throwable), true, now()->addMinutes(5));
             }
         } catch (Throwable $exception) {
-            logger()->error($exception);
-        } finally {
-            logger()->error($throwable);
+
+            Cache::forget($this->exceptionSignature($throwable));
+
+            throw new SystemException($throwable->getMessage(), 0, $exception);
         }
     }
 
+    /**
+     * @param $request
+     * @param AuthenticationException $exception
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         return $this->shouldReturnJson($request, $exception)
