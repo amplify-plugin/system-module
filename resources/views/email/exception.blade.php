@@ -254,7 +254,6 @@
                         </span>
                         </h3>
                         <p class="break-long-words trace-message">{{ $content['previous']->getMessage() }}</p>
-                        <p class="">File: ()</p>
                     </th>
                 </tr>
                 </thead>
