@@ -286,6 +286,7 @@ class EmailService
                 $data[$key] = strtr($data[$key], [
                     '__product_name__' => $data['product']->product_name ?? null,
                     '__product_code__' => $data['product']->product_code ?? null,
+                    '__product_detail_link__' => "<a href='".frontendSingleProductURL($data['product'])."' target='_blank'>__product_code__</a>",
                 ]);
             }
 
@@ -1250,8 +1251,8 @@ class EmailService
             'product' => $wishlist->product,
             'subject' => $eventTemplate->subject,
             'email_content' => $eventTemplate->email_body,
-            'show_button' => $eventTemplate->show_button == 1,
-            'button_url' => frontendSingleProductURL($wishlist->product),
+            'show_button' => $eventTemplate->show_button,
+            'button_url' => url($eventTemplate->button_url),
             'button_text' => $eventTemplate->button_text,
             'is_customer_mail' => true,
         ];
