@@ -4,7 +4,6 @@ namespace Amplify\System\Commands;
 
 use Amplify\ErpApi\Facades\ErpApi;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class CsdErpTokenRefreshCommand extends Command
 {
@@ -20,7 +19,7 @@ class CsdErpTokenRefreshCommand extends Command
      *
      * @var string
      */
-    protected $description = 'This a schedule command to update token';
+    protected $description = 'Update csd-erp oauth2 token';
 
     /**
      * Execute the console command.
@@ -28,19 +27,8 @@ class CsdErpTokenRefreshCommand extends Command
     public function handle()
     {
         if (config('amplify.erp.default', 'default') == 'csd-erp') {
-            try {
-                ErpApi::refreshToken(true);
-
-                Log::debug('CSD-ERP token refreshed successful');
-
-                return self::SUCCESS;
-            } catch (\Exception $e) {
-                Log::error($e);
-
-                return self::FAILURE;
-            }
+            ErpApi::refreshToken(true);
         }
-
         return self::SUCCESS;
     }
 }
