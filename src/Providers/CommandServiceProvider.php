@@ -5,6 +5,7 @@ namespace Amplify\System\Providers;
 use Amplify\System\Commands\AddProductSlugCommand;
 use Amplify\System\Commands\AddProductThumbnailCommand;
 use Amplify\System\Commands\BackupDatabase;
+use Amplify\System\Commands\BackupRunCommand;
 use Amplify\System\Commands\CleanApiLogCommand;
 use Amplify\System\Commands\CleanAuditCommand;
 use Amplify\System\Commands\CreateAllLoginCommand;
@@ -55,6 +56,7 @@ class CommandServiceProvider extends ServiceProvider
                 CsdErpTokenRefreshCommand::class,
                 AddProductThumbnailCommand::class,
                 SitemapGenerateCommand::class,
+                BackupRunCommand::class,
             ]);
 
             if (class_exists('Backpack\Generators\Services\BackpackCommand')) {
