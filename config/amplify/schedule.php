@@ -19,13 +19,12 @@ return [
     'catalog_sync_enabled' => env('AMPLIFY_CATALOG_SYNC_ENABLED', false),
     'labels' => [
         'product_sync' => 'Catalog Synchronization',
-        'backup_clean' => 'Backup Clean',
+//        'backup_clean' => 'Backup Clean',
         'backup_run' => 'Backup Run',
         'product_slug' => 'Generate Product Slug from Name',
         'api_log_clean' => 'Clean API Request Log Data',
         'permission_sync' => 'Permission Synchronization',
         'audit_clean' => 'Clean Activity Log Data',
-        // 'backup_table' => 'Backup Table',
 //        'incremental-catalog' => 'Incremental Catalog Update',
         'customer-report' => 'Customer Registration Report',
         'sitemap_generate' => 'Generate Scheduled Sitemap',
@@ -50,7 +49,7 @@ return [
             ],
         ],
 
-        'backup_clean' => [
+        /*'backup_clean' => [
             'command' => 'backup:clean',
             'enabled' => true,
             'priority' => 1,
@@ -65,17 +64,14 @@ return [
                 'month' => '*',
                 'weekday' => '*',
             ],
-        ],
+        ],*/
 
         'backup_run' => [
-            'command' => 'backup:run',
+            'command' => 'amplify:create-backup',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'daily',
-            'variables' => [
-                '--only-db' => '--no-arg-val--',
-                '--disable-notifications' => '--no-arg-val--',
-            ],
+            'variables' => [],
             'time' => [
                 'minute' => '0',
                 'hour' => '*',
