@@ -1,6 +1,7 @@
 <?php
 
 use Amplify\System\Pipelines\AddToCart;
+use Amplify\System\Pipelines\ProductDetail;
 
 return [
     'debug' => env('AMPLIFY_DEBUG', false),
@@ -15,4 +16,8 @@ return [
         AddToCart\OnlyStandardPackSize::class,
         AddToCart\AllowBackOrder::class,
     ],
+    'product_detail_pipeline' => [
+        ProductDetail\SelectColumns::class,
+        ProductDetail\SkipArchived::class,
+    ]
 ];
