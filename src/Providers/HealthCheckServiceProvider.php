@@ -113,12 +113,12 @@ class HealthCheckServiceProvider extends ServiceProvider
                     ->method('GET'),
 
                 QueueCheck::new()
-                    ->failWhenHealthJobTakesLongerThanMinutes(10)
+                    ->failWhenHealthJobTakesLongerThanMinutes(12)
                     ->onQueue(['default', 'production', 'worker'])
                     ->everyTenMinutes(),
 
                 RedisCheck::new()
-                    ->if(class_exists('Redis')),
+                    ->if(config('cache.default') == 'redis'),
 
                 ScheduleCheck::new()
                     ->everyTenMinutes()
