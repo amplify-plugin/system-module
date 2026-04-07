@@ -19,11 +19,9 @@ return [
     'catalog_sync_enabled' => env('AMPLIFY_CATALOG_SYNC_ENABLED', false),
     'labels' => [
         'product_sync' => 'Catalog Synchronization',
-//        'backup_clean' => 'Backup Clean',
         'backup_run' => 'Backup Run',
         'product_slug' => 'Generate Product Slug from Name',
         'api_log_clean' => 'Clean API Request Log Data',
-        'permission_sync' => 'Permission Synchronization',
         'audit_clean' => 'Clean Activity Log Data',
 //        'incremental-catalog' => 'Incremental Catalog Update',
         'customer-report' => 'Customer Registration Report',
@@ -48,23 +46,6 @@ return [
                 'weekday' => '*',
             ],
         ],
-
-        /*'backup_clean' => [
-            'command' => 'backup:clean',
-            'enabled' => true,
-            'priority' => 1,
-            'interval' => 'daily',
-            'variables' => [
-                '--disable-notifications' => '--no-arg-val--',
-            ],
-            'time' => [
-                'minute' => '0',
-                'hour' => '*',
-                'day' => '*',
-                'month' => '*',
-                'weekday' => '*',
-            ],
-        ],*/
 
         'backup_run' => [
             'command' => 'amplify:create-backup',
@@ -98,23 +79,8 @@ return [
             ],
         ],
 
-        'permission_sync' => [
-            'command' => 'permission:sync',
-            'enabled' => true,
-            'priority' => 4,
-            'interval' => 'daily',
-            'variables' => [],
-            'time' => [
-                'minute' => '*',
-                'hour' => '*',
-                'day' => '*',
-                'month' => '*',
-                'weekday' => '*',
-            ],
-        ],
-
         'audit_clean' => [
-            'command' => 'audit:clean',
+            'command' => 'amplify:audit-clean',
             'enabled' => true,
             'priority' => 2,
             'interval' => 'daily',
@@ -139,26 +105,6 @@ return [
             'time' => [
                 'minute' => '30',
                 'hour' => '23',
-                'day' => '*',
-                'month' => '*',
-                'weekday' => '*',
-            ],
-        ],
-
-        'backup_table' => [
-            'command' => 'backup:database',
-            'enabled' => env('SFTP_EXPORT', false),
-            'priority' => 2,
-            'interval' => 'daily',
-            'variables' => [
-                'tableList' => 'attribute_product_classification,attribute_product,attribute_values,'
-                    .'attributes,categories,category_product,customer_group_product,customer_groups,'
-                    .'customers,manufacturers,option_product_classification,option_product,'
-                    .'options,products,product__images,products,warehouses',
-            ],
-            'time' => [
-                'minute' => '0',
-                'hour' => '*',
                 'day' => '*',
                 'month' => '*',
                 'weekday' => '*',
