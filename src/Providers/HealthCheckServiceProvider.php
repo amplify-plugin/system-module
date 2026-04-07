@@ -3,6 +3,8 @@
 namespace Amplify\System\Providers;
 
 use Amplify\System\Checks\CpuLoad\CpuLoadCheck;
+use Amplify\System\Checks\ApiLog\EasyAskApiLogCheck;
+use Amplify\System\Checks\ApiLog\ErpApiLogCheck;
 use Amplify\System\Checks\SslCertificate\SslCertificateExpiredCheck;
 use Amplify\System\Checks\SslCertificate\SslCertificateValidityCheck;
 use Amplify\System\Sayt\Facade\Sayt;
@@ -63,7 +65,7 @@ class HealthCheckServiceProvider extends ServiceProvider
 
                 BackupsCheck::new()
                     ->onDisk('backups')
-                    ->locatedAt('*.zip')
+                    ->parseModifiedFormat('\a\m\p\l\i\f\y-\d\b-\b\a\c\k\u\p-Y-m-d-H-i-s')
                     ->youngestBackShouldHaveBeenMadeBefore(now()->subDays(1))
                     ->onlyCheckSizeOnFirstAndLast(),
 
@@ -126,6 +128,11 @@ class HealthCheckServiceProvider extends ServiceProvider
                     ->if(Str::contains(config('app.url'), 'https://'))
                     ->url(config('app.url')),
 
+                EasyAskApiLogCheck::new()
+                    ->if(config('amplify.sayt.enabled', false)),
+
+                ErpApiLogCheck::new()
+                ->if(config('amplify.erp.default') != 'default'),
             ]);
         }
     }
