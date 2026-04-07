@@ -4,7 +4,7 @@ namespace Amplify\System\Providers;
 
 use Amplify\System\Commands\AddProductSlugCommand;
 use Amplify\System\Commands\AddProductThumbnailCommand;
-use Amplify\System\Commands\BackupDatabase;
+use Amplify\System\Commands\EasyAskDatabaseExportCommand;
 use Amplify\System\Commands\BackupRunCommand;
 use Amplify\System\Commands\CleanApiLogCommand;
 use Amplify\System\Commands\CleanAuditCommand;
@@ -21,7 +21,7 @@ use Amplify\System\Commands\RemoveUnusedAddressesCommand;
 use Amplify\System\Commands\ScopeMakeCommand;
 use Amplify\System\Commands\SetupEnvCommand;
 use Amplify\System\Commands\SitemapGenerateCommand;
-use Amplify\System\Commands\SyncPermissions;
+use Amplify\System\Commands\SyncPermissionCommand;
 use Amplify\System\Commands\TracepartsImportXmlData;
 use Amplify\System\Commands\TraitMakeCommand;
 use Amplify\System\Commands\TransformProduct;
@@ -35,7 +35,7 @@ class CommandServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 AddProductSlugCommand::class,
-                BackupDatabase::class,
+                EasyAskDatabaseExportCommand::class,
                 CleanApiLogCommand::class,
                 CleanAuditCommand::class,
                 CreateAllLoginCommand::class,
@@ -47,7 +47,7 @@ class CommandServiceProvider extends ServiceProvider
                 RemoveUnusedAddressesCommand::class,
                 ScopeMakeCommand::class,
                 SetupEnvCommand::class,
-                SyncPermissions::class,
+                SyncPermissionCommand::class,
                 TracepartsImportXmlData::class,
                 TraitMakeCommand::class,
                 TransformProduct::class,

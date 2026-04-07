@@ -14,7 +14,7 @@ class CleanAuditCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'audit:clean {--days=30}';
+    protected $signature = 'amplify:audit-clean {--days=30}';
 
     /**
      * The console command description.

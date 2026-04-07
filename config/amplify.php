@@ -7,6 +7,7 @@ return [
     'debug' => env('AMPLIFY_DEBUG', false),
     'client_code' => env('AMPLIFY_CLIENT_CODE', 'ACP'),
     'suppress_exception' => env('AMPLIFY_SUPPRESS_EXCEPTION', true),
+    'easyask_sftp_export' => env('AMPLIFY_SFTP_EXPORT', false),
     'add_to_cart_pipeline' => [
         AddToCart\DataPreparation::class,
         AddToCart\OnlyDefaultWarehouse::class,

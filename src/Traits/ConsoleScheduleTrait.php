@@ -3,6 +3,8 @@
 namespace Amplify\System\Traits;
 
 use Amplify\System\Commands\CsdErpTokenRefreshCommand;
+use Amplify\System\Commands\EasyAskDatabaseExportCommand;
+use Amplify\System\Commands\SyncPermissionCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
 use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
@@ -12,7 +14,8 @@ trait ConsoleScheduleTrait
     /**
      * Define the application's command schedule.
      *
-     * @var Schedule
+     * @param Schedule $schedule
+     * @return void
      */
     protected function schedule(Schedule $schedule): void
     {
@@ -35,6 +38,22 @@ trait ConsoleScheduleTrait
             $schedule->command(CsdErpTokenRefreshCommand::class)
                 ->hourly()
                 ->when(fn () => config('amplify.erp.default', 'default') == 'csd-erp')
+                ->withoutOverlapping()
+                ->onOneServer();
+
+            $schedule->command(SyncPermissionCommand::class)
+                ->daily()
+                ->withoutOverlapping()
+                ->onOneServer();
+
+            $schedule->command(EasyAskDatabaseExportCommand::class, [
+'tableList' => 'attribute_product_classification,attribute_product,attribute_values,'
+    .'attributes,categories,category_product,customer_group_product,customer_groups,'
+    .'customers,manufacturers,option_product_classification,option_product,'
+    .'options,products,product__images,products,warehouses'
+            ])
+                ->daily()
+                ->when(fn () => config('amplify.easyask_sftp_export', false) == true)
                 ->withoutOverlapping()
                 ->onOneServer();
 
