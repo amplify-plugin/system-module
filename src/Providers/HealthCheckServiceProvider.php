@@ -112,12 +112,16 @@ class HealthCheckServiceProvider extends ServiceProvider
                     ->timeout(10)
                     ->method('GET'),
 
-                QueueCheck::new(),
+                QueueCheck::new()
+                    ->failWhenHealthJobTakesLongerThanMinutes(10)
+                    ->onQueue(['default', 'production', 'worker'])
+                    ->everyTenMinutes(),
 
                 RedisCheck::new()
                     ->if(class_exists('Redis')),
 
                 ScheduleCheck::new()
+                    ->everyTenMinutes()
                     ->heartbeatMaxAgeInMinutes(12),
 
                 SslCertificateValidityCheck::new()
