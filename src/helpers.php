@@ -1170,7 +1170,10 @@ if (! function_exists('returnProductSlug')) {
 if (! function_exists('frontendSingleProductURL')) {
     function frontendSingleProductURL($product, $seo_path = null): string
     {
+        $skuProductCode = false;
+
         if ($product instanceof Product && config('amplify.frontend.show_parent_product_for_sku', true) && $product->parent_id) {
+            $skuProductCode = $product->product_code;
             $product = Product::find($product->parent_id) ?? $product;
         }
 
@@ -1186,6 +1189,8 @@ if (! function_exists('frontendSingleProductURL')) {
 
         if (! empty($seo_path)) {
             $params['ref'] = $seo_path;
+        }else if(!empty($skuProductCode)){
+            $params['ref'] = '-'.$skuProductCode;
         }
 
         return (! empty($params['identifier']))

@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class OrderReceivedJob implements ShouldQueue
 {
@@ -60,7 +61,10 @@ class OrderReceivedJob implements ShouldQueue
         $customer = Customer::find($this->customerId);
         $contact = Contact::find($this->contactId ?? null);
 
-        $order->erp_details = ErpApi::getOrderDetail(['order_number' => $order->erp_order_id])->toArray();
+        $order->erp_details = ErpApi::getOrderDetail([
+            'order_number' => $order->erp_order_id,
+            'customer_number' => $customer->erp_id,
+        ])->toArray();
 
         foreach ($this->eventInfo->eventActions ?? [] as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
