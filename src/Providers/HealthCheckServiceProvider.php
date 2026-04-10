@@ -34,7 +34,7 @@ class HealthCheckServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('production', 'staging')) {
+        if (config('app.env') === 'production') {
 
             Check::macro('easyAskUrl', function () {
                 $url = Url::fromString('/EasyAsk/apps/Advisor.jsp')
@@ -114,7 +114,7 @@ class HealthCheckServiceProvider extends ServiceProvider
 
                 QueueCheck::new()
                     ->failWhenHealthJobTakesLongerThanMinutes(12)
-                    ->onQueue(['default', 'production', 'worker'])
+                    ->onQueue(['default', 'production'])
                     ->everyTenMinutes(),
 
                 RedisCheck::new()
