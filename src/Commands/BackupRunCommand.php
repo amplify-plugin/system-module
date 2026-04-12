@@ -262,5 +262,7 @@ class BackupRunCommand extends Command
                 throw new \Exception("Failed to move backup directory.");
             }
         }
+
+        @unlink($zipFilePath);
     }
 }
