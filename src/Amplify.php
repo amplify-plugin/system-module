@@ -44,7 +44,10 @@ class Amplify
             'system-config' => 'u,cache-clear', // okay
             'attribute' => 'l,s,c,u,d', // okay
             'category' => 'l,s,c,u,d,ro', // okay
+            'category-product' => 'l,s,c,u,d', // okay
             'contact' => 'l,s,c,u,d,impersonate', // okay
+            'contact-login' => 'l,s,c,u,d', // okay
+            'contact-registration' => 'l,s,c,u,d', // okay
             'customer' => 'l,s,c,u,d,erp-bulk-sync', // okay
             'product' => 'l,s,c,u,d,remove-sku,publish,unpublish', // okay
             'classification' => 'l,s,c,u,d', // okay
@@ -62,6 +65,7 @@ class Amplify
             'saved-report' => 'l,s,c,u,d',
             'dynamic-report' => 'l',
             'order' => 'l,s,c,u,d',
+            'attribute-value' => 'l,s,c,u,d',
             'quote' => 'l,s,c,u,d', // okay
             'invoice' => 'l,s,c,u,d', // okay
             'payment' => 'l,s,c,u,d', // okay
@@ -75,7 +79,8 @@ class Amplify
             'faq' => 'l,s,c,u,d', // okay
             'campaign' => 'l,s,c,u,d',
             'subscriber' => 'l,s,c,u,d',
-            'shipping' => 'l,s,c,u,d', // okay
+            'shippings' => 'l,s,c,u,d', // okay
+            'threshold-range' => 'l,s,c,u,d', // okay
             'tax' => 'l,s,c,u,d', // okay
             'warehouse' => 'l,s,c,u,d', // okay
             'store' => 'l,s,c,u,d', // okay
@@ -86,6 +91,7 @@ class Amplify
             'customer-group' => 'l,s,c,u,d', // okay
             'customer-registration' => 'l,s,u,d', // okay
             'language' => 'l,s,c,u,d', // okay
+            'catalog' => 'l,s,c,u,d', // okay
             'localization' => 'l,s,c,u,d', // okay
             'content-category' => 'l,s,c,u,d', // okay
             'content' => 'l,s,c,u,d', // okay
@@ -125,6 +131,28 @@ class Amplify
             'relationship-type' => 'l,s,c,u,d', // okay
             'product-relation' => 'l,s,c,u,d', // okay
             'customer-address' => 'l,s,c,u,d', // okay
+            'custom-product' => 'l,s,c,u,d', // okay
+            'draft-order' => 'l,s,c,u,d', // okay
+            'email' => 'l,s,c,u,d', // okay
+            'env-variable' => 'l,s,c,u,d', // okay
+            'event-recipent' => 'l,s,c,u,d', // okay
+            'event-variable' => 'l,s,c,u,d', // okay
+            'industry-classification' => 'l,s,c,u,d', // okay
+            'list-item' => 'l,s,c,u,d', // okay
+            'model-code' => 'l,s,c,u,d', // okay
+            'my-report' => 'l,s,c,u,d', // okay
+            'new-report' => 'l,s,c,u,d', // okay
+            'notice' => 'l,s,c,u,d', // okay
+            'notification' => 'l,s,c,u,d', // okay
+            'product-classification' => 'l,s,c,u,d', // okay
+            'report' => 'l,s,c,u,d', // okay
+            'search' => 'l,s,c,u,d', // okay
+            'site' => 'l,s,c,u,d', // okay
+            'site-only' => 'l,s,c,u,d', // okay
+            'standard-report' => 'l,s,c,u,d', // okay
+            'state' => 'l,s,c,u,d', // okay
+            'system-configuration' => 'l,s,c,u,d', // okay
+            'event' => 'l,s,c,u,d', // okay
         ];
 
         return new Collection($permissions ?? $defaultPermissions);
