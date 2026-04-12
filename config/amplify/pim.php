@@ -21,7 +21,7 @@ return [
 
     'pim_db_enabled' => env('DB_PIM_ENABLED', false),
     'document_type' => null,
-    'default_status' => 'draft',
+    'default_status' => 'published',
     'product_statuses' => [
         'incomplete' => 'Incomplete',
         'draft' => 'Draft',

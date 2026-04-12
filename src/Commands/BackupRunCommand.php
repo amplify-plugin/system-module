@@ -44,6 +44,12 @@ class BackupRunCommand extends Command
     public function handle()
     {
         try {
+
+            if (app()->environment() !== 'production') {
+                $this->error('The Backup process can only be run in production environment.');
+                return self::FAILURE;
+            }
+
             $startAt = now();
 
             $this->verifyConditions();
@@ -256,5 +262,7 @@ class BackupRunCommand extends Command
                 throw new \Exception("Failed to move backup directory.");
             }
         }
+
+        @unlink($zipFilePath);
     }
 }
