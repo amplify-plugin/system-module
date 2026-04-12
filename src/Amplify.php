@@ -75,7 +75,8 @@ class Amplify
             'faq' => 'l,s,c,u,d', // okay
             'campaign' => 'l,s,c,u,d',
             'subscriber' => 'l,s,c,u,d',
-            'shipping' => 'l,s,c,u,d', // okay
+            'shippings' => 'l,s,c,u,d', // okay
+            'threshold-range' => 'l,s,c,u,d', // okay
             'tax' => 'l,s,c,u,d', // okay
             'warehouse' => 'l,s,c,u,d', // okay
             'store' => 'l,s,c,u,d', // okay
