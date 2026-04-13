@@ -34,12 +34,7 @@ trait ConsoleScheduleTrait
             );
         }
 
-        if (app()->environment('production', 'staging')) {
-            $schedule->command(CsdErpTokenRefreshCommand::class)
-                ->hourly()
-                ->when(fn () => config('amplify.erp.default', 'default') == 'csd-erp')
-                ->withoutOverlapping()
-                ->onOneServer();
+        if (config('app.env') === 'production') {
 
             $schedule->command(SyncPermissionCommand::class)
                 ->daily()

@@ -10,7 +10,6 @@ use Amplify\System\Commands\CleanApiLogCommand;
 use Amplify\System\Commands\CleanAuditCommand;
 use Amplify\System\Commands\CreateAllLoginCommand;
 use Amplify\System\Commands\CrudControllerBackpackCommand;
-use Amplify\System\Commands\CsdErpTokenRefreshCommand;
 use Amplify\System\Commands\CustomerRegisteredReportCommand;
 use Amplify\System\Commands\DeleteProductsCommand;
 use Amplify\System\Commands\FetchTracePartsCatalogCommand;
@@ -53,7 +52,6 @@ class CommandServiceProvider extends ServiceProvider
                 TransformProduct::class,
                 UpgradeIssueFix::class,
                 CustomerRegisteredReportCommand::class,
-                CsdErpTokenRefreshCommand::class,
                 AddProductThumbnailCommand::class,
                 SitemapGenerateCommand::class,
                 BackupRunCommand::class,
