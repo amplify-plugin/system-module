@@ -36,7 +36,7 @@ class HealthCheckServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (config('app.env') === 'production') {
+        if (config('app.env') == 'production') {
 
             Check::macro('easyAskUrl', function () {
                 $url = Url::fromString('/EasyAsk/apps/Advisor.jsp')
@@ -141,19 +141,20 @@ class HealthCheckServiceProvider extends ServiceProvider
                 ->if(config('amplify.erp.default') != 'default'),
             ]);
 
-            $this->app->booted(function () {
+            if ($this->app->runningInConsole()) {
+                $this->app->booted(function () {
 
-                $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
+                    $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
 
-                $schedule->command(DispatchQueueCheckJobsCommand::class)
-                    ->everyTenMinutes()
-                    ->onOneServer();
+                    $schedule->command(DispatchQueueCheckJobsCommand::class)
+                        ->everyTenMinutes()
+                        ->onOneServer();
 
-                $schedule->command(ScheduleCheckHeartbeatCommand::class)
-                    ->everyTenMinutes()
-                    ->onOneServer();
-
-            });
+                    $schedule->command(ScheduleCheckHeartbeatCommand::class)
+                        ->everyTenMinutes()
+                        ->onOneServer();
+                });
+            }
         }
     }
 }
