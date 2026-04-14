@@ -21,7 +21,7 @@ return [
     'labels' => [
         'product_sync' => 'Catalog Synchronization',
 //        'incremental-catalog' => 'Incremental Catalog Update',
-        'customer-report' => 'Customer Registration Report',
+        'customer_report' => 'Customer Registration Report',
         'sitemap_generate' => 'Generate Scheduled Sitemap',
     ],
     'commands' => [
@@ -76,12 +76,12 @@ return [
             ],
         ],*/
 
-        'customer-report' => [
+        'customer_report' => [
             'command' => \Amplify\System\Backend\Commands\CustomerRegisteredReportCommand::class,
             'enabled' => true,
             'priority' => 2,
             'interval' => 'monthly',
-            'variables' => ['--days' => 30],
+            'variables' => ['--interval' => 'monthly'],
             'time' => [
                 'minute' => '0',
                 'hour' => '0',
