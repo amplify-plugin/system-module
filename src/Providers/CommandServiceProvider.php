@@ -2,29 +2,18 @@
 
 namespace Amplify\System\Providers;
 
-use Amplify\System\Commands\AddProductSlugCommand;
 use Amplify\System\Commands\AddProductThumbnailCommand;
-use Amplify\System\Commands\EasyAskDatabaseExportCommand;
-use Amplify\System\Commands\BackupRunCommand;
-use Amplify\System\Commands\CleanApiLogCommand;
-use Amplify\System\Commands\CleanAuditCommand;
 use Amplify\System\Commands\CreateAllLoginCommand;
-use Amplify\System\Commands\CrudControllerBackpackCommand;
-use Amplify\System\Commands\CustomerRegisteredReportCommand;
 use Amplify\System\Commands\DeleteProductsCommand;
+use Amplify\System\Commands\EasyAskDatabaseExportCommand;
 use Amplify\System\Commands\FetchTracePartsCatalogCommand;
 use Amplify\System\Commands\HealthCheckupCommand;
 use Amplify\System\Commands\IncrementalCatalogUpdate;
 use Amplify\System\Commands\MoveStorageToCloud;
-use Amplify\System\Commands\RemoveUnusedAddressesCommand;
-use Amplify\System\Commands\ScopeMakeCommand;
 use Amplify\System\Commands\SetupEnvCommand;
 use Amplify\System\Commands\SitemapGenerateCommand;
-use Amplify\System\Commands\SyncPermissionCommand;
 use Amplify\System\Commands\TracepartsImportXmlData;
-use Amplify\System\Commands\TraitMakeCommand;
 use Amplify\System\Commands\TransformProduct;
-use Amplify\System\Commands\UpgradeIssueFix;
 use Illuminate\Support\ServiceProvider;
 
 class CommandServiceProvider extends ServiceProvider
@@ -33,36 +22,19 @@ class CommandServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                AddProductSlugCommand::class,
                 EasyAskDatabaseExportCommand::class,
-                CleanApiLogCommand::class,
-                CleanAuditCommand::class,
                 CreateAllLoginCommand::class,
                 DeleteProductsCommand::class,
                 FetchTracePartsCatalogCommand::class,
                 HealthCheckupCommand::class,
                 IncrementalCatalogUpdate::class,
                 MoveStorageToCloud::class,
-                RemoveUnusedAddressesCommand::class,
-                ScopeMakeCommand::class,
                 SetupEnvCommand::class,
-                SyncPermissionCommand::class,
                 TracepartsImportXmlData::class,
-                TraitMakeCommand::class,
                 TransformProduct::class,
-                UpgradeIssueFix::class,
-                CustomerRegisteredReportCommand::class,
                 AddProductThumbnailCommand::class,
                 SitemapGenerateCommand::class,
-                BackupRunCommand::class,
             ]);
-
-            if (class_exists('Backpack\Generators\Services\BackpackCommand')) {
-                $this->commands([
-                    CrudControllerBackpackCommand::class,
-                ]);
-            }
         }
-
     }
 }
