@@ -2,13 +2,8 @@
 
 namespace Amplify\System;
 
-use Amplify\System\Backend\Models\Attribute;
-use Amplify\System\Backend\Models\Category;
-use Amplify\System\Backend\Models\Product;
+use Amplify\System\Commands\EasyAskDatabaseExportCommand;
 use Amplify\System\Facades\AssetsFacade;
-use Amplify\System\Observers\AttributeObserver;
-use Amplify\System\Observers\CategoryObserver;
-use Amplify\System\Observers\ProductObserver;
 use Amplify\System\Providers\AuthServiceProvider;
 use Amplify\System\Providers\BladeServiceProvider;
 use Amplify\System\Providers\CommandServiceProvider;
@@ -83,14 +78,24 @@ class SystemServiceProvider extends ServiceProvider
 
         AliasLoader::getInstance()->alias('Asset', AssetsFacade::class);
 
-        $this->loadObservers();
+        if (config('app.env') === 'production'
+            && $this->app->runningInConsole()
+            && config('amplify.easyask_sftp_export', false)) {
+            $this->app->booted(function () {
 
-    }
+                $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
 
-    private function loadObservers()
-    {
-        Product::observe(ProductObserver::class);
-        Category::observe(CategoryObserver::class);
-        Attribute::observe(AttributeObserver::class);
+                $schedule->command(EasyAskDatabaseExportCommand::class, [
+                    'tableList' => 'attribute_product_classification,attribute_product,attribute_values,'
+                        . 'attributes,categories,category_product,customer_group_product,customer_groups,'
+                        . 'customers,manufacturers,option_product_classification,option_product,'
+                        . 'options,products,product__images,products,warehouses'
+                ])
+                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
+                    ->daily()
+                    ->withoutOverlapping()
+                    ->onOneServer();
+            });
+        }
     }
 }

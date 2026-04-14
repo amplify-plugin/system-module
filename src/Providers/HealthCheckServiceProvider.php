@@ -24,6 +24,8 @@ use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Checks\Checks\ScheduleCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 use Spatie\Health\Facades\Health;
 use Spatie\Url\Url;
 
@@ -138,6 +140,20 @@ class HealthCheckServiceProvider extends ServiceProvider
                 ErpApiLogCheck::new()
                 ->if(config('amplify.erp.default') != 'default'),
             ]);
+
+            $this->app->booted(function () {
+
+                $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
+
+                $schedule->command(DispatchQueueCheckJobsCommand::class)
+                    ->everyTenMinutes()
+                    ->onOneServer();
+
+                $schedule->command(ScheduleCheckHeartbeatCommand::class)
+                    ->everyTenMinutes()
+                    ->onOneServer();
+
+            });
         }
     }
 }
