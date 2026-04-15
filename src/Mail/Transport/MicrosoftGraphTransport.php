@@ -2,11 +2,10 @@
 
 namespace Amplify\System\Mail\Transport;
 
-use Amplify\System\Services\MicrosoftGraphApiService;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Collection;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerInterface;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
@@ -17,12 +16,14 @@ use Symfony\Component\Mime\MessageConverter;
 
 class MicrosoftGraphTransport extends AbstractTransport
 {
+    protected const TOKEN_TTL = 3000;
+
     public function __construct(
-        protected MicrosoftGraphApiService $microsoftGraphApiService,
-        ?EventDispatcherInterface $dispatcher = null,
-        ?LoggerInterface $logger = null
+        protected readonly string $tenantId,
+        protected readonly string $clientId,
+        protected readonly string $clientSecret,
     ) {
-        parent::__construct($dispatcher, $logger);
+        parent::__construct();
     }
 
     public function __toString(): string
@@ -37,9 +38,7 @@ class MicrosoftGraphTransport extends AbstractTransport
     {
         $email = MessageConverter::toEmail($message->getOriginalMessage());
         $envelope = $message->getEnvelope();
-
         $html = $email->getHtmlBody();
-
         [$attachments, $html] = $this->prepareAttachments($email, $html);
 
         $payload = [
@@ -56,14 +55,39 @@ class MicrosoftGraphTransport extends AbstractTransport
                 'sender' => $this->transformEmailAddress($envelope->getSender()),
                 'attachments' => $attachments,
             ],
-            'saveToSentItems' => config('mail.mailers.microsoft-graph.save_to_sent_items', false) ?? false,
+            'saveToSentItems' => false,
         ];
 
         if (filled($headers = $this->getInternetMessageHeaders($email))) {
             $payload['message']['internetMessageHeaders'] = $headers;
         }
 
-        $this->microsoftGraphApiService->sendMail($envelope->getSender()->getAddress(), $payload);
+        $from = $envelope->getSender()->getAddress();
+
+        Http::withToken($this->getAccessToken())
+            ->baseUrl('https://graph.microsoft.com/v1.0')
+            ->post("/users/{$from}/sendMail", $payload)
+            ->throw();
+    }
+
+    protected function getAccessToken(): string
+    {
+        return Cache::remember('microsoft-graph-api-access-token-'.$this->tenantId, self::TOKEN_TTL, function (): string {
+            $response = Http::asForm()
+                ->post("https://login.microsoftonline.com/{$this->tenantId}/oauth2/v2.0/token", [
+                    'grant_type' => 'client_credentials',
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'scope' => 'https://graph.microsoft.com/.default',
+                ]);
+
+            $response->throw();
+
+            $accessToken = $response->json('access_token');
+            throw_unless(is_string($accessToken), new \Error('Microsoft Graph token response missing access_token.'));
+
+            return $accessToken;
+        });
     }
 
     protected function prepareAttachments(Email $email, ?string $html): array
@@ -88,10 +112,6 @@ class MicrosoftGraphTransport extends AbstractTransport
         return [$attachments, $html];
     }
 
-    /**
-     * @param  Collection<array-key, Address>  $recipients
-     * @return array<array-key, array<string, array<string, string>>>
-     */
     protected function transformEmailAddresses(Collection $recipients): array
     {
         return $recipients
@@ -108,9 +128,6 @@ class MicrosoftGraphTransport extends AbstractTransport
         ];
     }
 
-    /**
-     * @return Collection<array-key, Address>
-     */
     protected function getRecipients(Email $email, Envelope $envelope): Collection
     {
         return collect($envelope->getRecipients())
