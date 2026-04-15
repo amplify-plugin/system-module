@@ -16,13 +16,15 @@ use Symfony\Component\Mime\MessageConverter;
 
 class MicrosoftGraphTransport extends AbstractTransport
 {
-    protected const TOKEN_TTL = 3000;
-
     public function __construct(
         protected readonly string $tenantId,
         protected readonly string $clientId,
         protected readonly string $clientSecret,
     ) {
+        if (empty($tenantId) || empty($clientId) || empty($clientSecret)) {
+            throw new \Error("Microsoft Graph mail transport requires tenant_id, client_id, and client_secret.");
+        }
+
         parent::__construct();
     }
 
@@ -72,7 +74,9 @@ class MicrosoftGraphTransport extends AbstractTransport
 
     protected function getAccessToken(): string
     {
-        return Cache::remember('microsoft-graph-api-access-token-'.$this->tenantId, self::TOKEN_TTL, function (): string {
+        $ttl = config('mail.mailers.microsoft-graph.token_ttl', 3000);
+
+        return Cache::remember('microsoft-graph-api-access-token-'.$this->tenantId, $ttl, function (): string {
             $response = Http::asForm()
                 ->post("https://login.microsoftonline.com/{$this->tenantId}/oauth2/v2.0/token", [
                     'grant_type' => 'client_credentials',
