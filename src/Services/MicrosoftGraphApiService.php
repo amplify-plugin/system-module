@@ -2,7 +2,6 @@
 
 namespace Amplify\System\Services;
 
-use Amplify\System\Exceptions\SystemException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
@@ -46,7 +45,7 @@ class MicrosoftGraphApiService
             $accessToken = $response->json('access_token');
             throw_unless(
                 is_string($accessToken),
-                new SystemException('Expected response to contain key access_token of type string, got: '.var_export($accessToken, true).'.')
+                new \Error('Expected response to contain key access_token of type string, got: '.var_export($accessToken, true).'.')
             );
 
             return $accessToken;
