@@ -10,6 +10,7 @@ use Amplify\System\Providers\CommandServiceProvider;
 use Amplify\System\Providers\EventServiceProvider;
 use Amplify\System\Providers\FileManagerServiceProvider;
 use Amplify\System\Providers\HealthCheckServiceProvider;
+use Amplify\System\Providers\MicrosoftGraphMailProvider;
 use Amplify\System\Providers\ValidationServiceProvider;
 use Amplify\System\Support\AssetsLoader;
 use Illuminate\Foundation\AliasLoader;
@@ -43,6 +44,8 @@ class SystemServiceProvider extends ServiceProvider
         $this->app->register(ValidationServiceProvider::class);
 
         $this->app->register(FileManagerServiceProvider::class);
+
+        $this->app->register(MicrosoftGraphMailProvider::class);
 
         $this->app->singleton(AssetsLoader::class, fn () => new AssetsLoader);
     }
