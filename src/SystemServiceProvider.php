@@ -98,6 +98,10 @@ class SystemServiceProvider extends ServiceProvider
                     ->daily()
                     ->withoutOverlapping()
                     ->onOneServer();
+
+                $schedule->command('queue:prune-batches', ['--quiet' => true])
+                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
+                    ->daily();
             });
         }
     }
