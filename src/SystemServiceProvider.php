@@ -80,29 +80,5 @@ class SystemServiceProvider extends ServiceProvider
         }
 
         AliasLoader::getInstance()->alias('Asset', AssetsFacade::class);
-
-        if (config('app.env') === 'production'
-            && $this->app->runningInConsole()
-            && config('amplify.easyask_sftp_export', false)) {
-            $this->app->booted(function () {
-
-                $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
-
-                $schedule->command(EasyAskDatabaseExportCommand::class, [
-                    'tableList' => 'attribute_product_classification,attribute_product,attribute_values,'
-                        . 'attributes,categories,category_product,customer_group_product,customer_groups,'
-                        . 'customers,manufacturers,option_product_classification,option_product,'
-                        . 'options,products,product__images,products,warehouses'
-                ])
-                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
-                    ->daily()
-                    ->withoutOverlapping()
-                    ->onOneServer();
-
-                $schedule->command('queue:prune-batches', ['--quiet' => true])
-                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
-                    ->daily();
-            });
-        }
     }
 }
