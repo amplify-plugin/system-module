@@ -78,40 +78,4 @@ class CommandServiceProvider extends ServiceProvider
             });
         }
     }
-
-    private function registerScheduler()
-    {
-        if (config('app.env') === 'production' && $this->app->runningInConsole()) {
-            $this->app->booted(function () {
-                $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
-
-                if (config('amplify.easyask_sftp_export', false)) {
-                    $schedule->command(EasyAskDatabaseExportCommand::class, [
-                        'tableList' => 'attribute_product_classification,attribute_product,attribute_values,'
-                            . 'attributes,categories,category_product,customer_group_product,customer_groups,'
-                            . 'customers,manufacturers,option_product_classification,option_product,'
-                            . 'options,products,product__images,products,warehouses'
-                    ])
-                        ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
-                        ->daily()
-                        ->withoutOverlapping()
-                        ->onOneServer();
-                }
-
-                $schedule->command('queue:prune-batches', ['--quiet' => true])
-                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
-                    ->daily();
-
-                $schedule->command(DefragmentTablesCommand::class, ['--analyze' => true])
-                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
-                    ->dailyAt('03:00');
-
-                $schedule->command(DefragmentTablesCommand::class, ['--optimize' => true])
-                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
-                    ->saturdays()->at('05:00')
-                    ->withoutOverlapping()
-                    ->onOneServer();
-            });
-        }
-    }
 }
