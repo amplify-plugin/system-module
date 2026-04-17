@@ -286,7 +286,7 @@ class EmailService
                 $data[$key] = strtr($data[$key], [
                     '__product_name__' => $data['product']->product_name ?? null,
                     '__product_code__' => $data['product']->product_code ?? null,
-                    '__product_detail_link__' => "<a href='".frontendSingleProductURL($data['product'])."' target='_blank'>__product_code__</a>",
+                    '__product_detail_link__' => "<a href='".frontendSingleProductURL($data['product'])."' target='_blank'>". ($data['product']->product_code ?? null)."</a>",
                 ]);
             }
 
