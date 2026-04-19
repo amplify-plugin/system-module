@@ -26,14 +26,6 @@ class HealthCheckupCommand extends Command
             Artisan::call('optimize:clear --quiet');
         });
 
-        //        $this->components->task("Publish default assets", function () {
-        //            Artisan::call('vendor:publish --tag=fintech-auth-assets --quiet --force');
-        //        });
-        //
-        //        $this->components->task("Publish file manager assets", function () {
-        //            Artisan::call('vendor:publish --tag=fm-assets --quiet --force');
-        //        });
-
         $this->components->task('Flush permission cache', function () {
             Artisan::call('permission:cache-reset --quiet');
         });

@@ -47,9 +47,15 @@ trait ExceptionHandlerTrait
         if ($exception instanceof TokenMismatchException) {
 
             // Return JSON for API / AJAX requests
-            if ($request->expectsJson()) {
+            if ($this->shouldReturnJson($request, $exception)) {
+                logger()->warning('CSRF Token MisMatch: Security token expired.', [
+                    'url' => $request->fullUrl(),
+                    'ip' => $request->ip(),
+                    'user_id' => auth()->id(),
+                ]);
+
                 return response()->json(
-                    ['message' => 'Please refresh the page and try again.'],
+                    ['message' => __('Security Token Expired. Please refresh the page and try again.')],
                     419);
             }
 
@@ -57,8 +63,9 @@ trait ExceptionHandlerTrait
             return redirect()
                 ->back()
                 ->withInput()
-                ->withErrors([
-                    'message' => 'Please refresh the page and try again.',
+                ->with([
+                    'alert' => true,
+                    'error' => __('Security Token Expired. Please refresh the page and try again.'),
                 ]);
         }
 

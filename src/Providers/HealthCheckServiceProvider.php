@@ -24,6 +24,8 @@ use Spatie\Health\Checks\Checks\QueueCheck;
 use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Checks\Checks\ScheduleCheck;
 use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
+use Spatie\Health\Commands\DispatchQueueCheckJobsCommand;
+use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 use Spatie\Health\Facades\Health;
 use Spatie\Url\Url;
 
@@ -34,7 +36,7 @@ class HealthCheckServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('production', 'staging')) {
+        if (config('app.env') == 'production') {
 
             Check::macro('easyAskUrl', function () {
                 $url = Url::fromString('/EasyAsk/apps/Advisor.jsp')
@@ -113,12 +115,12 @@ class HealthCheckServiceProvider extends ServiceProvider
                     ->method('GET'),
 
                 QueueCheck::new()
-                    ->failWhenHealthJobTakesLongerThanMinutes(10)
-                    ->onQueue(['default', 'production', 'worker'])
+                    ->failWhenHealthJobTakesLongerThanMinutes(12)
+                    ->onQueue(['default', 'production'])
                     ->everyTenMinutes(),
 
                 RedisCheck::new()
-                    ->if(class_exists('Redis')),
+                    ->if(config('cache.default') == 'redis'),
 
                 ScheduleCheck::new()
                     ->everyTenMinutes()
@@ -138,6 +140,21 @@ class HealthCheckServiceProvider extends ServiceProvider
                 ErpApiLogCheck::new()
                 ->if(config('amplify.erp.default') != 'default'),
             ]);
+
+            if ($this->app->runningInConsole()) {
+                $this->app->booted(function () {
+
+                    $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
+
+                    $schedule->command(DispatchQueueCheckJobsCommand::class)
+                        ->everyTenMinutes()
+                        ->onOneServer();
+
+                    $schedule->command(ScheduleCheckHeartbeatCommand::class)
+                        ->everyTenMinutes()
+                        ->onOneServer();
+                });
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ class SitemapGenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'amplify:sitemap-generate  {--category-depth=1} {--product-chunk-size=1000}';
+    protected $signature = 'amplify:sys-generate-sitemap  {--category-depth=1} {--product-chunk-size=1000}';
 
     /**
      * The console command description.

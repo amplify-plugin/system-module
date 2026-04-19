@@ -286,7 +286,7 @@ class EmailService
                 $data[$key] = strtr($data[$key], [
                     '__product_name__' => $data['product']->product_name ?? null,
                     '__product_code__' => $data['product']->product_code ?? null,
-                    '__product_detail_link__' => "<a href='".frontendSingleProductURL($data['product'])."' target='_blank'>__product_code__</a>",
+                    '__product_detail_link__' => "<a href='".frontendSingleProductURL($data['product'])."' target='_blank'>". ($data['product']->product_code ?? null)."</a>",
                 ]);
             }
 
@@ -767,7 +767,7 @@ class EmailService
             'customer' => $contact->customer,
             'subject' => $eventTemplate->subject,
             'email_content' => strtr($eventTemplate->email_body, [
-                '__email_verification_url__' => "<a href='{$button_url}' target='_blank'>{$button_url}</a>",
+                '__email_verification_url__' => "<a href='{$button_url}' target='_blank'>Verify Email</a>",
             ]),
             'show_button' => $eventTemplate->show_button === 1,
             'button_url' => $button_url,

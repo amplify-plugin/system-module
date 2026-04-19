@@ -2,30 +2,19 @@
 
 namespace Amplify\System\Providers;
 
-use Amplify\System\Commands\AddProductSlugCommand;
 use Amplify\System\Commands\AddProductThumbnailCommand;
-use Amplify\System\Commands\EasyAskDatabaseExportCommand;
-use Amplify\System\Commands\BackupRunCommand;
-use Amplify\System\Commands\CleanApiLogCommand;
-use Amplify\System\Commands\CleanAuditCommand;
 use Amplify\System\Commands\CreateAllLoginCommand;
-use Amplify\System\Commands\CrudControllerBackpackCommand;
-use Amplify\System\Commands\CsdErpTokenRefreshCommand;
-use Amplify\System\Commands\CustomerRegisteredReportCommand;
+use Amplify\System\Commands\DefragmentTablesCommand;
 use Amplify\System\Commands\DeleteProductsCommand;
+use Amplify\System\Commands\EasyAskDatabaseExportCommand;
 use Amplify\System\Commands\FetchTracePartsCatalogCommand;
 use Amplify\System\Commands\HealthCheckupCommand;
 use Amplify\System\Commands\IncrementalCatalogUpdate;
 use Amplify\System\Commands\MoveStorageToCloud;
-use Amplify\System\Commands\RemoveUnusedAddressesCommand;
-use Amplify\System\Commands\ScopeMakeCommand;
 use Amplify\System\Commands\SetupEnvCommand;
 use Amplify\System\Commands\SitemapGenerateCommand;
-use Amplify\System\Commands\SyncPermissionCommand;
 use Amplify\System\Commands\TracepartsImportXmlData;
-use Amplify\System\Commands\TraitMakeCommand;
 use Amplify\System\Commands\TransformProduct;
-use Amplify\System\Commands\UpgradeIssueFix;
 use Illuminate\Support\ServiceProvider;
 
 class CommandServiceProvider extends ServiceProvider
@@ -34,37 +23,59 @@ class CommandServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                AddProductSlugCommand::class,
                 EasyAskDatabaseExportCommand::class,
-                CleanApiLogCommand::class,
-                CleanAuditCommand::class,
                 CreateAllLoginCommand::class,
                 DeleteProductsCommand::class,
                 FetchTracePartsCatalogCommand::class,
                 HealthCheckupCommand::class,
                 IncrementalCatalogUpdate::class,
                 MoveStorageToCloud::class,
-                RemoveUnusedAddressesCommand::class,
-                ScopeMakeCommand::class,
                 SetupEnvCommand::class,
-                SyncPermissionCommand::class,
                 TracepartsImportXmlData::class,
-                TraitMakeCommand::class,
                 TransformProduct::class,
-                UpgradeIssueFix::class,
-                CustomerRegisteredReportCommand::class,
-                CsdErpTokenRefreshCommand::class,
                 AddProductThumbnailCommand::class,
                 SitemapGenerateCommand::class,
-                BackupRunCommand::class,
+                DefragmentTablesCommand::class
             ]);
 
-            if (class_exists('Backpack\Generators\Services\BackpackCommand')) {
-                $this->commands([
-                    CrudControllerBackpackCommand::class,
-                ]);
-            }
+            $this->registerScheduler();
         }
+    }
 
+    private function registerScheduler()
+    {
+        if (config('app.env') === 'production') {
+            $this->app->booted(function () {
+                $schedule = app(\Illuminate\Console\Scheduling\Schedule::class);
+
+                if (config('amplify.easyask_sftp_export', false)) {
+                    $schedule->command(EasyAskDatabaseExportCommand::class, [
+                        'tableList' => 'attribute_product_classification,attribute_product,attribute_values,'
+                            . 'attributes,categories,category_product,customer_group_product,customer_groups,'
+                            . 'customers,manufacturers,option_product_classification,option_product,'
+                            . 'options,products,product__images,products,warehouses'
+                    ])
+                        ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
+                        ->daily()
+                        ->withoutOverlapping()
+                        ->onOneServer();
+                }
+
+                $schedule->command('queue:prune-batches', ['--quiet' => true])
+                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
+                    ->daily();
+
+                $schedule->command(DefragmentTablesCommand::class, ['--analyze'])
+                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
+                    ->dailyAt('03:00');
+
+                $schedule->command(DefragmentTablesCommand::class, ['--optimize'])
+                    ->timezone(\config('amplify.schedule.timezone', \config('app.timezone', 'UTC')))
+                    ->saturdays()
+                    ->at('04:00')
+                    ->withoutOverlapping()
+                    ->onOneServer();
+            });
+        }
     }
 }
