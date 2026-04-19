@@ -41,7 +41,7 @@ class ErpInventory implements AddToCart
                 ->first();
 
             if ($inventory) {
-                $item['uom'] = $inventory->UnitOfMeasure ?? 'EA';
+                $item['uom'] = $inventory->PricingUnitOfMeasure ?? 'EA';
                 $item['unitprice'] = $inventory->OrderPrice;
                 $item['subtotal'] = $inventory->ExtendedPrice;
                 $item['product_back_order'] = $inventory->AllowBackOrder ?? $item['product_back_order'] ?? false;
