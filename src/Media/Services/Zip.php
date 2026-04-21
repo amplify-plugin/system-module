@@ -15,10 +15,7 @@ use ZipArchive;
 class Zip
 {
     protected $zip;
-
     protected $request;
-
-    protected $pathPrefix;
 
     /**
      * Zip constructor.
@@ -27,10 +24,6 @@ class Zip
     {
         $this->zip = $zip;
         $this->request = $request;
-        $this->pathPrefix = Storage::disk($request->input('disk'))
-            ->getDriver()
-            ->getAdapter()
-            ->getPathPrefix();
     }
 
     /**
@@ -38,13 +31,12 @@ class Zip
      *
      * @return array
      */
-    public function create()
+    public function create(): array
     {
-
         if ($this->createArchive()) {
             return [
                 'result' => [
-                    'status' => 'success',
+                    'status'  => 'success',
                     'message' => null,
                 ],
             ];
@@ -52,7 +44,7 @@ class Zip
 
         return [
             'result' => [
-                'status' => 'warning',
+                'status'  => 'warning',
                 'message' => 'zipError',
             ],
         ];
@@ -63,12 +55,12 @@ class Zip
      *
      * @return array
      */
-    public function extract()
+    public function extract(): array
     {
         if ($this->extractArchive()) {
             return [
                 'result' => [
-                    'status' => 'success',
+                    'status'  => 'success',
                     'message' => null,
                 ],
             ];
@@ -76,10 +68,15 @@ class Zip
 
         return [
             'result' => [
-                'status' => 'warning',
+                'status'  => 'warning',
                 'message' => 'zipError',
             ],
         ];
+    }
+
+    protected function prefixer($path): string
+    {
+        return Storage::disk($this->request->input('disk'))->path($path);
     }
 
     /**
@@ -87,29 +84,47 @@ class Zip
      *
      * @return bool
      */
-    protected function createArchive()
+    protected function createArchive(): bool
     {
         // elements list
         $elements = $this->request->input('elements');
 
+        // Check files for traversal
+        if (isset($elements['files']) && is_array($elements['files'])) {
+            foreach ($elements['files'] as $file) {
+                if (strpos($file, '..') !== false) {
+                    event(new ZipFailed($this->request));
+                    return false;
+                }
+            }
+        }
+
+        // Check directories for traversal
+        if (isset($elements['directories']) && is_array($elements['directories'])) {
+            foreach ($elements['directories'] as $directory) {
+                if (strpos($directory, '..') !== false) {
+                    event(new ZipFailed($this->request));
+                    return false;
+                }
+            }
+        }
+
         // create or overwrite archive
         if ($this->zip->open(
-            $this->createName(),
-            ZipArchive::OVERWRITE | ZipArchive::CREATE
-        ) === true
+                $this->createName(),
+                ZipArchive::OVERWRITE | ZipArchive::CREATE
+            ) === true
         ) {
-            // files processing
-            if ($elements['files']) {
+            if (isset($elements['files']) && $elements['files']) {
                 foreach ($elements['files'] as $file) {
                     $this->zip->addFile(
-                        $this->pathPrefix.$file,
+                        $this->prefixer($file),
                         basename($file)
                     );
                 }
             }
 
-            // directories processing
-            if ($elements['directories']) {
+            if (isset($elements['directories']) && $elements['directories']) {
                 $this->addDirs($elements['directories']);
             }
 
@@ -130,14 +145,18 @@ class Zip
      *
      * @return bool
      */
-    protected function extractArchive()
+    protected function extractArchive(): bool
     {
-        $zipPath = $this->pathPrefix.$this->request->input('path');
-
+        $zipPath = $this->prefixer($this->request->input('path'));
         $rootPath = dirname($zipPath);
 
         // extract to new folder
         $folder = $this->request->input('folder');
+
+        if ($folder && (strpos($folder, '..') !== false || strpos($folder, '://') !== false)) {
+            event(new UnzipFailed($this->request));
+            return false;
+        }
 
         if ($this->zip->open($zipPath) === true) {
             $this->zip->extractTo($folder ? $rootPath.'/'.$folder : $rootPath);
@@ -155,6 +174,8 @@ class Zip
 
     /**
      * Add directories - recursive
+     *
+     * @param  array  $directories
      */
     protected function addDirs(array $directories)
     {
@@ -162,7 +183,7 @@ class Zip
 
             // Create recursive directory iterator
             $files = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($this->pathPrefix.$directory),
+                new RecursiveDirectoryIterator($this->prefixer($directory)),
                 RecursiveIteratorIterator::LEAVES_ONLY
             );
 
@@ -174,12 +195,12 @@ class Zip
                     strlen($this->fullPath($this->request->input('path')))
                 );
 
-                if (! $file->isDir()) {
+                if (!$file->isDir()) {
                     // Add current file to archive
                     $this->zip->addFile($filePath, $relativePath);
                 } else {
                     // add empty folders
-                    if (! glob($filePath.'/*')) {
+                    if (!glob($filePath.'/*')) {
                         $this->zip->addEmptyDir($relativePath);
                     }
                 }
@@ -192,7 +213,7 @@ class Zip
      *
      * @return string
      */
-    protected function createName()
+    protected function createName(): string
     {
         return $this->fullPath($this->request->input('path'))
             .$this->request->input('name');
@@ -201,11 +222,12 @@ class Zip
     /**
      * Generate full path
      *
+     * @param $path
      *
      * @return string
      */
-    protected function fullPath($path)
+    protected function fullPath($path): string
     {
-        return $path ? $this->pathPrefix.$path.'/' : $this->pathPrefix;
+        return $path ? $this->prefixer($path).'/' : $this->prefixer('');
     }
 }
