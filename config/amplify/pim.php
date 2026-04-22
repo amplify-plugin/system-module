@@ -7,6 +7,7 @@ return [
     'categorization_required' => true,
     'use_product_specific_detail_page' => true,
     'use_minimum_order_quantity' => false,
+    'use_product_code_unique_check' => true,
     'mandatory_fields' => [],
 
     // @see product/create/tabs/BasicInfo.vue for usage
