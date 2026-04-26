@@ -128,4 +128,12 @@ interface ConfigRepository
      * null or value in minutes
      */
     public function getAclRulesCache(): ?int;
+
+    /**
+     * Whether to slugify uploaded filenames (basename only; extension preserved).
+     *
+     * @return bool|null
+     */
+    public function getSlugifyNames(): ?bool;
+
 }

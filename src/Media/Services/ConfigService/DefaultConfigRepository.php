@@ -179,4 +179,15 @@ class DefaultConfigRepository implements ConfigRepository
     {
         return config('file-manager.aclRulesCache');
     }
+
+
+    /**
+     * Whether to slugify filenames of uploaded files.
+     *
+     * @return bool|null
+     */
+    public function getSlugifyNames(): ?bool
+    {
+        return config('file-manager.slugifyNames', false);
+    }
 }

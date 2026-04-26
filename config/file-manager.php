@@ -164,4 +164,9 @@ return [
             // ['disk' => 'public', 'path' => 'files/*', 'access' => 1],
         ],
     ],
+
+    /**
+     * Enable slugification of filenames of uploaded files.
+     */
+    'slugifyNames' => false,
 ];
