@@ -48,12 +48,6 @@ trait ExceptionHandlerTrait
 
             // Return JSON for API / AJAX requests
             if ($this->shouldReturnJson($request, $exception)) {
-                logger()->warning('CSRF Token MisMatch: Security token expired.', [
-                    'url' => $request->fullUrl(),
-                    'ip' => $request->ip(),
-                    'user_id' => auth()->id(),
-                ]);
-
                 return response()->json(
                     ['message' => __('Security Token Expired. Please refresh the page and try again.')],
                     419);
