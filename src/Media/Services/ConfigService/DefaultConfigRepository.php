@@ -110,6 +110,14 @@ class DefaultConfigRepository implements ConfigRepository
     }
 
     /**
+     * Whether to slugify filenames of uploaded files
+     */
+    public function getSlugifyNames(): ?bool
+    {
+        return config('file-manager.slugifyNames', false);
+    }
+
+    /**
      * Show / Hide system files and folders
      */
     public function getHiddenFiles(): bool

@@ -80,6 +80,11 @@ interface ConfigRepository
     public function getAllowFileTypes(): array;
 
     /**
+     * Whether to slugify uploaded filenames (basename only; extension preserved)
+     */
+    public function getSlugifyNames(): ?bool;
+
+    /**
      * Show / Hide system files and folders
      */
     public function getHiddenFiles(): bool;
