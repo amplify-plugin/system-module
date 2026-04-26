@@ -110,14 +110,6 @@ class DefaultConfigRepository implements ConfigRepository
     }
 
     /**
-     * Whether to slugify filenames of uploaded files
-     */
-    public function getSlugifyNames(): ?bool
-    {
-        return config('file-manager.slugifyNames', false);
-    }
-
-    /**
      * Show / Hide system files and folders
      */
     public function getHiddenFiles(): bool
@@ -186,5 +178,16 @@ class DefaultConfigRepository implements ConfigRepository
     public function getAclRulesCache(): ?int
     {
         return config('file-manager.aclRulesCache');
+    }
+
+
+    /**
+     * Whether to slugify filenames of uploaded files.
+     *
+     * @return bool|null
+     */
+    public function getSlugifyNames(): ?bool
+    {
+        return config('file-manager.slugifyNames', false);
     }
 }
