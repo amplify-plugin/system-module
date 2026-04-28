@@ -855,7 +855,7 @@ class EmailService
          */
         $button_url = str_replace(
             '__customer_details_url_for_request_received__',
-            '/admin/customer-registration/'.$customer->id.'/show',
+            '/admin/customer-registration/'.$customer->id.'/edit',
             $email_data->button_url
         );
 
