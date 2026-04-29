@@ -40,14 +40,22 @@ class Amplify
 
     public static function backendDefaultPermissions(?array $permissions = null): Collection
     {
-        $defaultPermissions = config('amplify.backend.permissions', []);
+        $defaultPermissions = [];
+
+        if (function_exists('backend_permissions')) {
+            $defaultPermissions = backend_permissions();
+        }
 
         return new Collection($permissions ?? $defaultPermissions);
     }
 
     public static function frontendDefaultPermissions(?array $permissions = null): Collection
     {
-        $defaultPermissions = config('amplify.frontend.permissions', []);
+        $defaultPermissions = [];
+
+        if (function_exists('frontend_permissions')) {
+            $defaultPermissions = frontend_permissions();
+        }
 
         return new Collection($permissions ?? $defaultPermissions);
     }
