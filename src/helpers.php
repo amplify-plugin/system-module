@@ -1016,13 +1016,6 @@ if (! function_exists('str_slug')) {
     }
 }
 
-if (! function_exists('is_icecat_username_set')) {
-    function is_icecat_username_set()
-    {
-        return strlen(config('amplify.icecat.icecat_username', '')) > 0;
-    }
-}
-
 if (! function_exists('getEasyaskSkuProductImage')) {
     function getEasyaskSkuProductImage($Product): array
     {
