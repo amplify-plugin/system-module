@@ -3,45 +3,39 @@
 namespace Amplify\System\Abstracts;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Illuminate\Support\Str;
 
 abstract class BackpackCustomCrudController extends CrudController
 {
     public function __construct()
     {
-        parent::__construct();
+        if ($this->crud) {
+            return;
+        }
 
         $this->middleware(function ($request, $next) {
-            if (! backpack_user()->can($this->crud->entity_name.'.list')) {
-                $this->crud->denyAccess('list');
-            }
-
-            //            if (! backpack_user()->can($this->crud->entity_name.'.show')) {
-            //            $this->crud->denyAccess('show');
-            //            }
-
-            if (! backpack_user()->can($this->crud->entity_name.'.reorder')) {
-                $this->crud->denyAccess('reorder');
-            }
-
-            if (! backpack_user()->can($this->crud->entity_name.'.create')) {
-                $this->crud->denyAccess('create');
-            }
-
-            if (! backpack_user()->can($this->crud->entity_name.'.update')) {
-                $this->crud->denyAccess('update');
-            }
-
-            if (! backpack_user()->can($this->crud->entity_name.'.delete')) {
-                $this->crud->denyAccess('delete');
-            }
+            $this->crud = app('crud');
+            $this->crud->setRequest($request);
+            $this->setupDefaults();
+            $this->setup();
+            $this->setupConfigurationForCurrentOperation();
 
             $this->crud->removeSaveAction('save_and_edit');
             $this->crud->removeSaveAction('save_and_new');
             $this->crud->removeSaveAction('save_and_preview');
-            //            $this->crud->removeButton('show');
+
+            $this->crud->removeButton('show');
+            $this->crud->addButton('top', 'create', 'view', 'backend::buttons.create', 'beginning');
+
+            $operations = ['list', 'create', 'show', 'update', 'delete', 'reorder', 'clone'];
+
+            foreach ($operations as $op) {
+                if (!backpack_user()->can("{$this->crud->entity_name}.{$op}")) {
+                    $this->crud->denyAccess([$op]);
+                }
+            }
 
             return $next($request);
         });
-
     }
 }
