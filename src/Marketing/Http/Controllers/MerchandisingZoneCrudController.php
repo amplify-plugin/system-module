@@ -107,18 +107,6 @@ class MerchandisingZoneCrudController extends BackpackCustomCrudController
      */
     protected function setupUpdateOperation()
     {
-        $this->crud->setUpdateView('backend::pages.merchandising_zone.create');
-
         $this->setupCreateOperation();
-    }
-
-    public function fetchMerchandisingZoneSlug(): JsonResponse
-    {
-        $easyask_key = request()->easyask_key;
-        $id = request()->id ?? null;
-
-        return response()->json([
-            'easyask_key' => getMerchandisingZoneSlug($easyask_key, $id),
-        ]);
     }
 }

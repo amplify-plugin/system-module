@@ -26,7 +26,7 @@ class MerchandisingZoneRequest extends FormRequest
     {
         return [
             'name' => 'required|min:3|max:255',
-            'easyask_key' => 'required|min:3',
+            'easyask_key' => 'required|min:3|unique:merchandising_zones,easyask_key,' . $this->route('id'),
             'description' => 'required',
         ];
     }
