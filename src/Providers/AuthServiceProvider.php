@@ -27,7 +27,7 @@ class AuthServiceProvider extends ServiceProvider
 
             if ($user instanceof User) {
                 // Allow Everything
-                if ($user->is_admin == 1) {
+                if ($user->isAdmin()) {
                     return true;
                 }
 
@@ -43,7 +43,9 @@ class AuthServiceProvider extends ServiceProvider
                     return true;
                 }
                 // Continue Check
-                setPermissionsTeamId($user->customer()->id);
+                (!config('amplify.security.single_team_for_customers'))
+                    ? setPermissionsTeamId($user->customer()->id)
+                    : setPermissionsTeamId(null);
 
                 return null;
             }
