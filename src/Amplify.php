@@ -18,6 +18,7 @@ class Amplify
      *     <tr><td>u</td><td>update</td></tr>
      *     <tr><td>r</td><td>remove</td></tr>
      *     <tr><td>ro</td><td>reorder</td></tr>
+     *     <tr><td>dt</td><td>details</td></tr>
      *     </tbody></table>
      * @return Collection
      */
@@ -32,7 +33,8 @@ class Amplify
             'a' => 'add',
             'u' => 'update',
             'r' => 'remove',
-            'ro' => 'reorder'
+            'ro' => 'reorder',
+            'dt' => 'details',
         ];
 
         return new Collection($aliases ?? $defaultAliases);
