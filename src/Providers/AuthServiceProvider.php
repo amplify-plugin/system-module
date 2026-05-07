@@ -27,25 +27,26 @@ class AuthServiceProvider extends ServiceProvider
 
             if ($user instanceof User) {
                 // Allow Everything
-                if ($user->is_admin == 1) {
+                if ($user->isAdmin()) {
                     return true;
                 }
 
                 // Continue Check
-                setPermissionsTeamId(User::SYSTEM_TEAM_ID);
-
-                return null;
+                if (config('permission.teams')) {
+                    setPermissionsTeamId(User::SYSTEM_TEAM_ID);
+                }
             }
 
             if ($user instanceof Contact) {
                 // Allow Everything
-                if (! config('amplify.basic.is_permission_system_enabled')) {
+                if (!config('amplify.basic.is_permission_system_enabled')) {
                     return true;
                 }
-                // Continue Check
-                setPermissionsTeamId($user->customer()->id);
 
-                return null;
+                // Continue Check
+                if (config('permission.teams')) {
+                    setPermissionsTeamId($user->customer->id);
+                }
             }
 
             return null;
