@@ -315,11 +315,19 @@ class FileManager
      */
     public function thumbnails($disk, $path): mixed
     {
+        $content = Storage::disk($disk)->get($path);
+        $image = $this->createImageInstance($content);
+
+        if (method_exists($image, 'coverDown')) {
+            $image = $image->coverDown(80, 80);
+        } else {
+            $image = $image->fit(80, 80, function ($constraint) {
+                $constraint->upsize();
+            });
+        }
+
         return response()->make(
-            Image::read(
-                Storage::disk($disk)->get($path))
-                ->coverDown(80, 80)
-                ->encode(),
+            $image->encode(),
             200,
             ['Content-Type' => Storage::disk($disk)->mimeType($path)]
         );
@@ -336,11 +344,31 @@ class FileManager
      */
     public function preview($disk, $path): mixed
     {
+        $content = Storage::disk($disk)->get($path);
+        $image = $this->createImageInstance($content);
+
         return response()->make(
-            Image::read(Storage::disk($disk)->get($path))->encode(),
+            $image->encode(),
             200,
             ['Content-Type' => Storage::disk($disk)->mimeType($path)]
         );
+    }
+
+    /**
+     * Create an Intervention Image instance compatible with v2/v3 APIs.
+     *
+     * @param string $content
+     * @return mixed
+     */
+    protected function createImageInstance(string $content): mixed
+    {
+        $manager = Image::getFacadeRoot();
+
+        if ($manager && method_exists($manager, 'read')) {
+            return Image::read($content);
+        }
+
+        return Image::make($content);
     }
 
     /**
