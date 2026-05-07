@@ -14,5 +14,4 @@ return [
 HTML,
     'skip_contact_approval' => true,
     'verification_method' => 'email',
-    'single_team_for_customers' => true
 ];
