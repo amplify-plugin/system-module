@@ -3,6 +3,7 @@
 namespace Amplify\System\Traits;
 
 use Amplify\ErpApi\Facades\ErpApi;
+use Illuminate\Support\Carbon;
 
 trait OrderEmailFormatingTrait
 {
@@ -184,16 +185,20 @@ trait OrderEmailFormatingTrait
 
         $data[$key] = str_replace(
             '__entry_date__',
-            $this->getOrderDataByKey(
-                $data['order']->erp_details, 'EntryDate'
+            $this->formatErpDetailDate(
+                $this->getOrderDataByKey(
+                    $data['order']->erp_details, 'EntryDate'
+                )
             ),
             $data[$key]
         );
 
         $data[$key] = str_replace(
             '__estimate_ship_date__',
-            $this->getOrderDataByKey(
-                $data['order']->erp_details, 'RequestedShipDate'
+            $this->formatErpDetailDate(
+                $this->getOrderDataByKey(
+                    $data['order']->erp_details, 'RequestedShipDate'
+                )
             ),
             $data[$key]
         );
@@ -212,8 +217,10 @@ trait OrderEmailFormatingTrait
 
         $data[$key] = str_replace(
             '__invoice_date__',
-            $this->getOrderDataByKey(
-                $data['order']->erp_details, 'InvoiceDate'
+            $this->formatErpDetailDate(
+                $this->getOrderDataByKey(
+                    $data['order']->erp_details, 'InvoiceDate'
+                )
             ),
             $data[$key]
         );
@@ -258,6 +265,22 @@ trait OrderEmailFormatingTrait
         }
 
         return '';
+    }
+
+    private function formatErpDetailDate(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return '';
+        }
+
+        try {
+            return Carbon::parse($value)
+                ->timezone(config('app.timezone'))
+                ->format('m/d/Y');
+        } catch (\Throwable) {
+            return $value;
+        }
     }
 
     private function getOrderNote(array $data): string
