@@ -277,7 +277,7 @@ trait OrderEmailFormatingTrait
         try {
             return Carbon::parse($value)
                 ->timezone(config('app.timezone'))
-                ->format('m/d/Y');
+                ->format(config('amplify.basic.date_format', 'm/d/Y'));
         } catch (\Throwable) {
             return $value;
         }
