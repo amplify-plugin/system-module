@@ -1165,6 +1165,7 @@ if (!function_exists('product_code_url_map')) {
     {
         $replacements = [
                 '/' => '~',
+                ' ' => '%20'
         ];
 
         if ($decode) {
@@ -1188,7 +1189,7 @@ if (! function_exists('frontendSingleProductURL')) {
         $identifier = returnProductSlug($product);
 
         if (config('amplify.frontend.easyask_single_product_index') == 'product_code') {
-            $identifier = urlencode(product_code_url_map($identifier));
+            $identifier = product_code_url_map($identifier);
         }
 
         $params['identifier'] = $identifier;
