@@ -26,7 +26,9 @@ abstract class BackpackCustomCrudController extends CrudController
             $this->crud->removeSaveAction('save_and_preview');
 
 //            $this->crud->removeButton('show');
-            $this->crud->modifyButton('create', ['content' => 'backend::buttons.create']);
+            if ($this->crud->buttons()->firstWhere('name', 'create')) {
+                $this->crud->modifyButton('create', ['content' => 'backend::buttons.create']);
+            }
 
             Permission::selectRaw("`name`, REPLACE(`name`, '{$this->crud->entity_name}.', '') as `operation`")
                 ->where('guard_name', User::AUTH_GUARD)
