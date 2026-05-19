@@ -19,5 +19,12 @@ class QueueFailedListener
             $uuid = $event->job->uuid();
             manageImportJobHistory($uuid, $command->importJobId, $isFinalJob);
         }
+
+        $exception = new \Error(
+            message: "[$event->connectionName] {$event->job->resolveName()} Job Failed. Error: {$event->exception->getMessage()}",
+            previous: $event->exception
+        );
+
+        report($exception);
     }
 }
