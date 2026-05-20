@@ -1117,6 +1117,15 @@ class EmailService
         }
     }
 
+    private function parseCommaSeparatedEmails(?string $emails): array
+    {
+        if (empty($emails)) {
+            return [];
+        }
+
+        return array_filter(array_map('trim', explode(',', $emails)));
+    }
+
     private function getContactEmail($customer, $contact)
     {
         if (! empty($contact) && $contact instanceof Contact) {
@@ -1151,7 +1160,7 @@ class EmailService
             }
 
             if ($email_action->is_get_customer_business_contact) {
-                $emails[] = $customer->business_contact;
+                $emails = array_merge($emails, $this->parseCommaSeparatedEmails($customer->business_contact));
             }
 
             if ($email_action->is_get_contact) {
@@ -1165,7 +1174,8 @@ class EmailService
             }
 
             if ($email_action->is_get_customer_business_contact) {
-                $emails[] = ! empty($customer->customer) ? $customer->customer->business_contact : '';
+                $businessContact = ! empty($customer->customer) ? $customer->customer->business_contact : '';
+                $emails = array_merge($emails, $this->parseCommaSeparatedEmails($businessContact));
             }
 
             if ($email_action->is_get_contact) {
@@ -1183,7 +1193,7 @@ class EmailService
             $emails[] = $quotation->QuotedByEmail;
         }
 
-        $extra_emails = explode(',', str_replace([' ', "\t", "\n", "\r"], '', trim($email_action->recipient_emails)));
+        $extra_emails = $this->parseCommaSeparatedEmails($email_action->recipient_emails);
 
         $filteredEmails = filter_var_array([...$emails, ...$extra_emails], FILTER_SANITIZE_EMAIL);
 
