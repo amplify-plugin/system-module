@@ -12,6 +12,8 @@ return [
                     We won't track your information when you visit our site. But in order to comply with your preferences, we'll have to use just one tiny cookie so that you're not asked to make this choice again.
                 </p>
 HTML,
-    'skip_contact_approval' => true,
-    'verification_method' => 'email',
+    'skip_request_account_approval' => false,
+    'request_account_verification_method' => 'backend',
+    'skip_new_retail_customer_approval' => false,
+    'new_retail_customer_verification_method' => 'backend',
 ];
