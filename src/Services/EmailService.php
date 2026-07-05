@@ -128,10 +128,10 @@ class EmailService
         /*
          *  Generate admin button url for either quotation details or order details
          */
-        if (optional($email_data)->button_url === '__order_details_url__') {
+        if (in_array(optional($email_data)->button_url, ['__order_details_url__', '__admin_order_details_url__'], true)) {
             $button_url_admin = str_replace(
-                '__order_details_url__',
-                '/admin/order/'.$order->id.'/show',
+                $email_data->button_url,
+                route('order.show', $order->id),
                 $email_data->button_url
             );
         } elseif (optional($email_data)->button_url === '__quotation_details_url__') {
@@ -1003,7 +1003,7 @@ class EmailService
         if (optional($email_data)->button_url === '__admin_order_details_url__') {
             $button_url = str_replace(
                 '__admin_order_details_url__',
-                '/admin/order-line?order_line_id='.$order->id,
+                route('order.show', $order->id),
                 optional($email_data)->button_url
             );
         }

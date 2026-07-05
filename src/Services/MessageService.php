@@ -111,10 +111,10 @@ class MessageService
         /*
          *  Generate admin button url for either quotation details or order details
          */
-        if (optional($message_data)->button_url === '__order_details_url__') {
+        if (in_array(optional($message_data)->button_url, ['__order_details_url__', '__admin_order_details_url__'], true)) {
             $button_url_admin = str_replace(
-                '__order_details_url__',
-                '/admin/order/'.$order->id.'/show',
+                $message_data->button_url,
+                route('order.show', $order->id),
                 $message_data->button_url
             );
         } elseif (optional($message_data)->button_url === '__quotation_details_url__') {
@@ -205,6 +205,20 @@ class MessageService
                 '__customer_quotation_details_url__',
                 '<a href="'.route('frontend.quotation.details', $data['order']->id).'">View Details</a>',
                 '<a href="'.route('frontend.quotations.show', $data['order']->erp_order_id).'">View Details</a>',
+                $data['message_content']
+            );
+
+            $adminOrderDetailsUrl = route('order.show', $data['order']->id);
+
+            $data['message_content'] = str_replace(
+                '__admin_order_details_url__',
+                '<a href="'.$adminOrderDetailsUrl.'">View Details</a>',
+                $data['message_content']
+            );
+
+            $data['message_content'] = str_replace(
+                '__order_details_url__',
+                '<a href="'.$adminOrderDetailsUrl.'">View Details</a>',
                 $data['message_content']
             );
         }
@@ -374,7 +388,7 @@ class MessageService
         if (optional($message_data)->button_url === '__admin_order_details_url__') {
             $button_url = str_replace(
                 '__admin_order_details_url__',
-                '/admin/order-line?order_line_id='.$order->id,
+                route('order.show', $order->id),
                 optional($message_data)->button_url
             );
         }
