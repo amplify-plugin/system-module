@@ -203,15 +203,12 @@ trait OrderEmailFormatingTrait
             $data[$key]
         );
 
+        $order = $data['order'];
+        $order->loadMissing(['orderLines.warehouse', 'orderLines.product']);
+
         $data[$key] = str_replace(
             '__order_details__',
-            view(
-                'system::email.order.details',
-                [
-                    'details' => ! empty($data['order']->erp_details) ? $data['order']->erp_details['OrderDetail'] : [],
-                    'warehouseCode' => $data['order']->erp_details['WarehouseID'],
-                ]
-            )->render(),
+            view('system::email.order.details', ['order' => $order])->render(),
             $data[$key]
         );
 
@@ -248,6 +245,26 @@ trait OrderEmailFormatingTrait
         $data[$key] = str_replace(
             '__customer_quotation_details_url__',
             '<a href="'.route('frontend.quotations.show', $data['order']->erp_order_id).'">View Details</a>',
+            $data[$key]
+        );
+
+        $adminOrderDetailsUrl = route('order.show', $data['order']->id);
+
+        $data[$key] = str_replace(
+            '__admin_order_details_url__',
+            '<a href="'.$adminOrderDetailsUrl.'">View Details</a>',
+            $data[$key]
+        );
+
+        $data[$key] = str_replace(
+            '__order_details_url__',
+            '<a href="'.$adminOrderDetailsUrl.'">View Details</a>',
+            $data[$key]
+        );
+
+        $data[$key] = str_replace(
+            '__quotation_details_url__',
+            '<a href="'.route('quote.show', $data['order']->id).'">View Details</a>',
             $data[$key]
         );
 
