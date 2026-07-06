@@ -203,15 +203,12 @@ trait OrderEmailFormatingTrait
             $data[$key]
         );
 
+        $order = $data['order'];
+        $order->loadMissing(['orderLines.warehouse', 'orderLines.product']);
+
         $data[$key] = str_replace(
             '__order_details__',
-            view(
-                'system::email.order.details',
-                [
-                    'details' => ! empty($data['order']->erp_details) ? $data['order']->erp_details['OrderDetail'] : [],
-                    'warehouseCode' => $data['order']->erp_details['WarehouseID'],
-                ]
-            )->render(),
+            view('system::email.order.details', ['order' => $order])->render(),
             $data[$key]
         );
 
