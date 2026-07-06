@@ -28,7 +28,7 @@ class CreateAllLoginCommand extends Command
     public function handle()
     {
         Contact::with('customer', 'customer_address')->each(function (Contact $contact) {
-            ContactLogin::firstOrCreate([
+            ContactLogin::findOrCreateAssignment([
                 'contact_id' => $contact->getKey(),
                 'customer_id' => $contact->customer_id,
                 'warehouse_id' => $contact->customer->warehouse_id ?? null,
