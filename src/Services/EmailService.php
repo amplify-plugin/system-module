@@ -747,7 +747,7 @@ class EmailService
      * @param  Contact  $contact
      * @return void
      */
-    public function contactAccountRequestVerificationEmail(EventAction $email_action, $contact)
+    public function contactAccountRequestVerificationEmail(EventAction $email_action, $contact, $type)
     {
         $eventTemplate = $email_action->eventTemplate;
 
@@ -757,7 +757,7 @@ class EmailService
 
         $contact->update(['otp' => $token]);
 
-        $button_url = URL::to(str_replace([':id', ':hash'], [$contact->id, base64_encode($hash)], $eventTemplate->button_url));
+        $button_url = URL::to(str_replace([':id', ':hash'], [$contact->id, base64_encode("{$type}|{$hash}")], $eventTemplate->button_url));
 
         /*
          * Preparing email data

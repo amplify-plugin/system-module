@@ -24,15 +24,18 @@ class ContactAccountRequestVerificationJob implements ShouldQueue
 
     public $contactId;
 
+    public $type;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($event_code, $contact_id)
+    public function __construct($event_code, $contact_id, string $type = Contact::EMAIL_VERIFICATION)
     {
         $this->eventCode = $event_code;
         $this->contactId = $contact_id;
+        $this->type = $type;
     }
 
     /**
@@ -47,7 +50,7 @@ class ContactAccountRequestVerificationJob implements ShouldQueue
 
         foreach ($this->eventInfo?->eventActions ?? [] as $eventAction) {
             if ($eventAction->eventTemplate->notification_type == 'emailable') {
-                $this->emailService->contactAccountRequestVerificationEmail($eventAction, $contact);
+                $this->emailService->contactAccountRequestVerificationEmail($eventAction, $contact, $this->type);
             }
         }
     }

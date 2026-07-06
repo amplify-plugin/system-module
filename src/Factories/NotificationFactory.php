@@ -76,7 +76,8 @@ class NotificationFactory
                 break;
 
             case Event::CONTACT_ACCOUNT_REQUEST_VERIFICATION:
-                ContactAccountRequestVerificationJob::dispatch($event_code, $args['contact_id']);
+                $type = $args['type'] ?? \Amplify\System\Backend\Models\Contact::EMAIL_VERIFICATION;
+                ContactAccountRequestVerificationJob::dispatch($event_code, $args['contact_id'], $type);
                 break;
 
             case Event::CONTACT_ACCOUNT_REQUEST_ACCEPTED:
