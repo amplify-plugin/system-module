@@ -3,7 +3,6 @@
 namespace Amplify\System\Support;
 
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -34,7 +33,7 @@ class AssetsLoader
 
     public function __construct()
     {
-        $this->config = Config::get('assets');
+        $this->config = config('assets', []);
 
         $this->collection = [
             self::TYPE_CSS => [
@@ -64,7 +63,7 @@ class AssetsLoader
             self::TYPE_HTML => [],
         ];
 
-        $this->presets = $this->config['presets'];
+        $this->presets = $this->config['presets'] ?? [];
 
     }
 
