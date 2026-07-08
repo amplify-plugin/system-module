@@ -26,7 +26,7 @@ class DataPreparation implements AddToCart
             $uniqueCodes = [];
 
             foreach ($data['items'] as $product) {
-                if (! empty($product['product_code'])) {
+                if (!empty($product['product_code'])) {
                     $uniqueCodes[$product['product_code']] = true;
                 }
             }
@@ -43,13 +43,13 @@ class DataPreparation implements AddToCart
 
             $fallbackImage = config('amplify.frontend.fallback_image_path');
 
-            if (! Str::contains($fallbackImage, 'http')) {
+            if (!Str::contains($fallbackImage, 'http')) {
                 $fallbackImage = asset($fallbackImage);
             }
 
             $invalidProducts = [];
             foreach ($data['items'] ?? [] as $index => $item) {
-                if (! isset($item['additional_info'])) {
+                if (!isset($item['additional_info'])) {
                     $item['additional_info'] = [];
                 }
                 /**
@@ -93,7 +93,8 @@ class DataPreparation implements AddToCart
                 } else {
                     $invalidProducts[] = $item['product_code'];
                     unset($data['items'][$index]);
-                    $data['errors'][$index][] = __('Part number :code is not available on our website. Please contact your representative, email us at <a href="mailto::email">:email</a> , or call us at <a href="tel::phone">:phone.', [
+                    $data['errors'][$index][] = __(config('amplify.messages.product_unavailable',
+                        'Product is not available on our website.'), [
                         'code' => $item['product_code'],
                         'email' => config('amplify.cms.email'),
                         'phone' => config('amplify.cms.phone'),
@@ -124,11 +125,11 @@ class DataPreparation implements AddToCart
     {
         $warehouseCode = $item['product_warehouse_code'] ?? '';
 
-        if (! empty($warehouseCode)) {
+        if (!empty($warehouseCode)) {
             return $warehouseCode;
         }
 
-        if (! customer_check()) {
+        if (!customer_check()) {
             return config('amplify.frontend.guest_checkout_warehouse');
         }
 
