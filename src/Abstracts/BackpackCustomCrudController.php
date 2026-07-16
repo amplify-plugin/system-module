@@ -8,7 +8,38 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 
 abstract class BackpackCustomCrudController extends CrudController
 {
-    public function __construct()
+
+    public function setupCrudController($operation = null)
+    {
+        parent::setupCrudController($operation);
+
+        //Amplify Customization
+        $this->crud->removeSaveAction('save_and_edit');
+        $this->crud->removeSaveAction('save_and_new');
+        $this->crud->removeSaveAction('save_and_preview');
+
+        if ($this->crud->buttons()->firstWhere('name', 'create')) {
+            $this->crud->modifyButton('create', ['content' => 'backend::buttons.create']);
+        }
+
+        $this->applyPermissions();
+    }
+
+    private function applyPermissions(): void
+    {
+        Permission::selectRaw("`name`, REPLACE(`name`, '{$this->crud->entity_name}.', '') as `operation`")
+            ->where('guard_name', User::AUTH_GUARD)
+            ->where('name', 'like', "{$this->crud->entity_name}.%")
+            ->get()
+            ->each(function ($item) {
+                backpack_user()->can($item->name)
+                    ? $this->crud->allowAccess([$item->operation])
+                    : $this->crud->denyAccess([$item->operation]);
+            });
+    }
+
+
+    public function __trash()
     {
         if ($this->crud) {
             return;
@@ -21,24 +52,6 @@ abstract class BackpackCustomCrudController extends CrudController
             $this->setup();
             $this->setupConfigurationForCurrentOperation();
 
-            $this->crud->removeSaveAction('save_and_edit');
-            $this->crud->removeSaveAction('save_and_new');
-            $this->crud->removeSaveAction('save_and_preview');
-
-//            $this->crud->removeButton('show');
-            if ($this->crud->buttons()->firstWhere('name', 'create')) {
-                $this->crud->modifyButton('create', ['content' => 'backend::buttons.create']);
-            }
-
-            Permission::selectRaw("`name`, REPLACE(`name`, '{$this->crud->entity_name}.', '') as `operation`")
-                ->where('guard_name', User::AUTH_GUARD)
-                ->where('name', 'like', "{$this->crud->entity_name}.%")
-                ->get()
-                ->each(function ($item) {
-                    (backpack_user()->can($item->name))
-                        ? $this->crud->allowAccess([$item->operation])
-                        : $this->crud->denyAccess([$item->operation]);
-                });
 
             return $next($request);
         });
