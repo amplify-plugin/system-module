@@ -23,6 +23,7 @@ return [
 //        'incremental-catalog' => 'Incremental Catalog Update',
         'customer_report' => 'Customer Registration Report',
         'sitemap_generate' => 'Generate Scheduled Sitemap',
+        'purchased_together' => 'Aggregate Frequently Purchased Together',
     ],
     'commands' => [
         'product_sync' => [
@@ -100,6 +101,20 @@ return [
                 'minute' => '0',
                 'hour' => '0',
                 'day' => '1',
+                'month' => '*',
+                'weekday' => '*',
+            ],
+        ],
+        'purchased_together' => [
+            'command' => \Amplify\System\Commands\AggregateProductPurchasedTogetherCommand::class,
+            'enabled' => true,
+            'priority' => 5,
+            'interval' => 'daily',
+            'variables' => [],
+            'time' => [
+                'minute' => '0',
+                'hour' => '2',
+                'day' => '*',
                 'month' => '*',
                 'weekday' => '*',
             ],

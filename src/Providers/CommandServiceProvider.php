@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Providers;
 
+use Amplify\System\Commands\AggregateProductPurchasedTogetherCommand;
 use Amplify\System\Commands\AddProductThumbnailCommand;
 use Amplify\System\Commands\CreateAllLoginCommand;
 use Amplify\System\Commands\DefragmentTablesCommand;
@@ -23,6 +24,7 @@ class CommandServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
+                AggregateProductPurchasedTogetherCommand::class,
                 EasyAskDatabaseExportCommand::class,
                 CreateAllLoginCommand::class,
                 DeleteProductsCommand::class,
