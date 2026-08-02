@@ -1368,24 +1368,6 @@ if (! function_exists('getCart')) {
     }
 }
 
-if (! function_exists('getOrCreateCart')) {
-    function getOrCreateCart()
-    {
-        $contact_id = customer_check() ? customer(true)->id : null;
-        $session_id = session()->token();
-
-        if ($cart = getCart()) {
-            return $cart;
-        }
-
-        return Cart::create([
-            'contact_id' => $contact_id,
-            'session_id' => $session_id,
-            'status' => true,
-        ]);
-    }
-}
-
 if (! function_exists('getAllAddress')) {
     function getAllAddress()
     {
