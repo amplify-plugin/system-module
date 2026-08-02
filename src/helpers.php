@@ -1443,29 +1443,35 @@ if (! function_exists('fileUploads')) {
 if (! function_exists('get_orders')) {
     function get_orders($type)
     {
-        $ordersCount = 0;
-        $totalAmount = 0;
+        $now = Carbon::now();
 
         if ($type === 'today') {
-            $orders = CustomerOrder::whereDate('created_at', Carbon::today())->get();
-            $ordersCount = $orders->count();
-            $totalAmount = $orders->sum('total_amount');
-        } elseif ($type == 'this_month') {
-            $orders = CustomerOrder::whereMonth('created_at', Carbon::now()->month)->get();
-            $ordersCount = $orders->count();
-            $totalAmount = $orders->sum('total_amount');
-        } elseif ($type == 'this_week') {
-            $orders = CustomerOrder::whereBetween(
-                'created_at',
-                [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
-            )->get();
-            $ordersCount = $orders->count();
-            $totalAmount = $orders->sum('total_amount');
+            $start = $now->copy()->startOfDay();
+            $end = $now->copy()->endOfDay();
+        } elseif ($type === 'this_week') {
+            // Keep week-to-date inside the current month so early-month
+            // cards don't include prior-month days from the calendar week.
+            $start = $now->copy()->startOfWeek();
+            $monthStart = $now->copy()->startOfMonth();
+            if ($start->lt($monthStart)) {
+                $start = $monthStart;
+            }
+            $end = $now->copy()->endOfWeek();
+        } elseif ($type === 'this_month') {
+            $start = $now->copy()->startOfMonth();
+            $end = $now->copy()->endOfMonth();
+        } else {
+            return [
+                'count' => 0,
+                'totalAmount' => 0,
+            ];
         }
 
+        $query = CustomerOrder::query()->whereBetween('created_at', [$start, $end]);
+
         return [
-            'count' => $ordersCount,
-            'totalAmount' => $totalAmount,
+            'count' => (clone $query)->count(),
+            'totalAmount' => (clone $query)->sum('total_amount'),
         ];
     }
 }
