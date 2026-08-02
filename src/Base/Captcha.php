@@ -11,7 +11,6 @@ use Illuminate\Session\Store as Session;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\HtmlString;
-use Intervention\Image\Gd\Font;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 
@@ -320,7 +319,6 @@ class Captcha
             $marginLeft = $this->textLeftPadding + ($key * ($this->image->width() - $this->textLeftPadding) / $this->length);
 
             $this->image->text($char, $marginLeft, $marginTop, function ($font) {
-                /* @var Font $font */
                 $font->file($this->font());
                 $font->size($this->fontSize());
                 // $font->color($this->fontColor());
@@ -383,7 +381,6 @@ class Captcha
                 rand(0, $this->image->width()),
                 rand(0, $this->image->height()),
                 function ($draw) {
-                    /* @var Font $draw */
                     $draw->color($this->fontColor());
                 }
             );

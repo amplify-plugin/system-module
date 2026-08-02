@@ -12,7 +12,13 @@ class ValidationServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('captcha', function ($app) {
-            return $app->make(Captcha::class);
+            return new Captcha(
+                $app['Illuminate\Filesystem\Filesystem'],
+                $app['Illuminate\Contracts\Config\Repository'],
+                $app['Intervention\Image\ImageManager'],
+                $app['Illuminate\Session\Store'],
+                $app['Illuminate\Hashing\BcryptHasher']
+            );
         });
 
     }
