@@ -10,6 +10,7 @@ return [
     'nxt_available_web_order_number' => '0000001',
     'date_time_format' => 'Y-m-d H:i:s',
     'date_format' => 'd M Y',
+    'first_day_of_week' => 0, // Sunday (Carbon::SUNDAY)
     'default_reorder_limit' => 10,
     'navbar_brand' => 'img/Amplify Logo 280 tagline.png',
     'length_options' => '10,25,50,100,500',
