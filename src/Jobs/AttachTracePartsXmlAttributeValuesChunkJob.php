@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AttachTracePartsXmlAttributeValuesChunkJob implements ShouldQueue
 {
@@ -42,8 +41,6 @@ class AttachTracePartsXmlAttributeValuesChunkJob implements ShouldQueue
             if (! $product) {
                 continue;
             }
-
-            Log::info($item['product_code']);
 
             DB::transaction(function () use ($item, $product, $attributes): void {
                 foreach ($item['attributes'] ?? [] as $attribute) {
