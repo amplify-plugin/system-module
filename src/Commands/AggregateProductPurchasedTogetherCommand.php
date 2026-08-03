@@ -46,7 +46,7 @@ class AggregateProductPurchasedTogetherCommand extends Command
             return self::SUCCESS;
         }
 
-        AggregateProductPurchasedTogetherJob::dispatch();
+        AggregateProductPurchasedTogetherJob::dispatch()->onQueue('worker');
 
         $this->info('Product purchased together aggregation job dispatched to the queue.');
 
