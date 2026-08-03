@@ -12,7 +12,6 @@ use Amplify\System\Backend\Models\Product;
 use Amplify\System\Cms\Models\Banner;
 use Amplify\System\Cms\Models\Navigation;
 use Amplify\System\Cms\Models\Page;
-use Amplify\System\Cms\Models\Template;
 use Amplify\System\Facades\AssetsFacade;
 use Amplify\System\Helpers\ProductHelper;
 use Amplify\System\Sayt\Classes\ItemRow;
@@ -491,21 +490,6 @@ if (! function_exists('getNavShortCode')) {
         return $count
                 ? "$short_code-$count"
                 : $short_code;
-    }
-}
-
-if (! function_exists('getTemplateSlug')) {
-    function getTemplateSlug($slug, $id = null)
-    {
-        $where = $id
-                ? [['slug', 'LIKE', '%'.$slug.'%'], ['id', '!=', $id]]
-                : ['slug' => $slug];
-
-        $count = Template::query()->where($where)->count();
-
-        return $count
-                ? "$slug-$count"
-                : $slug;
     }
 }
 
