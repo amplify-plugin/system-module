@@ -10,6 +10,10 @@ use Spatie\Honeypot\Honeypot;
 
 class UtilityHelper
 {
+    private const TRACEPARTS_BASE_URL = 'https://catalog.dklokusa.com';
+
+    private const ATTRIBUTE_VALUE_SEPARATOR = ' | ';
+
     private static array $xmlArray = [];
 
     /**
@@ -333,7 +337,7 @@ class UtilityHelper
         }
     }
 
-    public static function extractStructuredMasterProducts(string $content): array
+    public static function extractStructuredMasterProducts(string $content)
     {
         $dom = new \DOMDocument;
         $dom->preserveWhiteSpace = false;
@@ -557,6 +561,78 @@ class UtilityHelper
         return $skus;
     }
 
+    /**
+     * Stream master products with parent-level attribute values.
+     *
+     * Only Product-level <Data> nodes are parsed. SKU (<Item>) data is intentionally
+     * ignored and should be handled by streamStructuredProductsWithAttributeValues().
+     */
+    public static function streamMasterProducts(string $filePath): \Generator
+    {
+        $reader = new \XMLReader;
+
+        if (! $reader->open($filePath, null, LIBXML_NONET | LIBXML_COMPACT)) {
+            throw new \RuntimeException("Unable to open XML file: {$filePath}");
+        }
+
+        try {
+            while ($reader->read()) {
+                if (
+                    $reader->nodeType !== \XMLReader::ELEMENT
+                    || $reader->name !== 'Product'
+                ) {
+                    continue;
+                }
+
+                $productNode = $reader->expand();
+
+                if (! $productNode instanceof \DOMElement) {
+                    continue;
+                }
+
+                $dom = new \DOMDocument('1.0', 'UTF-8');
+                $dom->preserveWhiteSpace = false;
+                $dom->appendChild($dom->importNode($productNode, true));
+
+                $xpath = new \DOMXPath($dom);
+                $productNode = $dom->documentElement;
+
+                $productCode = basename(
+                    $productNode->getAttribute('URL')
+                );
+
+                $attributeMeta = self::buildAttributeMeta(
+                    $xpath,
+                    $productNode,
+                );
+
+                $parsed = self::parseAttributes(
+                    $xpath->query('./Data', $productNode),
+                    $attributeMeta,
+                );
+
+                $productCode = $parsed['product_code'] ?? $productCode;
+
+                yield [
+                    'id' => (int) $productNode->getAttribute('ID'),
+                    'product_code' => $productCode,
+                    'product_name' => $productNode->getAttribute('Name'),
+                    'attributes' => $parsed['attributes'],
+                ];
+
+                unset(
+                    $attributeMeta,
+                    $parsed,
+                    $xpath,
+                    $dom,
+                    $productNode
+                );
+            }
+        } finally {
+            $reader->close();
+        }
+    }
+
     public static function cleanCategoryCode($string): string
     {
         // Replace slashes with hyphens
@@ -592,91 +668,55 @@ class UtilityHelper
     public static function streamSkuItems(string $filePath): \Generator
     {
         $reader = new \XMLReader;
-        $reader->open($filePath);
 
-        // Build asset ID => URL map
-        $assets = [];
-        // We need to grab all <Asset> first
-        $domAssets = new \DOMDocument;
-        $domAssets->preserveWhiteSpace = false;
-        $domAssets->load($filePath);
-        $xpathAssets = new \DOMXPath($domAssets);
-        foreach ($xpathAssets->query('//Asset') as $asset) {
-            $id = $asset->getAttribute('ID');
-            $url = $asset->getAttribute('URL');
-            $name = $asset->getAttribute('Name');
-            $assets[$id]['url'] = str_starts_with($url, 'http') ? $url : 'https://catalog.dklokusa.com'.$url;
-            $assets[$id]['name'] = $name;
+        if (! $reader->open($filePath, null, LIBXML_NONET | LIBXML_COMPACT)) {
+            throw new \RuntimeException("Unable to open XML file: {$filePath}");
         }
 
-        // Build attribute metadata map
-        $attributeMeta = [];
-        foreach ($xpathAssets->query('//Product/Attribute') as $attrNode) {
-            $attrId = $attrNode->getAttribute('ID');
-            $group = $attrNode->getAttribute('Group');
-            $measures = [];
-            foreach ($attrNode->getElementsByTagName('Measure') as $measureNode) {
-                $measures[$measureNode->getAttribute('ID')] = $measureNode->getAttribute('Name');
-            }
-            $attributeMeta[$attrId] = [
-                'group' => $group,
-                'measures' => $measures,
-            ];
-        }
+        $assets = self::buildAssetMap($filePath);
 
-        // Now stream through each <Product> and its <Item> children
-        while ($reader->read()) {
-            if ($reader->nodeType === \XMLReader::ELEMENT && $reader->name === 'Product') {
+        try {
+
+            // Stream each Product and yield its SKU Items one at a time.
+            while ($reader->read()) {
+                if (
+                    $reader->nodeType !== \XMLReader::ELEMENT
+                    || $reader->name !== 'Product'
+                ) {
+                    continue;
+                }
+
                 $productNode = $reader->expand();
                 $domProd = new \DOMDocument;
                 $domProd->preserveWhiteSpace = false;
                 $domProd->appendChild($domProd->importNode($productNode, true));
                 $xpath = new \DOMXPath($domProd);
 
-                $parentId = (int) $productNode->getAttribute('ID');
-                $parentUrl = $productNode->getAttribute('URL');
-                $parentCode = collect(explode('/', $parentUrl))->last();
+                $attributeMeta = self::buildAttributeMeta(
+                    $xpath,
+                    $domProd->documentElement,
+                );
 
-                foreach ($xpath->query('//Item') as $itemNode) {
+                $parentId = (int) $productNode->getAttribute('ID');
+                $parentCode = basename(
+                    $productNode->getAttribute('URL')
+                );
+
+                foreach ($xpath->query('./Item', $domProd->documentElement) as $itemNode) {
                     $skuId = (int) $itemNode->getAttribute('ID');
                     $skuUrl = $itemNode->getAttribute('URL');
-                    $skuCode = collect(explode('/', $skuUrl))->last();
-                    $productName = 'Unnamed';
-                    $attributes = [];
 
-                    // Data → attributes
-                    foreach ($itemNode->getElementsByTagName('Data') as $dataNode) {
-                        $attrId = $dataNode->getAttribute('AttributeID');
-                        $measureId = $dataNode->getAttribute('MeasureID');
-                        $val = null;
+                    $parsed = self::parseAttributes(
+                        $itemNode->getElementsByTagName('Data'),
+                        $attributeMeta,
+                    );
 
-                        if ($node = $dataNode->getElementsByTagName('ValueCharacter')->item(0)) {
-                            $val = $node->nodeValue;
-                        } elseif ($node = $dataNode->getElementsByTagName('ValueLongText')->item(0)) {
-                            $val = $node->nodeValue;
-                        } elseif ($node = $dataNode->getElementsByTagName('ValueNumeric')->item(0)) {
-                            $val = $node->nodeValue;
-                        }
+                    $skuCode = $parsed['product_code'] ?? basename($skuUrl);
 
-                        if ($attrId && $val !== null) {
-                            $measureName = $attributeMeta[$attrId]['measures'][$measureId] ?? null;
-                            $groupName = $attributeMeta[$attrId]['group'] ?? null;
+                    $productName = $parsed['product_name']
+                        ?? $productNode->getAttribute('Name');
 
-                            $valueWithUnit = ($measureId !== '0' && $measureName)
-                                ? "{$val} {$measureName}"
-                                : $val;
-
-                            $attributes[] = [
-                                'attribute_id' => (int) $attrId,
-                                'attribute_value' => $valueWithUnit,
-                                'group' => $groupName,
-                            ];
-
-                            if ((int) $attrId === 15) {
-                                $productName = $val;
-                            }
-                        }
-                    }
+                    $attributes = $parsed['attributes'];
 
                     // Assets for this SKU
                     $mainImage = null;
@@ -684,23 +724,26 @@ class UtilityHelper
                     $documents = [];
 
                     foreach ($itemNode->getElementsByTagName('AssetID') as $assetIdNode) {
-                        $context = $assetIdNode->getAttribute('Context');
                         $assetId = trim($assetIdNode->nodeValue);
-                        $url = $assets[$assetId]['url'] ?? null;
-                        if (! $url) {
+
+                        if (! isset($assets[$assetId])) {
                             continue;
                         }
 
-                        if ($context === 'Primary Image') {
-                            $mainImage = $url;
-                        } elseif ($context === 'Secondary Image') {
-                            $additionalImages = [$url];
-                        } elseif ($context === 'Downloads') {
-                            $documents[] = [
-                                'url' => $url,
+                        $context = $assetIdNode->getAttribute('Context');
+
+                        match ($context) {
+                            'Primary Image' => $mainImage = $assets[$assetId]['url'],
+
+                            'Secondary Image' => $additionalImages[] = $assets[$assetId]['url'],
+
+                            'Downloads' => $documents[] = [
+                                'url' => $assets[$assetId]['url'],
                                 'name' => $assets[$assetId]['name'] ?? null,
-                            ];
-                        }
+                            ],
+
+                            default => null,
+                        };
                     }
 
                     yield [
@@ -715,9 +758,181 @@ class UtilityHelper
                         'documents' => $documents,
                     ];
                 }
+
+                unset(
+                    $attributeMeta,
+                    $xpath,
+                    $domProd,
+                    $productNode
+                );
+            }
+
+        } finally {
+            $reader->close();
+        }
+    }
+
+    private static function buildAttributeMeta(
+        \DOMXPath $xpath,
+        \DOMElement $productNode,
+    ): array {
+        $attributeMeta = [];
+
+        foreach ($xpath->query('./Attribute', $productNode) as $attributeNode) {
+            $attributeId = (int) $attributeNode->getAttribute('ID');
+
+            $measures = [];
+
+            foreach ($attributeNode->getElementsByTagName('Measure') as $measureNode) {
+                $measures[$measureNode->getAttribute('ID')] = $measureNode->getAttribute('Name');
+            }
+
+            $attributeMeta[$attributeId] = [
+                'name' => $attributeNode->getAttribute('Name'),
+                'group' => $attributeNode->getAttribute('Group'),
+                'measures' => $measures,
+            ];
+        }
+
+        return $attributeMeta;
+    }
+
+    private static function buildAssetMap(string $filePath): array
+    {
+        $assets = [];
+
+        $reader = new \XMLReader;
+
+        if (! $reader->open($filePath, null, LIBXML_NONET | LIBXML_COMPACT)) {
+            throw new \RuntimeException("Unable to open XML file: {$filePath}");
+        }
+
+        try {
+            while ($reader->read()) {
+                if (
+                    $reader->nodeType !== \XMLReader::ELEMENT
+                    || $reader->name !== 'Asset'
+                ) {
+                    continue;
+                }
+
+                $id = $reader->getAttribute('ID');
+
+                if (! $id) {
+                    continue;
+                }
+
+                $url = $reader->getAttribute('URL') ?? '';
+
+                $assets[$id] = [
+                    'url' => str_starts_with($url, 'http')
+                        ? $url
+                        : self::TRACEPARTS_BASE_URL.$url,
+                    'name' => $reader->getAttribute('Name'),
+                ];
+            }
+        } finally {
+            $reader->close();
+        }
+
+        return $assets;
+    }
+
+    private static function extractDataValue(\DOMElement $dataNode): ?string
+    {
+        foreach ([
+            'ValueCharacter',
+            'ValueLongText',
+            'ValueNumeric',
+        ] as $type) {
+            $node = $dataNode->getElementsByTagName($type)->item(0);
+
+            if ($node !== null) {
+                return trim($node->nodeValue);
             }
         }
 
-        $reader->close();
+        return null;
+    }
+
+    private static function formatAttributeValue(
+        string $value,
+        string $measureId,
+        array $measures,
+    ): string {
+        $measure = $measures[$measureId] ?? null;
+
+        return $measureId !== '0' && $measure
+            ? "{$value} {$measure}"
+            : $value;
+    }
+
+    private static function parseAttributes(
+        \DOMNodeList $nodes,
+        array $attributeMeta,
+    ): array {
+        $attributes = [];
+        $productCode = null;
+        $productName = null;
+
+        foreach ($nodes as $dataNode) {
+            if (! $dataNode instanceof \DOMElement) {
+                continue;
+            }
+
+            $attributeId = (int) $dataNode->getAttribute('AttributeID');
+
+            $value = self::extractDataValue($dataNode);
+
+            if ($value === null) {
+                continue;
+            }
+
+            match ($attributeId) {
+                10 => $productCode = $value,
+                15 => $productName = $value,
+                default => null,
+            };
+
+            $measureId = $dataNode->getAttribute('MeasureID');
+
+            $formattedValue = self::formatAttributeValue(
+                $value,
+                $measureId,
+                $attributeMeta[$attributeId]['measures'] ?? [],
+            );
+
+            if (! isset($attributes[$attributeId])) {
+                $attributes[$attributeId] = [
+                    'attribute_id' => $attributeId,
+                    'attribute_value' => [],
+                    'group' => $attributeMeta[$attributeId]['group'] ?? null,
+                ];
+            }
+
+            $attributes[$attributeId]['attribute_value'][] = $formattedValue;
+        }
+
+        foreach ($attributes as &$attribute) {
+            $attribute['attribute_value'] = implode(
+                self::ATTRIBUTE_VALUE_SEPARATOR,
+                array_values(
+                    array_unique(
+                        array_filter(
+                            array_map('trim', $attribute['attribute_value']),
+                            static fn (string $value): bool => $value !== '',
+                        )
+                    )
+                )
+            );
+        }
+
+        unset($attribute);
+
+        return [
+            'product_code' => $productCode,
+            'product_name' => $productName,
+            'attributes' => array_values($attributes),
+        ];
     }
 }

@@ -13,6 +13,7 @@ class TracepartsImportXmlData extends Command
                             {--master-products}
                             {--attach-master-products-to-categories}
                             {--import-skus}
+                            {--attach-attribute-values-to-products}
                             {--update_sku_id}';
 
     protected $description = 'Import DK-Lok XML data into the database';
@@ -46,6 +47,13 @@ class TracepartsImportXmlData extends Command
             $this->info('[5/5] Dispatching SKU import jobs…');
             [$totalSkus, $jobs] = $this->importService->importSkuProductsWithAllData();
             $this->info(" ✓ {$totalSkus} SKUs found, {$jobs} jobs dispatched");
+        }
+
+
+        if ($opts['attach-attribute-values-to-products']) {
+            $this->info('Dispatching product attribute-value attachment jobs...');
+            [$totalProducts, $jobs] = $this->importService->attachAttributeValuesToProducts();
+            $this->info(" {$totalProducts} XML products/SKUs found, {$jobs} jobs dispatched");
         }
 
         if ($opts['update_sku_id']) {
