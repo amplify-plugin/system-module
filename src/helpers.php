@@ -1431,14 +1431,10 @@ if (! function_exists('get_orders')) {
             $start = $now->copy()->startOfDay();
             $end = $now->copy()->endOfDay();
         } elseif ($type === 'this_week') {
-            // Keep week-to-date inside the current month so early-month
-            // cards don't include prior-month days from the calendar week.
-            $start = $now->copy()->startOfWeek();
-            $monthStart = $now->copy()->startOfMonth();
-            if ($start->lt($monthStart)) {
-                $start = $monthStart;
-            }
-            $end = $now->copy()->endOfWeek();
+            $weekStartsAt = (int) config('amplify.basic.first_day_of_week', Carbon::SUNDAY);
+            $weekEndsAt = ($weekStartsAt + 6) % 7;
+            $start = $now->copy()->startOfWeek($weekStartsAt);
+            $end = $now->copy()->endOfWeek($weekEndsAt);
         } elseif ($type === 'this_month') {
             $start = $now->copy()->startOfMonth();
             $end = $now->copy()->endOfMonth();
