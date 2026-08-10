@@ -1352,24 +1352,6 @@ if (! function_exists('getCart')) {
     }
 }
 
-if (! function_exists('getOrCreateCart')) {
-    function getOrCreateCart()
-    {
-        $contact_id = customer_check() ? customer(true)->id : null;
-        $session_id = session()->token();
-
-        if ($cart = getCart()) {
-            return $cart;
-        }
-
-        return Cart::create([
-            'contact_id' => $contact_id,
-            'session_id' => $session_id,
-            'status' => true,
-        ]);
-    }
-}
-
 if (! function_exists('getAllAddress')) {
     function getAllAddress()
     {
@@ -1427,29 +1409,31 @@ if (! function_exists('fileUploads')) {
 if (! function_exists('get_orders')) {
     function get_orders($type)
     {
-        $ordersCount = 0;
-        $totalAmount = 0;
+        $now = Carbon::now();
 
         if ($type === 'today') {
-            $orders = CustomerOrder::whereDate('created_at', Carbon::today())->get();
-            $ordersCount = $orders->count();
-            $totalAmount = $orders->sum('total_amount');
-        } elseif ($type == 'this_month') {
-            $orders = CustomerOrder::whereMonth('created_at', Carbon::now()->month)->get();
-            $ordersCount = $orders->count();
-            $totalAmount = $orders->sum('total_amount');
-        } elseif ($type == 'this_week') {
-            $orders = CustomerOrder::whereBetween(
-                'created_at',
-                [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
-            )->get();
-            $ordersCount = $orders->count();
-            $totalAmount = $orders->sum('total_amount');
+            $start = $now->copy()->startOfDay();
+            $end = $now->copy()->endOfDay();
+        } elseif ($type === 'this_week') {
+            $weekStartsAt = (int) config('amplify.basic.first_day_of_week', Carbon::SUNDAY);
+            $weekEndsAt = ($weekStartsAt + 6) % 7;
+            $start = $now->copy()->startOfWeek($weekStartsAt);
+            $end = $now->copy()->endOfWeek($weekEndsAt);
+        } elseif ($type === 'this_month') {
+            $start = $now->copy()->startOfMonth();
+            $end = $now->copy()->endOfMonth();
+        } else {
+            return [
+                'count' => 0,
+                'totalAmount' => 0,
+            ];
         }
 
+        $query = CustomerOrder::query()->whereBetween('created_at', [$start, $end]);
+
         return [
-            'count' => $ordersCount,
-            'totalAmount' => $totalAmount,
+            'count' => (clone $query)->count(),
+            'totalAmount' => (clone $query)->sum('total_amount'),
         ];
     }
 }

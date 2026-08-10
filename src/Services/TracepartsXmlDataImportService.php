@@ -10,6 +10,7 @@ use Amplify\System\Backend\Models\ProductImage;
 use Amplify\System\Backend\Models\SkuProduct;
 use Amplify\System\Backend\Models\User;
 use Amplify\System\Helpers\UtilityHelper;
+use Amplify\System\Jobs\AttachTracePartsXmlAttributeValuesChunkJob;
 use Amplify\System\Jobs\ImportTracePartsXmlDataSkuChunkJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -264,6 +265,46 @@ class TracepartsXmlDataImportService
         }
 
         return [$totalSkus, $jobCount];
+    }
+
+    public function attachAttributeValuesToProducts(): array
+    {
+        $filePath = public_path('assets/cnid_7673_cat_1001.xml');
+        $chunk = [];
+        $jobCount = 0;
+        $totalProducts = 0;
+
+        $dispatchChunk = function () use (&$chunk, &$jobCount): void {
+            if ($chunk === []) {
+                return;
+            }
+
+            dispatch(new AttachTracePartsXmlAttributeValuesChunkJob($chunk));
+            $jobCount++;
+            $chunk = [];
+        };
+
+        foreach (UtilityHelper::streamMasterProducts($filePath) as $product) {
+            $chunk[] = $product;
+            $totalProducts++;
+
+            if (count($chunk) === 500) {
+                $dispatchChunk();
+            }
+        }
+
+        foreach (UtilityHelper::streamSkuItems($filePath) as $sku) {
+            $chunk[] = $sku;
+            $totalProducts++;
+
+            if (count($chunk) === 500) {
+                $dispatchChunk();
+            }
+        }
+
+        $dispatchChunk();
+
+        return [$totalProducts, $jobCount];
     }
 
     public function updateSkuId(): array
