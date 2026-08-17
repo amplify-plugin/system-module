@@ -188,6 +188,8 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
             $this->mergeTransformedDataWithProductModel($transformedData['fields']);
         }
 
+        $this->applyCatalogSyncAllowBackOrder();
+
         if ($this->product->save()) {
             if ($this->parent_id) {
                 // $this->product->parentProducts()->sync($this->parent_id);
@@ -641,6 +643,17 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * When `allow_back_order_on_catalog_sync` is enabled, imported products always allow back order.
+     * Otherwise leave the mapped/transformed column value unchanged.
+     */
+    private function applyCatalogSyncAllowBackOrder(): void
+    {
+        if (config('amplify.pim.allow_back_order_on_catalog_sync', false)) {
+            $this->product->allow_back_order = true;
         }
     }
 }
