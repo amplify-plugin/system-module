@@ -85,16 +85,37 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
 
         $this->prepareInitialProperty($aCsv);
 
-        $product = match (true) {
-            ! empty($this->product_id) => Product::find($this->product_id),
-            ! empty($this->product_code) => Product::where('product_code', $this->product_code)->first(),
-            default => null
-        };
+        $product = $this->resolveImportProduct();
 
-        empty($product) ? $this->handleCreateOperation($aCsv) : $this->handleUpdateOperation($aCsv, $product);
+        if ($product === null) {
+            $this->handleCreateOperation($aCsv);
+        } else {
+            $this->handleUpdateOperation($aCsv, $product);
+        }
 
         App::setLocale($this->default_locale);
         Schema::enableForeignKeyConstraints();
+    }
+
+    private function resolveImportProduct(): ?Product
+    {
+        $product = match (true) {
+            ! empty($this->product_id) => Product::query()->whereKey($this->product_id)->first(),
+            ! empty($this->product_code) => Product::query()->where('product_code', $this->product_code)->first(),
+            default => null,
+        };
+
+        if ($product === null) {
+            return null;
+        }
+
+        if ($product->status === 'archived') {
+            $product->archiveAndReleaseCode();
+
+            return null;
+        }
+
+        return $product;
     }
 
     protected function prepareInitialProperty($aCsv): void
