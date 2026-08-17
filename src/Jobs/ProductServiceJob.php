@@ -101,16 +101,12 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
     private function resolveImportProduct(): ?Product
     {
         $product = match (true) {
-            ! empty($this->product_id) => Product::query()->whereKey($this->product_id)->first(),
-            ! empty($this->product_code) => Product::query()->where('product_code', $this->product_code)->first(),
+            ! empty($this->product_id) => Product::find($this->product_id),
+            ! empty($this->product_code) => Product::where('product_code', $this->product_code)->first(),
             default => null,
         };
 
-        if ($product === null) {
-            return null;
-        }
-
-        if ($product->status === 'archived') {
+        if ($product?->status === 'archived') {
             $product->archiveAndReleaseCode();
 
             return null;
@@ -710,7 +706,7 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
 
         do {
             $slug = $base.'-'.Str::lower(Str::random(6));
-        } while (Product::query()->where('product_slug', $slug)->exists());
+        } while (Product::where('product_slug', $slug)->exists());
 
         return $slug;
     }
