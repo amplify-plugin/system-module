@@ -21,6 +21,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 /**
  * @property int $product_id
@@ -210,6 +211,7 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
         }
 
         $this->applyCatalogSyncAllowBackOrder();
+        $this->applyImportProductSlug();
 
         if ($this->product->save()) {
             if ($this->parent_id) {
@@ -676,5 +678,40 @@ class ProductServiceJob extends BaseImportJob implements ShouldQueue
         if (config('amplify.pim.allow_back_order_on_catalog_sync', false)) {
             $this->product->allow_back_order = true;
         }
+    }
+
+    /**
+     * Match catalog-sync slug style: {name-slug}-{6 random chars}.
+     * Skip updates and imports that already map product_slug.
+     */
+    private function applyImportProductSlug(): void
+    {
+        if ($this->is_updating || $this->hasMappedProductField('product_slug')) {
+            return;
+        }
+
+        $this->product->product_slug = $this->makeUniqueHashedProductSlug((string) $this->product->product_name);
+    }
+
+    private function hasMappedProductField(string $fieldName): bool
+    {
+        return collect($this->column_mapping)->contains(
+            fn ($item) => $item->map_to !== 'Ignore' && $item->field_or_attribute_name === $fieldName
+        );
+    }
+
+    private function makeUniqueHashedProductSlug(string $productName): string
+    {
+        $base = generate_product_slug($productName);
+
+        if (config('amplify.client_code') === 'STV') {
+            return $base;
+        }
+
+        do {
+            $slug = $base.'-'.Str::lower(Str::random(6));
+        } while (Product::query()->where('product_slug', $slug)->exists());
+
+        return $slug;
     }
 }
