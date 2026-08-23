@@ -133,4 +133,17 @@ trait ProductDetailTrait
             'MaxPrice' => null,
         ];
     }
+
+    public function htmlAttributes(): string
+    {
+        $productId = (int) (store()->productModel?->getKey() ?: 0);
+
+        if ($productId > 0 && config('amplify.recently_viewed.enabled', true)) {
+            $this->attributes = $this->attributes->merge([
+                'data-recently-viewed-product-id' => $productId,
+            ]);
+        }
+
+        return parent::htmlAttributes();
+    }
 }
