@@ -28,7 +28,7 @@
         "amplify/frontend": "dev-upgrade/laravel12",
         "amplify/message": "*",
         "amplify/order-rule": "*",
-        "amplify/sayt": "*",
+        "amplify/sayt": "dev-sayt-suggestion",
         "amplify/ticket": "*",
         "amplify/utility": "*",
         "backpack/crud": "^7.0",
