@@ -20,7 +20,13 @@ trait ProductDetailTrait
      */
     private function getProductFromEasyAsk($product_id): RemoteResults
     {
-        return Sayt::storeProductDetail($product_id, request()->route('seo_path'));
+        $seoPath = request('ref');
+
+        if (empty($seoPath) || preg_match('/^merchandising\s*:/i', (string) $seoPath)) {
+            $seoPath = null;
+        }
+
+        return Sayt::storeProductDetail($product_id, $seoPath);
     }
 
     /**
@@ -126,5 +132,18 @@ trait ProductDetailTrait
             'MinPrice' => null,
             'MaxPrice' => null,
         ];
+    }
+
+    public function htmlAttributes(): string
+    {
+        $productId = (int) (store()->productModel?->getKey() ?: 0);
+
+        if ($productId > 0 && config('amplify.recently_viewed.enabled', true)) {
+            $this->attributes = $this->attributes->merge([
+                'data-recently-viewed-product-id' => $productId,
+            ]);
+        }
+
+        return parent::htmlAttributes();
     }
 }

@@ -1148,7 +1148,7 @@ if (! function_exists('returnProductSlug')) {
             return match ($column) {
                 'product_code' => $product->Product_Code,
                 'product_slug' => $product->Product_Slug,
-                default => $product->Product_Id
+                default => $product->Amplify_Id ?? $product->Product_Id,
             };
         }
 
