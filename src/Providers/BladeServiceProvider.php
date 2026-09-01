@@ -2,6 +2,7 @@
 
 namespace Amplify\System\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 
@@ -24,6 +25,10 @@ class BladeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Blade::if('erp', fn () => erp()->enabled());
+        Blade::if('selectwarehouse', fn () => erp()->allowMultiWarehouse());
+        Blade::if('defaultwarehouse', fn () => ! erp()->allowMultiWarehouse());
+
         $this->app->afterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $bladeCompiler->directive('money', function ($expression) {
                 return "<?php echo currency_format({$expression}); ?>";
