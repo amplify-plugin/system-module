@@ -24,7 +24,7 @@
         "amplify/backend": "dev-upgrade/laravel12",
         "amplify/cms": "dev-upgrade/laravel12",
         "amplify/custom-item": "*",
-        "amplify/erp": "*",
+        "amplify/erp": "dev-apprise-erp",
         "amplify/frontend": "dev-upgrade/laravel12",
         "amplify/message": "*",
         "amplify/order-rule": "*",
