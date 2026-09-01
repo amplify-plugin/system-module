@@ -32,7 +32,6 @@
         "amplify/ticket": "*",
         "amplify/utility": "*",
         "backpack/crud": "^7.0",
-        "backpack/editable-columns": "^3.1",
         "backpack/pro": "^3.0",
         "consoletvs/charts": "^6.9",
         "cviebrock/eloquent-sluggable": "^12.0",
