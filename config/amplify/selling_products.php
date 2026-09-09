@@ -4,7 +4,7 @@ use Amplify\System\Backend\Models\CustomerOrder;
 
 /*
 |--------------------------------------------------------------------------
-| Selling Products Dashboard Widget — file defaults
+| Selling Products Widget — file defaults
 |--------------------------------------------------------------------------
 |
 | Runtime values are loaded from system_configurations (see SellingProductsSettingSeeder).
@@ -16,6 +16,8 @@ return [
     'enabled' => true,
 
     'products_limit' => 10,
+
+    'cache_ttl' => 3600,
 
     'date_range' => 'last_60_days',
 
