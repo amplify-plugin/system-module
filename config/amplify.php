@@ -4,6 +4,7 @@ use Amplify\System\Pipelines\AddToCart;
 use Amplify\System\Pipelines\ProductDetail;
 
 return [
+    'timezone' => env('AMPLIFY_TIMEZONE', 'UTC'),
     'debug' => env('AMPLIFY_DEBUG', false),
     'client_code' => env('AMPLIFY_CLIENT_CODE', 'ACP'),
     'suppress_exception' => env('AMPLIFY_SUPPRESS_EXCEPTION', true),
