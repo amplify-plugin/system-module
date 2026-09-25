@@ -7,7 +7,9 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class SendSettingsEmail extends Mailable
 {
@@ -16,6 +18,8 @@ class SendSettingsEmail extends Mailable
     public $data;
 
     public $width = '570';
+
+    public string $mailId;
 
     /**
      * Create a new message instance.
@@ -33,6 +37,8 @@ class SendSettingsEmail extends Mailable
         }
 
         $this->data = $data;
+
+        $this->mailId = Str::uuid()->toString();
     }
 
     /**
@@ -80,4 +86,14 @@ class SendSettingsEmail extends Mailable
             'width' => $this->width,
         ]);
     }
+
+    public function headers(): Headers
+    {
+        return new Headers(
+            text: [
+                'X-Amplify-Mail-Id' => $this->mailId,
+            ],
+        );
+    }
+
 }
