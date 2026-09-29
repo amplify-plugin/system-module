@@ -1445,7 +1445,9 @@ if (! function_exists('get_orders')) {
             ];
         }
 
-        $query = CustomerOrder::query()->whereBetween('created_at', [$start, $end]);
+        $query = CustomerOrder::query()
+            ->whereBetween('created_at', [$start, $end])
+            ->where('order_status', '!=', 'Rejected');
 
         return [
             'count' => (clone $query)->count(),
