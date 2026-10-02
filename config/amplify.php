@@ -21,5 +21,7 @@ return [
     'product_detail_pipeline' => [
         ProductDetail\SelectColumns::class,
         ProductDetail\SkipArchived::class,
+    ],
+    'checkout_pipeline'=> [
     ]
 ];

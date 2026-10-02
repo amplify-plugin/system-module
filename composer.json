@@ -21,6 +21,7 @@
         "ext-pdo": "*",
         "ext-simplexml": "*",
         "ext-zip": "*",
+        "ext-openssl": "*",
         "amplify/backend": "dev-upgrade/laravel12",
         "amplify/cms": "dev-upgrade/laravel12",
         "amplify/custom-item": "*",
