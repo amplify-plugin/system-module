@@ -2,23 +2,28 @@
 
 namespace Amplify\System\Pipelines\Checkout;
 
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Contexts\CheckoutContext;
+use Amplify\System\Contracts\Checkout;
 use Closure;
 
-final class ResolveCustomer
+final class ResolveCustomer implements Checkout
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        $user = auth()->user();
+        $channel = $context->payload['checkout']['channel'];
 
-        if ($user) {
-            // Never trust company_id/customer_id from the browser.
-            $context->resolved['company_id'] = $user->company_id;
-            $context->resolved['customer_id'] = $user->customer_id;
-            $context->resolved['customer'] = $user->customer;
-        } else {
-            $context->resolved['company_id'] = null;
-            $context->resolved['customer_id'] = null;
+        $customer = match ($channel) {
+            'web' => customer_check() ? customer() : null,
+            'admin', 'api' => Customer::find($context->payload['customer']['id']),
+            default => null,
+        };
+
+        $context->resolved['customer'] = $customer;
+
+        if ($context->resolved['customer']) {
+            $context->payload['customer']['id'] = $customer?->id;
         }
 
         return $next($context);

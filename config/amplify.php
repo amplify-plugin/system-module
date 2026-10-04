@@ -24,9 +24,10 @@ return [
         ProductDetail\SkipArchived::class,
     ],
     'checkout_pipeline'=> [
-// Authentication / authorization
-        Checkout\ResolveCustomer::class,
+        // Authentication / authorization
         Checkout\ResolveContact::class,
+        Checkout\ResolveCustomer::class,
+        Checkout\ResolveSubmitter::class,
 
         // Input validation
         Checkout\ValidateBilling::class,
@@ -52,6 +53,8 @@ return [
         Checkout\ValidateCheckoutTotals::class,
 
         // Persistence should be the final stage.
-        Checkout\CreateOrder::class,
+        Checkout\PopulateOrder::class,
+        Checkout\PopulateOrderLines::class,
+        Checkout\PopulateOrderNotes::class,
     ]
 ];

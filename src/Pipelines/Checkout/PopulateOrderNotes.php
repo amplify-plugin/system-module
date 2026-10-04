@@ -6,7 +6,7 @@ use Amplify\System\Contexts\CheckoutContext;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
-final class CreateOrder
+final class PopulateOrderNotes
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {

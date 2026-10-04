@@ -10,11 +10,11 @@ final class ValidateBilling
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        $billing = $context->payload['billing'] ?? null;
+        $billing = $context->payload['payment'] ?? null;
 
         if (!$billing) {
             throw ValidationException::withMessages([
-                'billing' => 'Billing information is required.',
+                'payment' => 'Payment information is required.',
             ]);
         }
 

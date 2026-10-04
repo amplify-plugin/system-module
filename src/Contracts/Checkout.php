@@ -2,8 +2,10 @@
 
 namespace Amplify\System\Contracts;
 
+use Amplify\System\Contexts\CheckoutContext;
+
 interface Checkout
 {
-    public function handle(array $data, \Closure $next);
+    public function handle(CheckoutContext $context, \Closure $next);
 
 }
