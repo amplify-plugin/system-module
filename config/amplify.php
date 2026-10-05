@@ -24,12 +24,13 @@ return [
         ProductDetail\SkipArchived::class,
     ],
     'checkout_pipeline'=> [
-        // Authentication / authorization
+        // Authentication
         Checkout\ResolveContact::class,
         Checkout\ResolveCustomer::class,
         Checkout\ResolveSubmitter::class,
 
         // Input validation
+        Checkout\ValidateApiVersion::class,
         Checkout\ValidateBilling::class,
         Checkout\ValidateShipping::class,
         Checkout\ValidateItems::class,
@@ -37,10 +38,12 @@ return [
         // Server-side resolution
         Checkout\ResolveProducts::class,
         Checkout\ResolveCustomerPricing::class,
+        Checkout\ResolveCustomerPricing::class,
         Checkout\ValidateInventory::class,
 
         // Server-side calculations
         Checkout\CalculateSubtotal::class,
+        Checkout\ValidateOrderThreshold::class,
         Checkout\CalculateShipping::class,
         Checkout\CalculateTax::class,
         Checkout\CalculateAdditionalCharges::class,
@@ -48,7 +51,6 @@ return [
 
         // Payment / final validation
         Checkout\ValidatePayment::class,
-        Checkout\ValidateCheckoutVersion::class,
         Checkout\ValidateIdempotency::class,
         Checkout\ValidateCheckoutTotals::class,
 

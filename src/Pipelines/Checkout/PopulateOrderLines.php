@@ -2,31 +2,40 @@
 
 namespace Amplify\System\Pipelines\Checkout;
 
+use Amplify\System\Backend\Models\CustomerOrderLine;
 use Amplify\System\Contexts\CheckoutContext;
 use Closure;
-use Illuminate\Support\Facades\DB;
 
 final class PopulateOrderLines
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        $order = DB::transaction(function () use ($context) {
-            // Build the order exclusively from resolved/calculated server data.
-            //
-            // Example:
-            // $order = Order::create([
-            //     'company_id' => $context->resolved['company_id'],
-            //     'contact_id' => $context->resolved['contact_id'],
-            //     'subtotal' => $context->calculated['subtotal'],
-            //     'tax' => $context->calculated['tax'],
-            //     'shipping' => $context->calculated['shipping'],
-            //     'total' => $context->calculated['total'],
-            // ]);
+        $items = $context->payload['items'];
 
-            return null; // Replace with your Order model.
-        });
+        $items = array_map(function ($item) {
+            return new CustomerOrderLine([
+                'qty' => $item['quantity'] ?? null,
+                'unit_code' => $item['uom'] ?? null,
+                'product_id' => $item['product_id'] ?? null,
+                'product_code' => $item['product_code'] ?? null,
+                'options' => [
+                    'warehouse_code' => $item['product_warehouse_code'] ?? null,
+                    'unit_price' => $item['unitprice'] ?? null,
+                    'product_back_order' => $item['product_back_order'] ?? 0,
+                    'product_name' => $item['product_name'] ?? null
+                ],
+                'warehouse_id' => $item['warehouse_id'] ?? null,
+                'shipping_cost' => $item['shipping_cost'] ?? null,
+                'ssp' => $item['ssp'] ?? null,
+                'discount_amount' => $item['discount_amount'] ?? null,
+                'customer_price' => $item['subtotal'] ?? null,
+                'source_type' => $item['source_type'] ?? null,
+                'source' => $item['source'] ?? null,
+                'additional_info' => $item['additional_info'] ?? (object)[]
+            ]);
+        }, $items);
 
-        $context->resolved['order'] = $order;
+        $context->resolved['items'] = $items;
 
         return $next($context);
     }

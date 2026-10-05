@@ -6,12 +6,17 @@ use Amplify\System\Contexts\CheckoutContext;
 use Closure;
 use Illuminate\Validation\ValidationException;
 
-final class ValidateCheckoutVersion
+final class ValidateApiVersion
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        // Compare the submitted version with the server-side checkout/cart version.
-        // Reject if prices, inventory, cart, or other authoritative state changed.
+        $version = $context->payload['checkout']['version'] ?? null;
+
+        if (! $version) {
+            throw ValidationException::withMessages([
+                'checkout.version' => 'The checkout version must be set.',
+            ]);
+        }
 
         return $next($context);
     }
