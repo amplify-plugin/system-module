@@ -33,6 +33,7 @@
         "amplify/ticket": "*",
         "amplify/utility": "*",
         "backpack/crud": "^7.0",
+        "backpack/ckeditor-field": "^1.0",
         "backpack/pro": "^3.0",
         "backpack/tinymce-field": "*",
         "consoletvs/charts": "^6.9",
