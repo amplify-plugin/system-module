@@ -62,10 +62,11 @@ final class CreateOrder
         $attributes['total_additional'] = $context->payload['amounts']['additional'] ?? [];
 
         // Shipping Information
-        $attributes['ship_to_id'] = $context->resolved['shipping']?->id ?? $context->payload['shipping']['ship_to_id'] ?? null;
+        $attributes['ship_to_id'] = $context->resolved['shipping']?->id ?? $context->payload['shipping']['id'] ?? null;
         $attributes['ship_to_method'] = $context->payload['shipping']['method']['code'] ?? null;
         $attributes['ship_to_method_label'] = $context->payload['shipping']['method']['label'] ?? null;
         $attributes['ship_to_address'] = $context->resolved['shipping']?->address_name ?? $context->payload['shipping']['ship_to_address'] ?? null;
+        $attributes['ship_to_name'] = $context->resolved['shipping']?->address_name ?? $context->payload['shipping']['name'] ?? null;
         $attributes['ship_to_number'] = $context->resolved['shipping']?->address_code ?? $context->payload['shipping']['number'] ?? null;
         $attributes['ship_to_city'] = $context->resolved['shipping']?->city ?? $context->payload['shipping']['city'] ?? null;
         $attributes['ship_to_state'] = $context->resolved['shipping']?->state ?? $context->payload['shipping']['state'] ?? null;
@@ -75,6 +76,9 @@ final class CreateOrder
         $attributes['ship_to_contact'] = $context->payload['shipping']['contact'] ?? $context->resolved['contact']?->name ?? null;
         $attributes['ship_to_additional'] = $context->payload['shipping']['additional'] ?? [];
         $attributes['ship_to_phone'] = $context->resolved['shipping']?->phone ?? $context->payload['shipping']['phone'] ?? null;
+        $attributes['ship_to_address_1'] = $context->resolved['shipping']?->address_1 ?? $context->payload['shipping']['address1'] ?? null;
+        $attributes['ship_to_address_2'] = $context->resolved['shipping']?->address_2 ?? $context->payload['shipping']['address2'] ?? null;
+        $attributes['ship_to_address_3'] = $context->resolved['shipping']?->address_3 ?? $context->payload['shipping']['address3'] ?? null;
 
         // Payment Information
         $attributes['pay_to_method'] = $context->payload['payment']['method'] ?? null;
