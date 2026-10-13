@@ -16,5 +16,7 @@ Route::group(['middleware' => ['api'], 'prefix' => 'admin/api'], function () {
 });
 
 Route::group(['middleware' => ['api', 'frontend'], 'prefix' => 'api'], function () {
-    Route::get('payment/initialize', [PaymentGatewayController::class, 'initialize'])->name('api.payment.initialize');
+    Route::get('payment/initialize', [PaymentGatewayController::class, 'initialize'])
+        ->name('api.payment.initialize')
+    ->withoutMiddleware(\Amplify\System\Sayt\Http\Middlewares\SaytInitialized::class);
 });

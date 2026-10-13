@@ -6,15 +6,15 @@ use Amplify\System\Backend\Models\CustomerOrderNote;
 use Amplify\System\Contexts\CheckoutContext;
 use Closure;
 
-final class PopulateOrderNotes
+final class CreateOrderNotes
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        $notes = $context->payload['notes'];
+        $context->resolved['notes'] = array_map(fn($note) => new CustomerOrderNote($note), $context->payload['notes']);
 
-        $notes = array_map(fn ($note) => new CustomerOrderNote($note), $notes);
+        $order = $context->resolved['order'];
 
-        $context->resolved['notes'] = $notes;
+        $order->orderNotes()->saveMany($context->resolved['notes']);
 
         return $next($context);
     }

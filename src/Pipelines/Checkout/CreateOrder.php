@@ -7,7 +7,7 @@ use Amplify\System\Backend\Models\SystemConfiguration;
 use Amplify\System\Contexts\CheckoutContext;
 use Closure;
 
-final class PopulateOrder
+final class CreateOrder
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
@@ -55,26 +55,26 @@ final class PopulateOrder
         $attributes['submitter_id'] = $context->resolved['submitter'] ? $context->resolved['submitter']->id : null;
 
         // Order Summary Information
-        $attributes['total_net_price'] = $context->payload['amounts']['subtotal'] ?? null;
-        $attributes['total_tax_amount'] = $context->payload['amounts']['tax'] ?? null;
-        $attributes['total_shipping_cost'] = $context->payload['amounts']['shipping'] ?? null;
-        $attributes['total_amount'] = $context->payload['amounts']['total'] ?? null;
-        $attributes['total_additional'] = $context->payload['amounts']['additional'] ?? null;
+        $attributes['total_net_price'] = $context->calculated['subtotal'] ?? $context->payload['amounts']['subtotal'] ?? null;
+        $attributes['total_tax_amount'] = $context->calculated['tax'] ?? $context->payload['amounts']['tax'] ?? null;
+        $attributes['total_shipping_cost'] = $context->calculated['shipping'] ?? $context->payload['amounts']['shipping'] ?? null;
+        $attributes['total_amount'] = $context->calculated['total'] ?? $context->payload['amounts']['total'] ?? null;
+        $attributes['total_additional'] = $context->payload['amounts']['additional'] ?? [];
 
         // Shipping Information
-        $attributes['ship_to_id'] = $context->payload['shipping']['ship_to_id'] ?? null;
+        $attributes['ship_to_id'] = $context->resolved['shipping']?->id ?? $context->payload['shipping']['ship_to_id'] ?? null;
         $attributes['ship_to_method'] = $context->payload['shipping']['method']['code'] ?? null;
         $attributes['ship_to_method_label'] = $context->payload['shipping']['method']['label'] ?? null;
-        $attributes['ship_to_address'] = $context->payload['shipping']['ship_to_address'] ?? null;
-        $attributes['ship_to_number'] = $context->payload['shipping']['number'] ?? null;
-        $attributes['ship_to_city'] = $context->payload['shipping']['city'] ?? null;
-        $attributes['ship_to_state'] = $context->payload['shipping']['state'] ?? null;
-        $attributes['ship_to_zip_code'] = $context->payload['shipping']['zip_code'] ?? null;
-        $attributes['ship_to_country_code'] = $context->payload['shipping']['country'] ?? null;
+        $attributes['ship_to_address'] = $context->resolved['shipping']?->address_name ?? $context->payload['shipping']['ship_to_address'] ?? null;
+        $attributes['ship_to_number'] = $context->resolved['shipping']?->address_code ?? $context->payload['shipping']['number'] ?? null;
+        $attributes['ship_to_city'] = $context->resolved['shipping']?->city ?? $context->payload['shipping']['city'] ?? null;
+        $attributes['ship_to_state'] = $context->resolved['shipping']?->state ?? $context->payload['shipping']['state'] ?? null;
+        $attributes['ship_to_zip_code'] = $context->resolved['shipping']?->zip_code ?? $context->payload['shipping']['zip_code'] ?? null;
+        $attributes['ship_to_country_code'] = $context->resolved['shipping']?->country_code ?? $context->payload['shipping']['country'] ?? null;
         $attributes['ship_to_instruction'] = $context->payload['shipping']['instructions'] ?? null;
-        $attributes['ship_to_contact'] = $context->payload['shipping']['contact'] ?? null;
+        $attributes['ship_to_contact'] = $context->payload['shipping']['contact'] ?? $context->resolved['contact']?->name ?? null;
         $attributes['ship_to_additional'] = $context->payload['shipping']['additional'] ?? [];
-        $attributes['ship_to_phone'] = $context->payload['shipping']['phone'] ?? null;
+        $attributes['ship_to_phone'] = $context->resolved['shipping']?->phone ?? $context->payload['shipping']['phone'] ?? null;
 
         // Payment Information
         $attributes['pay_to_method'] = $context->payload['payment']['method'] ?? null;
@@ -83,9 +83,10 @@ final class PopulateOrder
         $attributes['pay_to_state'] = $context->payload['payment']['state'] ?? null;
         $attributes['pay_to_country_code'] = $context->payload['payment']['country'] ?? null;
         $attributes['pay_to_zip_code'] = $context->payload['payment']['zip_code'] ?? null;
-        $attributes['pay_to_additional'] = $context->payload['payment']['credentials'] ?? null;
+        $attributes['pay_to_additional'] = $context->payload['payment']['additional'] ?? null;
+        $attributes['request'] = request()->all();
 
-        $context->resolved['order'] = new CustomerOrder($attributes);
+        $context->resolved['order'] = CustomerOrder::create($attributes);
 
         return $next($context);
     }

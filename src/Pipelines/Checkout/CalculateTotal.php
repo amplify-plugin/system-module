@@ -9,20 +9,11 @@ final class CalculateTotal
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        $subtotal = (float) ($context->calculated['subtotal'] ?? 0);
-        $shipping = (float) ($context->calculated['shipping'] ?? 0);
-        $tax = (float) ($context->calculated['tax'] ?? 0);
+        $total = array_sum($context->calculated);
 
-        $additional = collect(
-            $context->calculated['additional'] ?? []
-        )->sum(fn ($charge) => (float) ($charge['amount'] ?? 0));
+        $context->calculated['total'] = $total;
 
-        $context->calculated['total'] = number_format(
-            $subtotal + $shipping + $tax + $additional,
-            2,
-            '.',
-            ''
-        );
+        $context->payload['amounts']['total'] = $total;
 
         return $next($context);
     }

@@ -9,9 +9,8 @@ final class CalculateTax
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        // Call the configured tax service/ERP integration.
-
-        $context->calculated['tax'] = '0.00';
+        $context->calculated['tax'] = data_get($context->payload, 'amounts.tax', null);
+        $context->payload['amounts']['tax'] = $context->calculated['tax'];
 
         return $next($context);
     }

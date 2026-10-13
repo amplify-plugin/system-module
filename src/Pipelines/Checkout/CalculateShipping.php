@@ -9,10 +9,8 @@ final class CalculateShipping
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        // Resolve shipping method and calculate its actual charge.
-        // Do not trust shipping.charge.amount from the browser.
-
-        $context->calculated['shipping'] = '0.00';
+        $context->calculated['shipping'] = data_get($context->payload, 'amounts.shipping', null);
+        $context->payload['amounts']['shipping'] = $context->calculated['shipping'];
 
         return $next($context);
     }

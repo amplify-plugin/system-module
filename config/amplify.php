@@ -38,7 +38,6 @@ return [
         // Server-side resolution
         Checkout\ResolveProducts::class,
         Checkout\ResolveCustomerPricing::class,
-        Checkout\ResolveCustomerPricing::class,
         Checkout\ValidateInventory::class,
 
         // Server-side calculations
@@ -55,8 +54,8 @@ return [
         Checkout\ValidateCheckoutTotals::class,
 
         // Persistence should be the final stage.
-        Checkout\PopulateOrder::class,
-        Checkout\PopulateOrderLines::class,
-        Checkout\PopulateOrderNotes::class,
+        Checkout\CreateOrder::class,
+        Checkout\CreateOrderLines::class,
+        Checkout\CreateOrderNotes::class,
     ]
 ];

@@ -9,8 +9,9 @@ final class CalculateAdditionalCharges
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        // ERP/configuration driven charges.
-        $context->calculated['additional'] = [];
+        foreach ($context->payload['amounts']['additional'] ?? [] as $additional) {
+            $context->calculated[$additional['field']] = floatval($additional['value']);
+        }
 
         return $next($context);
     }

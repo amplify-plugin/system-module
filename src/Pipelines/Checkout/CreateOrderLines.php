@@ -6,13 +6,11 @@ use Amplify\System\Backend\Models\CustomerOrderLine;
 use Amplify\System\Contexts\CheckoutContext;
 use Closure;
 
-final class PopulateOrderLines
+final class CreateOrderLines
 {
     public function handle(CheckoutContext $context, Closure $next): CheckoutContext
     {
-        $items = $context->payload['items'];
-
-        $items = array_map(function ($item) {
+        $context->resolved['lines'] = array_map(function ($item) {
             return new CustomerOrderLine([
                 'qty' => $item['quantity'] ?? null,
                 'unit_code' => $item['uom'] ?? null,
@@ -33,9 +31,11 @@ final class PopulateOrderLines
                 'source' => $item['source'] ?? null,
                 'additional_info' => $item['additional_info'] ?? (object)[]
             ]);
-        }, $items);
+        }, $context->payload['items']);
 
-        $context->resolved['items'] = $items;
+        $order = $context->resolved['order'];
+
+        $order->orderLines()->saveMany($context->resolved['lines']);
 
         return $next($context);
     }
