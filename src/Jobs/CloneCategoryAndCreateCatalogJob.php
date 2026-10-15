@@ -25,56 +25,58 @@ class CloneCategoryAndCreateCatalogJob implements ShouldQueue
                 $subtree = $this->fetchSubtree($this->category->id);
 
                 $mapping = [];
-                $newCategories = [];
+                $newRows = [];
 
-                // Create all cloned records first (new PKs, tree fields reset, parent not yet linked).
+                // Insert clones via the query builder: the Sluggable trait regenerates
+                // category_slug from category_name on every Eloquent create/update,
+                // which both mangles the cloned slug and can violate the unique slug
+                // index. Bypassing model events keeps cloned values deterministic.
                 foreach ($subtree as $original) {
-                    $new = $original->replicate();
-                    $new->parent_id = null;
-                    $new->catalog_id = null;
-                    $new->lft = null;
-                    $new->rgt = null;
-                    $new->depth = null;
-                    $new->level = null;
-                    $new->is_new = true;
-                    $new->is_updated = false;
-                    $new->deleted_at = null;
-                    $new->save();
+                    $attributes = $original->getAttributes();
+                    unset($attributes['id'], $attributes['created_at'], $attributes['updated_at']);
 
-                    $mapping[$original->id] = $new->id;
-                    $newCategories[$original->id] = $new;
+                    $attributes['parent_id'] = null;
+                    $attributes['catalog_id'] = null;
+                    $attributes['lft'] = null;
+                    $attributes['rgt'] = null;
+                    $attributes['depth'] = null;
+                    $attributes['level'] = null;
+                    $attributes['is_new'] = true;
+                    $attributes['is_updated'] = false;
+                    $attributes['deleted_at'] = null;
+                    $attributes['category_code'] = $this->uniqueCategoryValue('category_code', $original->category_code);
+                    $attributes['category_slug'] = $this->uniqueCategoryValue('category_slug', $original->category_slug);
+                    $attributes['created_at'] = now();
+                    $attributes['updated_at'] = now();
+
+                    $attributes['id'] = DB::table('categories')->insertGetId($attributes);
+
+                    $mapping[$original->id] = $attributes['id'];
+                    $newRows[$original->id] = $attributes;
                 }
 
-                // Link cloned children to their cloned parents only.
+                // Link cloned children to their cloned parents only; the cloned root
+                // stays an independent root (parent_id stays null).
                 foreach ($subtree as $original) {
-                    $new = $newCategories[$original->id];
-
                     if ($original->id === $this->category->id) {
-                        $new->parent_id = null; // cloned root is an independent root
-                    } else {
-                        $new->parent_id = $mapping[$original->parent_id];
+                        continue;
                     }
-                    $new->save();
+
+                    DB::table('categories')
+                        ->where('id', $mapping[$original->id])
+                        ->update(['parent_id' => $mapping[$original->parent_id]]);
                 }
 
                 // Rebuild nested-set columns for the new tree, appended after the last existing node.
                 $currentLft = (int) (Category::query()->max('rgt') ?? 0) + 1;
 
-                $this->assignNestedSet(
-                    $this->category,
-                    $subtree,
-                    $newCategories,
-                    $mapping,
-                    $currentLft,
-                    depth: 1
-                );
+                $this->assignNestedSet($this->category, $subtree, $mapping, $currentLft, depth: 1);
 
                 // Create exactly one new Catalog named after the cloned root.
                 // Inserted via the query builder so Catalog::booted()'s saved hook never
                 // fires: no placeholder Category is created and no Category is ever
                 // associated with the Catalog (cloned categories keep catalog_id = null).
-                $clonedRoot = $newCategories[$this->category->id];
-                $catalogName = $clonedRoot->label;
+                $catalogName = $this->category->label;
 
                 DB::table('catalogs')->insert([
                     'name' => $catalogName,
@@ -134,24 +136,61 @@ class CloneCategoryAndCreateCatalogJob implements ShouldQueue
     private function assignNestedSet(
         Category $original,
         \Illuminate\Support\Collection $subtree,
-        array $newCategories,
         array $mapping,
         int &$currentLft,
         int $depth
     ): void {
-        $new = $newCategories[$original->id];
-        $new->lft = $currentLft++;
-        $new->depth = $depth;
-        $new->save();
+        $cloneId = $mapping[$original->id];
+
+        DB::table('categories')->where('id', $cloneId)->update([
+            'lft' => $currentLft++,
+            'depth' => $depth,
+        ]);
 
         $children = $subtree->where('parent_id', $original->id)->sortBy('lft');
 
         foreach ($children as $child) {
-            $this->assignNestedSet($child, $subtree, $newCategories, $mapping, $currentLft, $depth + 1);
+            $this->assignNestedSet($child, $subtree, $mapping, $currentLft, $depth + 1);
         }
 
-        $new->rgt = $currentLft++;
-        $new->save();
+        DB::table('categories')->where('id', $cloneId)->update([
+            'rgt' => $currentLft++,
+        ]);
+    }
+
+    /**
+     * category_code has a unique index and category_slug is expected unique, so
+     * cloned values get a numeric suffix: a trailing number is incremented
+     * (PARTS-42 -> PARTS-43), otherwise a number is appended (parts -> parts-2).
+     * Checks include soft-deleted rows because the unique indexes still apply to them.
+     */
+    private function uniqueCategoryValue(string $column, ?string $value, ?int $ignoreId = null): ?string
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        if (preg_match('/^(.*?)(\d+)$/u', $value, $m)) {
+            $base = $m[1];
+            $start = (int) $m[2];
+        } else {
+            $base = $value.'-';
+            $start = 1;
+        }
+
+        $i = $start;
+
+        do {
+            $candidate = $base.(++$i);
+
+            $query = Category::withTrashed()->where($column, $candidate);
+
+            if ($ignoreId !== null) {
+                $query->where('id', '!=', $ignoreId);
+            }
+        } while ($query->exists());
+
+        return $candidate;
     }
 
     private function uniqueCatalogSlug(string $name): string
