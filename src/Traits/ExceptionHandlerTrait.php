@@ -37,11 +37,6 @@ trait ExceptionHandlerTrait
         });
     }
 
-    private function exceptionSignature($exception): string
-    {
-        return sha1(get_class($exception) . "|{$exception->getFile()}|{$exception->getLine()}");
-    }
-
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof TokenMismatchException) {

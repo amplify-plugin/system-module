@@ -1,20 +1,13 @@
 <?php
 
-use Amplify\ErpApi\Facades\ErpApi;
 use Amplify\System\Backend\Models\Attribute;
 use Amplify\System\Backend\Models\Cart;
 use Amplify\System\Backend\Models\Category;
 use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
-use Amplify\System\Backend\Models\CustomerAddress;
-use Amplify\System\Backend\Models\CustomerOrder;
 use Amplify\System\Backend\Models\Product;
-use Amplify\System\Cms\Models\Banner;
-use Amplify\System\Cms\Models\Navigation;
 use Amplify\System\Cms\Models\Page;
-use Amplify\System\Cms\Models\Template;
 use Amplify\System\Facades\AssetsFacade;
-use Amplify\System\Helpers\ProductHelper;
 use Amplify\System\Sayt\Classes\ItemRow;
 use Amplify\System\Support\AssetsLoader;
 use Amplify\System\Support\Money;
@@ -23,25 +16,15 @@ use Amplify\System\Utility\Models\ImportJobHistory;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\HigherOrderBuilderProxy;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Routing\Exceptions\UrlGenerationException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 
 /*
  |--------------------------------------------------------------------------
@@ -106,143 +89,10 @@ if (! function_exists('array_rename_recursive')) {
     }
 }
 
-if (! function_exists('is_super')) {
-    function is_super($role = ['Super Admin']): bool
-    {
-        return is_super_admin($role);
-    }
-}
-
 if (! function_exists('is_super_admin')) {
     function is_super_admin($role = ['Super Admin']): bool
     {
         return backpack_auth()->check() && backpack_user()->hasRole($role);
-    }
-}
-
-if (! function_exists('public_routes')) {
-    function public_routes($route = null)
-    {
-        $routes = [
-            'backpack',
-            'backpack.dashboard',
-            'product.status-update',
-        ];
-
-        return $route
-                ? in_array($route, $routes)
-                : $routes;
-    }
-}
-
-if (! function_exists('get_all_routes_name')) {
-    function get_all_routes_name(...$search)
-    {
-        $routesName = backpack_user()
-            ->getAllPermissions()
-            ->sortBy('name')
-            ->pluck('name');
-
-        return ($search
-                ? $routesName->map(function ($name) use ($search) {
-                    foreach ($search as $src) {
-                        if (if_found_pos($name, $src)) {
-                            return $name;
-                        }
-                    }
-
-                    return false;
-                })->reject(function ($val) {
-                    return $val == false;
-                })
-                : $routesName)->values()->toArray();
-    }
-}
-
-if (! function_exists('if_found_pos')) {
-    function if_found_pos($name, $search): bool
-    {
-        return strpos($name, $search) !== false;
-    }
-}
-
-if (! function_exists('get_fetch_routes')) {
-    function get_fetch_routes()
-    {
-        return get_all_routes_name('.fetch');
-    }
-}
-
-if (! function_exists('get_inline_routes')) {
-    function get_inline_routes()
-    {
-        return get_all_routes_name('-inline-');
-    }
-}
-
-if (! function_exists('get_action_button_permission')) {
-    function get_action_button_permission()
-    {
-        //    $route = Route::currentRouteName();
-        //    $routeArr                 = explode('.', $route);
-        //    $post                     = end($routeArr);
-        //    $route                    = implode('.', $routeArr);
-        //    dd($route);
-        /*return backpack_user()->can($route)
-            ? true
-            : false;*/
-    }
-}
-
-if (! function_exists('user_has_permission')) {
-    function user_has_permission($route = null): bool
-    {
-        // $freePass = [...get_inline_routes(), ...get_fetch_routes()];
-        $freePass = get_all_routes_name('.fetch', '-inline-');
-
-        if (public_routes($route = $route ?? Route::currentRouteName()) || in_array($route, $freePass)) {
-            return true;
-        }
-
-        $routePost = [
-            'create' => 'create',
-            'store' => 'create',
-            'destroy' => 'destroy',
-            'edit' => 'edit',
-            'update' => 'edit',
-            'index' => 'index',
-            'search' => 'index',
-            'show' => 'index',
-            'showDetailsRow' => 'index',
-            'reorder' => 'reorder',
-            'message' => 'message',
-            'newMessage' => 'message',
-            'reset' => 'reset',
-        ];
-
-        $routeArr = explode('.', $route);
-        $post = end($routeArr);
-        $routeArr[key($routeArr)] = $routePost[$post];
-        $route = implode('.', $routeArr);
-
-        return backpack_user()->can($route);
-    }
-}
-
-if (! function_exists('url_query')) {
-    function url_query($to, array $params = [], array $additional = []): string
-    {
-        $query = Arr::query($params);
-        $url = Str::finish(
-            url($to, $additional),
-            $query
-                    ? '?'
-                    : ''
-        );
-
-        return $query
-                ? $url.$query
-                : $url;
     }
 }
 
@@ -254,96 +104,6 @@ if (! function_exists('listOfCrudToHideBackToButton')) {
             'site pricings',
             'core configurations',
         ];
-    }
-}
-
-if (! function_exists('checkIfQuantityisValid')) {
-    function checkIfQuantityisValid($_products)
-    {
-        $products = $_products->map(function ($product) {
-            return ['item' => $product->product_code];
-        });
-
-        $warehouseString = \ErpApi::getWarehouses()->reduce(function ($previous, $current) {
-            return $previous.$current->WarehouseNumber;
-        }, '');
-
-        $erp = \ErpApi::getProductPriceAvailability(['items' => $products, 'warehouse' => $warehouseString]) ?? [];
-        foreach ($_products as $product) {
-            foreach ($erp as $item) {
-                if ($item['ItemNumber'] === $product->product_code && $item->WarehouseID == $product->product_warehouse_code) {
-                    $warehouseProduct = $item;
-                }
-            }
-
-            if ($warehouseProduct->QuantityAvailable < $product->quantity) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-
-if (! function_exists('sumOfProductPrices')) {
-    function sumOfProductPrices($_products)
-    {
-        $price = 0;
-        $products = array_map(function ($product) {
-            return ['item' => $product['product_code']];
-        }, $_products ?? []);
-
-        $warehouseString = \ErpApi::getWarehouses()->reduce(function ($previous, $current) {
-            return $previous.$current->WarehouseNumber;
-        }, '');
-
-        $erp = \ErpApi::getProductPriceAvailability(['items' => $products, 'warehouse' => $warehouseString]) ?? [];
-        $products = array_map(function ($product) {
-            return $product['product_code'];
-        }, $_products ?? []);
-
-        foreach ($_products as $product) {
-            foreach ($erp as $item) {
-                if ($item['ItemNumber'] === $product['product_code'] && $item['WarehouseID'] == $product['product_warehouse_code']) {
-                    $price += $item['Price'] * $product['qty'];
-                    break;
-                }
-            }
-        }
-
-        return $price;
-    }
-}
-
-if (! function_exists('array_flatten')) {
-    function array_flatten($array)
-    {
-        if (! is_array($array)) {
-            return false;
-        }
-        $result = [];
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $result = array_merge($result, array_flatten($value));
-            } else {
-                $result[$key] = $value;
-            }
-        }
-
-        return $result;
-    }
-}
-
-if (! function_exists('checkIfProductFieldIsRequired')) {
-    function checkIfProductFieldIsRequired($productFieldName): bool
-    {
-        if (ProductHelper::isRequiredFields()) {
-            if (in_array($productFieldName, ProductHelper::getProductMandatoryFields(), true)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
 
@@ -452,18 +212,6 @@ if (! function_exists('getProductSlug')) {
     }
 }
 
-/**
- * @params - productIds - Array which contains the ids of products
- *
- * @return Collection of products that matches the productIds array
- */
-if (! function_exists('getProductsFromProductIds')) {
-    function getProductsFromProductIds($productIds)
-    {
-        return Product::whereIn('id', $productIds);
-    }
-}
-
 if (! function_exists('getPageSlug')) {
     function getPageSlug($slug, $id = null)
     {
@@ -479,40 +227,7 @@ if (! function_exists('getPageSlug')) {
     }
 }
 
-if (! function_exists('getNavShortCode')) {
-    function getNavShortCode($short_code, $id = null)
-    {
-        $where = $id
-                ? [['short_code', 'LIKE', '%'.$short_code.'%'], ['id', '!=', $id]]
-                : ['short_code' => $short_code];
-
-        $count = Page::query()->where($where)->count();
-
-        return $count
-                ? "$short_code-$count"
-                : $short_code;
-    }
-}
-
-if (! function_exists('getTemplateSlug')) {
-    function getTemplateSlug($slug, $id = null)
-    {
-        $where = $id
-                ? [['slug', 'LIKE', '%'.$slug.'%'], ['id', '!=', $id]]
-                : ['slug' => $slug];
-
-        $count = Template::query()->where($where)->count();
-
-        return $count
-                ? "$slug-$count"
-                : $slug;
-    }
-}
-
 if (! function_exists('manageImportJobHistory')) {
-    /**
-     * @return Builder|Model|mixed|null
-     */
     function manageImportJobHistory(
         string $uuid,
         int $importJobId,
@@ -613,7 +328,7 @@ if (! function_exists('getFileData')) {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '300');
 
-        $fileData = Excel::toCollection($toCollection, $filePath, $disc, $readerType);
+        $fileData = \Maatwebsite\Excel\Facades\Excel::toCollection($toCollection, $filePath, $disc, $readerType);
 
         return collect($fileData->first());
     }
@@ -765,7 +480,7 @@ if (! function_exists('deleteFileFromPublicFolder')) {
 // Get default limit for reorder
 if (! function_exists('getDefaultReorderLimit')) {
     /**
-     * @return HigherOrderBuilderProxy|int|mixed
+     * @return int|mixed
      */
     function getDefaultReorderLimit()
     {
@@ -796,14 +511,6 @@ if (! function_exists('getDownloadAnchorTag')) {
                         .asset($filePath).'\'> <i class="la la-download mr-1"></i>'
                         : 'class=\'text-danger\' title=\'File Does Not Exists\' href=\'#\'>')
                 ."$fileName</a>";
-    }
-}
-
-// get Current DB name
-if (! function_exists('getCurrentDatabaseName')) {
-    function getCurrentDatabaseName(): string
-    {
-        return config('database.connections.'.config('database.default').'.database');
     }
 }
 
@@ -851,7 +558,7 @@ if (! function_exists('getFileDetails')) {
 
 if (! function_exists('getDataTransformations')) {
     /**
-     * @return bool|Builder[]|Illuminate\Database\Eloquent\Collection
+     * @return bool|\Illuminate\Database\Eloquent\Builder[]|Illuminate\Database\Eloquent\Collection
      */
     function getDataTransformations(
         string $appliesTo = 'Products',
@@ -883,150 +590,12 @@ if (! function_exists('getDataTransformations')) {
     }
 }
 
-if (! function_exists('generateEACategoryList')) {
-    function generateEACategoryList($eacategories, $sub_cat = null, $levelDepth = 0, $oldParentNodeString = ''): string
-    {
-        $categoryList = '<ul>';
-        $levelDepth++;
-        foreach ($eacategories as $eacategory) {
-            if (! empty($eacategory->subCategories) && $sub_cat !== null) {
-                $categoryList .= ($levelDepth === 1)
-                        ? "<li class='has-children'><a href='javascript:void(0)'>{$eacategory->name}</a>"
-                        : "<li><a href='".url()->current()
-                        ."?ea_server_products={$eacategory->nodeString}'>{$eacategory->name}</a>";
-                if (! empty($sub_cat['@attributes']['level'])) { // if level attribute found manage level
-                    if ($levelDepth <= $sub_cat['@attributes']['level']) {
-                        $categoryList .= "<span>({$eacategory->productCount})</span>";
-                        $categoryList .= generateEACategoryList(
-                            $eacategory->subCategories,
-                            $sub_cat,
-                            $levelDepth,
-                            $eacategory->nodeString
-                            ??
-                            ''
-                        );
-                    }
-                } else { // if there is no level attributes found show all sub-categories with their sub-categories
-                    $categoryList .= generateEACategoryList(
-                        $eacategory->subCategories,
-                        $sub_cat,
-                        $levelDepth,
-                        $eacategory->nodeString
-                        ?? ''
-                    );
-                }
-            } else {
-                $categoryList .= '<li>';
-                $categoryList .= "<a href='".url()->current()
-                        ."?ea_server_products={$eacategory->nodeString}'>{$eacategory->name}</a>";
-                $categoryList .= ($levelDepth === 1)
-                        ? "<span>({$eacategory->productCount})</span>"
-                        : '';
-            }
-            $categoryList .= '</li>';
-        }
-
-        return $categoryList.'</ul>';
-    }
-}
-
-if (! function_exists('getLayoutList')) {
-    function getLayoutList($location): array
-    {
-        $templateComponentDir = theme()->component_folder ?? theme('fallback')->component_folder;
-        $navLayouts = [];
-        $rootFolder = base_path();
-        $directoryFolder =
-                $rootFolder."/themes/{$templateComponentDir}/components/{$location}";
-
-        if (file_exists($directoryFolder) && $handle = opendir($directoryFolder)) {
-            $blacklist = ['.', '..'];
-            while (($folder = readdir($handle)) !== false) {
-                if (! in_array($folder, $blacklist)) {
-                    $fileLocation = $directoryFolder.'/'."$folder/config.json";
-                    if (file_exists($fileLocation) && $layout = json_decode(file_get_contents($fileLocation), true)) {
-                        $layout['blade_folder'] =
-                                "theme::{$templateComponentDir}.components.".str_replace('/', '.', $location)
-                                .".{$folder}.index";
-                        ! empty($layout['unique_identifier'])
-                                ? $navLayouts[$layout['unique_identifier']] = $layout
-                                : '';
-                    }
-                }
-            }
-            closedir($handle);
-        }
-
-        return $navLayouts;
-    }
-}
-
-if (! function_exists('getNavigationLayoutList')) {
-    function getNavigationLayoutList(): array
-    {
-        return getLayoutList('header/navigation-layouts');
-    }
-}
-
 if (! function_exists('getCategoryWithSubCategories')) {
     function getCategoryWithSubCategories($category_seopath)
     {
         $subCategories = Sayt::getSubCategoriesByCategory($category_seopath);
 
         return ! empty($subCategories) ? $subCategories : new stdClass;
-    }
-}
-
-if (! function_exists('getActiveNavigationLayout')) {
-    function getActiveNavigationLayout()
-    {
-        $navigationLayouts = getNavigationLayoutList();
-        $activeNavigation = Navigation::query()
-            ->where(['template_id' => (theme()->id ?? theme('fallback')->id), 'is_enabled' => 1])
-            ->with(['menu_group', 'mobile_menu', 'account_menu'])
-            ->first();
-
-        if (! empty($activeNavigation)) {
-            $layout = $navigationLayouts[$activeNavigation->layout];
-            $layout['menu_short_code'] = $activeNavigation->menu_group?->short_code;
-            $layout['mobile_menu_short_code'] = $activeNavigation->mobile_menu?->short_code;
-            $layout['account_menu_short_code'] = $activeNavigation->account_menu?->short_code;
-            $layout['menu_logo_key'] = $activeNavigation->cms_config_logo;
-            $layout['top_bar'] = $activeNavigation->top_bar;
-            $layout['db_contents'] = json_decode($activeNavigation->content, true);
-        } else {
-            $layout = [];
-        }
-
-        return $layout;
-    }
-}
-
-if (! function_exists('getFooterLayoutList')) {
-    function getFooterLayoutList(): array
-    {
-        return getLayoutList('footer');
-    }
-}
-
-if (! function_exists('str_slug')) {
-    function str_slug($title, $separator): string
-    {
-        return Str::slug($title, $separator);
-    }
-}
-
-if (! function_exists('getEasyaskSkuProductImage')) {
-    function getEasyaskSkuProductImage($Product): array
-    {
-        $product['image'] = $Product->Product_Image;
-        $product['name'] = $Product->Product_Name;
-        if (! empty($Product->Sku_List_Details) && count(json_decode($Product->Sku_List_Details)) == 1) {
-            $product['image'] = $Product->Sku_ProductImage;
-            $product['name'] = $Product->Sku_Name;
-        }
-
-        return $product;
     }
 }
 
@@ -1041,97 +610,6 @@ if (! function_exists('error_layout')) {
         return (request()->is(config('backpack.base.route_prefix').'/*') || request()->is('sales/*'))
                 ? 'errors.layout'
                 : theme_view('error');
-    }
-}
-
-if (! function_exists('menuLink')) {
-    function menuLink($menu)
-    {
-        if ($menu->url_type == 'page') {
-            if (empty($menu->page_slug)) {
-                return '#';
-            }
-
-            return route('dynamic-page', $menu->page_slug);
-        }
-
-        return $menu->url;
-    }
-}
-
-if (! function_exists('menuContent')) {
-    function menuContent($menu_group)
-    {
-        if (! empty($menu_group)) {
-            if ($menu_group->blade_location) {
-                return view(component_view($menu_group->blade_location), compact('menu_group'))->render();
-            }
-
-            return view('components.menu')
-                ->with('menu_group', $menu_group)
-                ->render();
-        } else {
-            return '';
-        }
-    }
-}
-
-if (! function_exists('get_banner_from_zone')) {
-    function get_banner_from_zone($banner): array
-    {
-        if (count($banner) > 0) {
-            $bannerDetail = Banner::whereCode($banner[0]->getid())->first();
-
-            return ! empty($bannerDetail) ? $bannerDetail->toArray() : [];
-        }
-
-        return [];
-    }
-}
-
-if (! function_exists('setSiteSearchConfigToCache')) {
-    function setSiteSearchConfigToCache($searchConfig, $forgetOnly = false)
-    {
-        if (Cache::has('siteSearchConfig')) {
-            Cache::forget('siteSearchConfig');
-        }
-
-        if (! $forgetOnly) {
-            Cache::forever('siteSearchConfig', $searchConfig);
-        }
-    }
-}
-
-if (! function_exists('getIsDynamicSiteFromCache')) {
-    function getIsDynamicSiteFromCache(): int
-    {
-        //        return (int) Cache::get('isDynamicSite');
-        return 0;
-    }
-}
-
-if (! function_exists('getSiteSearchConfigFromCache')) {
-    function getSiteSearchConfigFromCache()
-    {
-        return Cache::get('siteSearchConfig');
-    }
-}
-
-if (! function_exists('setDynamicSiteSlugToCache')) {
-    function setDynamicSiteSlugToCache($slug)
-    {
-        if (Cache::has('dynamicSiteSlug')) {
-            Cache::forget('dynamicSiteSlug');
-        }
-
-        Cache::forever('dynamicSiteSlug', $slug);
-    }
-}
-
-if (! function_exists('getDynamicSiteSlugFromCache')) {
-    function getDynamicSiteSlugFromCache()
-    {
-        return Cache::get('dynamicSiteSlug');
     }
 }
 
@@ -1207,10 +685,6 @@ if (! function_exists('frontendSingleProductURL')) {
         return (! empty($params['identifier']))
                 ? \route('frontend.shop.show', $params)
                 : '#';
-
-        //        return getIsDynamicSiteFromCache()
-        //                ? \request()->getSchemeAndHttpHost() . '/' . getDynamicSiteSlugFromCache() . "/product/{$productSlug}?seo_path={$seo_path}"
-        //                : route('frontend.shop.show',$params);
     }
 }
 
@@ -1219,55 +693,16 @@ if (! function_exists('frontendShopURL')) {
     {
         $shopRoutePrefix = config('amplify.frontend.shop_page_prefix');
 
-        $params = Arr::wrap($params);
+        $params = \Illuminate\Support\Arr::wrap($params);
 
-        return getIsDynamicSiteFromCache()
-                ? \request()->getSchemeAndHttpHost().'/'.getDynamicSiteSlugFromCache()."/{$shopRoutePrefix}/"
-                : route('frontend.shop.index', $params);
+        return route('frontend.shop.index', $params);
     }
 }
 
 if (! function_exists('frontendHomeURL')) {
     function frontendHomeURL(): string
     {
-        return getIsDynamicSiteFromCache()
-                ? \request()->getSchemeAndHttpHost().'/'.getDynamicSiteSlugFromCache()
-                : route('frontend.index');
-    }
-}
-
-if (! function_exists('frontend_page_url')) {
-    /**
-     * This function will return valid full url
-     * if a page type is available and given else return home url
-     * passing query parameters as array will convert them to
-     * http query string
-     *
-     * @deprecated
-     */
-    function frontend_page_url(?string $pageType = null, array $data = []): string
-    {
-        $query = '';
-        if (! empty($data)) {
-            $query = '?'.http_build_query($data);
-        }
-
-        if ($pageType == null) {
-            return route('frontend.index').$query;
-        }
-
-        /**
-         * Not Working
-         */
-        if (config('amplify.cms.page_types')) {
-            throw new InvalidArgumentException("Invalid Page Type ({$pageType}) given, check `\Amplify\System\Cms\Models\Page::PAGE_TYPES`.");
-        }
-
-        $page_id = config("amplify.frontend.{$pageType}_id");
-
-        $page = Page::findOrFail($page_id);
-
-        return \route('frontend.index').$page->slug.$query;
+        return route('frontend.index');
     }
 }
 
@@ -1368,45 +803,6 @@ if (! function_exists('getCart')) {
     }
 }
 
-if (! function_exists('getAllAddress')) {
-    function getAllAddress()
-    {
-        if (customer_check()) {
-            $customer = Contact::with('customer')->whereId(customer(true)->id)->first();
-
-            $addresses = CustomerAddress::where('customer_id', $customer->customer->id)->get(['id', 'address_name']);
-
-            return $addresses;
-        }
-
-        return [];
-    }
-}
-
-if (! function_exists('getImageFromPath')) {
-    function getImageFromPath($path)
-    {
-        $base64Path = base64_encode(file_get_contents($path));
-
-        return $base64Path;
-    }
-}
-
-if (! function_exists('getFileFromS3')) {
-    function getFileFromS3(string $attachment): string
-    {
-        if ($attachment == null) {
-            return $attachment;
-        }
-
-        if ($attachment[0] != '/') {
-            return config('filesystems.disks.uploads.url').'/'.$attachment;
-        }
-
-        return config('filesystems.disks.uploads.url').$attachment;
-    }
-}
-
 if (! function_exists('fileUploads')) {
     function fileUploads(?UploadedFile $file = null, $dir = '/')
     {
@@ -1445,7 +841,7 @@ if (! function_exists('get_orders')) {
             ];
         }
 
-        $query = CustomerOrder::query()
+        $query = \Amplify\System\Backend\Models\CustomerOrder::query()
             ->whereBetween('created_at', [$start, $end])
             ->where('order_status', '!=', 'Rejected');
 
@@ -1453,42 +849,6 @@ if (! function_exists('get_orders')) {
             'count' => (clone $query)->count(),
             'totalAmount' => (clone $query)->sum('total_amount'),
         ];
-    }
-}
-
-if (! function_exists('mega_menu_columns')) {
-    /**
-     * Dynamically calculate the mega menu column length
-     *
-     * @return int
-     */
-    function mega_menu_columns($parentColumn)
-    {
-        $parentColumn = (int) (strpos($parentColumn, 'col-md-') !== false)
-                ? str_replace('col-md-', '', $parentColumn)
-                : $parentColumn;
-
-        if ($parentColumn != null && is_numeric($parentColumn)) {
-            if ($parentColumn > 6) {
-                return 4;
-            } elseif ($parentColumn > 3) {
-                return 2;
-            }
-        }
-
-        return 1;
-    }
-}
-
-if (! function_exists('mega_menu_max_height')) {
-    function mega_menu_max_height()
-    {
-        $height = config('amplify.frontend.mega_menu_max_height', '310px');
-        if (is_numeric($height)) {
-            return intval($height).'px';
-        }
-
-        return $height;
     }
 }
 
@@ -1507,8 +867,8 @@ if (! function_exists('customer')) {
             return $contact;
         }
 
-        return Cache::remember(Session::token().'-customer-model',
-            (App::environment('production')) ? HOUR : 0,
+        return Cache::remember(\session()->token().'-customer-model',
+            (app()->environment('production')) ? HOUR : 0,
             fn () => ($contact instanceof Contact) ? $contact->customer : null);
     }
 }
@@ -1530,7 +890,7 @@ if (! function_exists('has_erp_customer')) {
     function has_erp_customer(): bool
     {
         try {
-            $cust = ErpApi::getCustomerDetail();
+            $cust = \ErpApi::getCustomerDetail();
 
             if (! empty($cust->CustomerNumber)) {
                 return true;
@@ -1549,7 +909,7 @@ if (! function_exists('customer_guard')) {
      */
     function customer_guard(): string
     {
-        return 'customer';
+        return Contact::AUTH_GUARD;
     }
 }
 
@@ -1559,7 +919,7 @@ if (! function_exists('customer_permissions')) {
      */
     function customer_permissions(): array
     {
-        $key = Session::token().'_permissions';
+        $key = \session()->token().'_permissions';
 
         if (! session()->has($key)) {
 
@@ -1621,13 +981,6 @@ if (! function_exists('carbon2moment_format')) {
     }
 }
 
-if (! function_exists('suppress_exception')) {
-    function suppress_exception(): bool
-    {
-        return config('amplify.suppress_exception', true);
-    }
-}
-
 if (! function_exists('sku_attribute_filter')) {
     function sku_attribute_filter($defaultAttributeId, $attributes = [])
     {
@@ -1645,26 +998,6 @@ if (! function_exists('active_shop_view')) {
         return request()->filled('view')
                 ? request('view', config('amplify.frontend.shop_page_default_view'))
                 : request()->cookie('showView', config('amplify.frontend.shop_page_default_view'));
-    }
-}
-
-if (! function_exists('sort_link')) {
-    function sort_link(string $column, ?string $label = null)
-    {
-
-        $inputs = request()->query();
-
-        $label = $label ?? ucfirst($column);
-
-        $inputs['dir'] = (
-            (isset($inputs['sort']) && $inputs['sort'] == $column)
-            && (isset($inputs['dir']) && $inputs['dir'] == 'asc')
-        ) ? 'desc' : 'asc';
-        $inputs['sort'] = $column;
-
-        $newUrl = request()->fullUrlWithQuery($inputs);
-
-        return new HtmlString("<a class='d-flex justify-content-between text-dark' style='text-decoration: none;' href='{$newUrl}'>{$label}</a>");
     }
 }
 
@@ -1705,13 +1038,6 @@ if (! function_exists('generate_ordinal')) {
     }
 }
 
-if (! function_exists('validate_number')) {
-    function validate_number($num)
-    {
-        return (float) filter_var($num, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    }
-}
-
 if (! function_exists('price_format')) {
     function price_format($num, $decimals = 2)
     {
@@ -1740,209 +1066,6 @@ if (! function_exists('discount_badge_label')) {
     }
 }
 
-// blade rendering related functions
-/**
- * @removed  generateEACategoryPageList()
- *
- * @see <x-ea-category-page-list :categories="$eacategories" />
- */
-if (! function_exists('generateInternalCategoryList')) {
-    function generateInternalCategoryList($categories, $sub_cat = null, $levelDepth = 0): string
-    {
-        $categoryList = '<ul>';
-        $levelDepth++;
-        foreach ($categories as $category) {
-            if (isset($category['children']) && ! empty($sub_cat)) {
-                $categoryList .= ($levelDepth === 1)
-                        ? "<li class='has-children'><a href='javascript:void(0)'>{$category['label']}</a>"
-                        : "<li><a href='"
-                        .request()->fullUrlWithQuery(['internal_category_id' => $category['id'], 'page' => 1])
-                        ."'>{$category['label']}</a>";
-                if (! empty($sub_cat['@attributes']['level'])) { // if level attribute found manage level
-                    if ($levelDepth <= $sub_cat['@attributes']['level']) {
-                        $categoryList .= isset($category['children'])
-                                ? count($category['children']) > 0
-                                        ? '<span>('.count($category['children']).')</span>'
-                                        : ''
-                                : '';
-                        $categoryList .= generateInternalCategoryList($category['children'] ?? [], $sub_cat, $levelDepth);
-                    }
-                } else { // if there is no level attributes found show all sub-categories with their sub-categories
-                    $categoryList .= generateInternalCategoryList($category['children'] ?? [], $sub_cat, $levelDepth);
-                }
-            } else {
-                $categoryList .= '<li>';
-                $categoryList .= "<a href='javascript:void(0)'>{$category['label']}</a>";
-                $categoryList .= ($levelDepth === 1)
-                        ? isset($category['children'])
-                                ? '<span>('.count($category['children']).')</span>'
-                                : ''
-                        : '';
-            }
-            $categoryList .= '</li>';
-        }
-
-        return $categoryList.'</ul>';
-    }
-}
-
-if (! function_exists('easyAskProductPagination')) {
-    /**
-     * @return array|false|Application|Factory|View|mixed
-     */
-    function easyAskProductPagination($cur_page, $number_of_pages, $prev_next = false)
-    {
-        $ends_count = 1;    // how many items at the ends (before and after [...])
-        $middle_count = 2;    // how many items before and after current page
-        $dots = false;
-
-        return view(component_view('product.product-pagination.custom-ea-pagination'), [
-            'cur_page' => $cur_page,
-            'number_of_pages' => $number_of_pages,
-            'middle_count' => $middle_count,
-            'ends_count' => $ends_count,
-            'dots' => $dots,
-        ]);
-    }
-}
-
-if (! function_exists('t2EasyAskProductPagination')) {
-    function t2EasyAskProductPagination($cur_page, $number_of_pages, $prev_next = false)
-    {
-        $ends_count = 1;  // how many items at the ends (before and after [...])
-        $middle_count = 2;  // how many items before and after current page
-        $dots = false;
-        ?>
-
-        <ul class="pagination">
-            <?php
-            if ($prev_next && $cur_page && $cur_page > 1) {  // print previous button?
-                ?>
-                <li><a class="btn btn-primary"
-                       href="<?php echo request()->fullUrlWithQuery(['currentPage' => $cur_page - 1]); ?>">Prev</a></li>
-                <?php
-            } else { ?>
-                <li>
-                    <button disabled class="btn btn-primary">Prev</button>
-                </li>
-
-            <?php }
-            ?>
-
-            <?php
-            for ($i = 1; $i <= $number_of_pages; $i++) {
-                if ($i == $cur_page) {
-                    ?>
-                    <li><a class="btn btn-primary text-white text-dark"><?php
-                        echo $i; ?></a></li><?php
-                    $dots = true;
-                } else {
-                    if ($i <= $ends_count
-                            || ($cur_page && $i >= $cur_page - $middle_count
-                                    && $i <= $cur_page + $middle_count)
-                            || $i > $number_of_pages - $ends_count) {
-                        ?>
-                        <li><a class="active btn btn-light text-dark" href="<?php
-                        echo request()->fullUrlWithQuery(['currentPage' => $i]); ?>"><?php
-                            echo $i; ?></a></li><?php
-                        $dots = true;
-                    } elseif ($dots) {
-                        ?>
-                        <li><a>&hellip;</a></li><?php
-                        $dots = false;
-                    }
-                }
-            }
-        ?>
-
-            <?php
-        if ($prev_next && $cur_page
-                && ($cur_page < $number_of_pages
-                        || $number_of_pages == -1)) { // print next button?
-            ?>
-                <li><a class="btn btn-primary"
-                       href="<?php echo request()->fullUrlWithQuery(['currentPage' => $cur_page + 1]); ?>">Next</a></li>
-                <?php
-        } else { ?>
-                <li>
-                    <button disabled class="btn btn-primary">Next</button>
-                </li>
-
-            <?php }
-        ?>
-
-
-        </ul>
-
-
-        <?php
-    }
-}
-
-/**
- * @removed  generateEACategoryPageList()
- *
- * @see <x-ea-category-page-list :categories="$eacategories" />
- */
-if (! function_exists('generateInternalCategoryList')) {
-    function generateInternalCategoryList($categories, $sub_cat = null, $levelDepth = 0): string
-    {
-        $categoryList = '<ul>';
-        $levelDepth++;
-        foreach ($categories as $category) {
-            if (isset($category['children']) && ! empty($sub_cat)) {
-                $categoryList .= ($levelDepth === 1)
-                        ? "<li class='has-children'><a href='javascript:void(0)'>{$category['label']}</a>"
-                        : "<li><a href='"
-                        .request()->fullUrlWithQuery(['internal_category_id' => $category['id'], 'page' => 1])
-                        ."'>{$category['label']}</a>";
-                if (! empty($sub_cat['@attributes']['level'])) { // if level attribute found manage level
-                    if ($levelDepth <= $sub_cat['@attributes']['level']) {
-                        $categoryList .= isset($category['children'])
-                                ? count($category['children']) > 0
-                                        ? '<span>('.count($category['children']).')</span>'
-                                        : ''
-                                : '';
-                        $categoryList .= generateInternalCategoryList($category['children'] ?? [], $sub_cat, $levelDepth);
-                    }
-                } else { // if there is no level attributes found show all sub-categories with their sub-categories
-                    $categoryList .= generateInternalCategoryList($category['children'] ?? [], $sub_cat, $levelDepth);
-                }
-            } else {
-                $categoryList .= '<li>';
-                $categoryList .= "<a href='javascript:void(0)'>{$category['label']}</a>";
-                $categoryList .= ($levelDepth === 1)
-                        ? isset($category['children'])
-                                ? '<span>('.count($category['children']).')</span>'
-                                : ''
-                        : '';
-            }
-            $categoryList .= '</li>';
-        }
-
-        return $categoryList.'</ul>';
-    }
-}
-
-if (! function_exists('easyAskProductPagination')) {
-    /**
-     * @return array|false|Application|Factory|View|mixed
-     */
-    function easyAskProductPagination($cur_page, $number_of_pages, $prev_next = false)
-    {
-        $ends_count = 1;    // how many items at the ends (before and after [...])
-        $middle_count = 2;    // how many items before and after current page
-        $dots = false;
-
-        return view(component_view('product.product-pagination.custom-ea-pagination'), [
-            'cur_page' => $cur_page,
-            'number_of_pages' => $number_of_pages,
-            'middle_count' => $middle_count,
-            'ends_count' => $ends_count,
-            'dots' => $dots,
-        ]);
-    }
-}
 if (! function_exists('checkPermissionLength')) {
     function checkPermissionLength($permissions): int
     {
@@ -2100,7 +1223,7 @@ if (! function_exists('html_stack')) {
      *
      * @param  string|array  $group
      */
-    function html_stack($group = AssetsLoader::DEFAULT_GROUP): HtmlString
+    function html_stack($group = AssetsLoader::DEFAULT_GROUP): \Illuminate\Support\HtmlString
     {
         return AssetsFacade::html($group);
     }
@@ -2164,14 +1287,13 @@ if (! function_exists('route_uri')) {
     /**
      * Get URI from route name.
      *
-     * @throws UrlGenerationException
      */
     function route_uri(string $name): string
     {
-        $route = Route::getRoutes()->getByName($name);
+        $route = \Illuminate\Support\Facades\Route::getRoutes()->getByName($name);
 
         if (! $route) {
-            throw new UrlGenerationException("Route with name '{$name}' does not exist.");
+            throw new \Illuminate\Routing\Exceptions\UrlGenerationException("Route with name '{$name}' does not exist.");
         }
 
         return $route->uri();
