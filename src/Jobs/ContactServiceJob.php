@@ -77,7 +77,34 @@ class ContactServiceJob extends BaseImportJob implements ShouldQueue
             $this->contact->password_reset_required = true;
         }
 
+        if (! config('amplify.security.use_email_as_login_id', true)) {
+            $loginId = $this->resolveImportedLoginId($aCsv);
+
+            if ($loginId === null || trim((string) $loginId) === '') {
+                throw new \Exception('login_id is required when "Use e-mail as login id" is disabled.');
+            }
+
+            $exists = Contact::query()->where('login_id', $loginId)->exists();
+
+            if ($exists) {
+                throw new \Exception("login_id \"{$loginId}\" is already in use.");
+            }
+        }
+
         $this->saveDataToDatabase($aCsv);
+    }
+
+    protected function resolveImportedLoginId($aCsv): ?string
+    {
+        $loginId = null;
+
+        collect($this->column_mapping)->map(function ($item, $index) use ($aCsv, &$loginId) {
+            if ($item->field_or_attribute_name === 'login_id') {
+                $loginId = $aCsv[$index];
+            }
+        });
+
+        return $loginId;
     }
 
     protected function handleUpdateOperation($aCsv, $entity): void
