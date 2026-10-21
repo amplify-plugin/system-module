@@ -1706,18 +1706,15 @@ if (! function_exists('price_format')) {
 if (! function_exists('discount_badge_label')) {
     function discount_badge_label($item_discount_price, $item_current_price, bool $ignore_equal_value = true)
     {
-        $min_limit = config('amplify.marketing.discount_percent_to_flat_min_limit');
-
         if ($item_discount_price < $item_current_price) {
             $discounted_price = $item_current_price - $item_discount_price;
             $discount_perc = ($discounted_price / $item_current_price) * 100;
 
-            if ($discount_perc >= $min_limit) {
-                return round($discount_perc).'% Off';
+            if ($discounted_price >= $discount_perc) {
+                return price_format($discounted_price).' off';
             }
 
-            return price_format($discounted_price).' Off';
-
+            return round($discount_perc).'% off';
         }
 
         return ($ignore_equal_value) ? '' : 'Special Price';
