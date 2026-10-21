@@ -85,7 +85,7 @@ class SetupEnvCommand extends Command
                 $this->removeDir($directory);
             }
 
-            shell_exec("git clone https://github.com/amplify-plugin/{$package}-module.git {$directory}");
+            shell_exec("git clone git@github.com:amplify-plugin/{$package}-module.git {$directory}");
 
         }
 
