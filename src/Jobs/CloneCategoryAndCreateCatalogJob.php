@@ -72,19 +72,21 @@ class CloneCategoryAndCreateCatalogJob implements ShouldQueue
 
                 $this->assignNestedSet($this->category, $subtree, $mapping, $currentLft, depth: 1);
 
-                // Create exactly one new Catalog named after the cloned root.
-                // Inserted via the query builder so Catalog::booted()'s saved hook never
-                // fires: no placeholder Category is created and no Category is ever
-                // associated with the Catalog (cloned categories keep catalog_id = null).
-                $catalogName = $this->category->label;
-
-                DB::table('catalogs')->insert([
-                    'name' => $catalogName,
-                    'slug' => $this->uniqueCatalogSlug($catalogName),
+                // Create exactly one new Catalog named after the cloned root, then link
+                // the cloned root to it via categories.catalog_id. Inserted via the query
+                // builder so Catalog::booted()'s saved hook never fires and no
+                // placeholder Category is created.
+                $catalogId = DB::table('catalogs')->insertGetId([
+                    'name' => $this->category->label,
+                    'slug' => $this->uniqueCatalogSlug($this->category->label),
                     'active' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                DB::table('categories')
+                    ->where('id', $mapping[$this->category->id])
+                    ->update(['catalog_id' => $catalogId]);
             });
         } catch (\Throwable $e) {
             Log::error('CloneCategoryAndCreateCatalogJob failed', [
