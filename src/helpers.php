@@ -604,8 +604,9 @@ if (! function_exists('error_layout')) {
      * return the layout to extend on error display page
      *
      * @return string
+     * @throws Throwable
      */
-    function error_layout()
+    function error_layout(): string
     {
         return (request()->is(config('backpack.base.route_prefix').'/*') || request()->is('sales/*'))
                 ? 'errors.layout'
