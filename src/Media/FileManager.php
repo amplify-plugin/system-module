@@ -204,6 +204,186 @@ class FileManager
     }
 
     /**
+     * Store a single upload chunk in the local temporary storage
+     *
+     * @param  string  $uploadId
+     * @param  int     $chunkIndex
+     * @param  \Illuminate\Http\UploadedFile  $chunk
+     *
+     * @return array
+     */
+    public function chunkUpload($uploadId, $chunkIndex, $chunk): array
+    {
+        $chunkDir = $this->chunkDirectory($uploadId);
+
+        if (! is_dir($chunkDir)) {
+            mkdir($chunkDir, 0775, true);
+        }
+
+        $chunk->move($chunkDir, (string) $chunkIndex);
+
+        return [
+            'result' => [
+                'status'  => 'success',
+                'message' => 'chunkUploaded',
+            ],
+        ];
+    }
+
+    /**
+     * Assemble uploaded chunks and store the file to the target disk
+     * (works with any Flysystem disk - local, S3, etc.)
+     *
+     * @param  string  $disk
+     * @param  string|null  $path
+     * @param  string  $uploadId
+     * @param  string  $name
+     * @param  int  $totalChunks
+     * @param  bool  $overwrite
+     *
+     * @return array
+     */
+    public function chunkUploadFinish($disk, $path, $uploadId, $name, $totalChunks, $overwrite): array
+    {
+        $chunkDir = $this->chunkDirectory($uploadId);
+
+        // all chunks must exist
+        for ($i = 0; $i < $totalChunks; $i++) {
+            if (! file_exists($chunkDir.DIRECTORY_SEPARATOR.$i)) {
+                return [
+                    'result' => [
+                        'status'  => 'danger',
+                        'message' => 'chunkMissing',
+                    ],
+                ];
+            }
+        }
+
+        $extension = pathinfo($name, PATHINFO_EXTENSION);
+
+        // check file type
+        if ($this->configRepository->getAllowFileTypes()
+            && ! in_array($extension, $this->configRepository->getAllowFileTypes())
+        ) {
+            $this->removeChunkDirectory($chunkDir);
+
+            return [
+                'result' => [
+                    'status'  => 'warning',
+                    'message' => 'notAllUploaded',
+                ],
+            ];
+        }
+
+        $targetName = $name;
+        if ($this->configRepository->getSlugifyNames()) {
+            $targetName = Str::slug(Str::replace('.'.$extension, '', $name)).'.'.$extension;
+        }
+
+        $targetPath = ltrim(($path ? $path.'/' : '').$targetName, '/');
+
+        // skip or overwrite files
+        if (! $overwrite && Storage::disk($disk)->exists($targetPath)) {
+            $this->removeChunkDirectory($chunkDir);
+
+            return [
+                'result' => [
+                    'status'  => 'warning',
+                    'message' => 'notAllUploaded',
+                ],
+            ];
+        }
+
+        // assemble chunks into a temporary local file
+        $tmpFile = tempnam(sys_get_temp_dir(), 'fm-assemble');
+
+        for ($i = 0; $i < $totalChunks; $i++) {
+            $chunkFile = $chunkDir.DIRECTORY_SEPARATOR.$i;
+            file_put_contents($tmpFile, file_get_contents($chunkFile), FILE_APPEND);
+        }
+
+        // check file size
+        if ($this->configRepository->getMaxUploadFileSize()
+            && filesize($tmpFile) / 1024 > $this->configRepository->getMaxUploadFileSize()
+        ) {
+            $this->removeChunkDirectory($chunkDir);
+            @unlink($tmpFile);
+
+            return [
+                'result' => [
+                    'status'  => 'warning',
+                    'message' => 'notAllUploaded',
+                ],
+            ];
+        }
+
+        // stream the assembled file to the target disk
+        if ($stream = fopen($tmpFile, 'rb')) {
+            Storage::disk($disk)->put($targetPath, $stream);
+            fclose($stream);
+        }
+
+        // cleanup
+        @unlink($tmpFile);
+        $this->removeChunkDirectory($chunkDir);
+
+        return [
+            'result' => [
+                'status'  => 'success',
+                'message' => 'uploaded',
+            ],
+        ];
+    }
+
+    /**
+     * Abort a chunked upload - remove stored chunks
+     *
+     * @param  string  $uploadId
+     *
+     * @return array
+     */
+    public function chunkUploadAbort($uploadId): array
+    {
+        $this->removeChunkDirectory($this->chunkDirectory($uploadId));
+
+        return [
+            'result' => [
+                'status'  => 'success',
+                'message' => 'aborted',
+            ],
+        ];
+    }
+
+    /**
+     * Temporary directory for upload chunks
+     *
+     * @param  string  $uploadId
+     *
+     * @return string
+     */
+    protected function chunkDirectory($uploadId): string
+    {
+        return storage_path('app/fm-chunks').DIRECTORY_SEPARATOR.$uploadId;
+    }
+
+    /**
+     * Remove temporary chunk directory
+     *
+     * @param  string  $chunkDir
+     *
+     * @return void
+     */
+    protected function removeChunkDirectory($chunkDir): void
+    {
+        if (is_dir($chunkDir)) {
+            foreach (glob($chunkDir.DIRECTORY_SEPARATOR.'*') as $file) {
+                @unlink($file);
+            }
+            @rmdir($chunkDir);
+        }
+    }
+
+    /**
      * Delete files and folders
      *
      * @param $disk

@@ -146,6 +146,97 @@ class FileManagerController extends Controller
     }
 
     /**
+     * Upload a single file chunk
+     *
+     * @param  RequestValidator  $request
+     *
+     * @return JsonResponse
+     */
+    public function chunkUpload(RequestValidator $request): JsonResponse
+    {
+        $uploadId = $request->input('upload_id');
+
+        if (! preg_match('/^[A-Za-z0-9._-]+$/', (string) $uploadId)) {
+            return response()->json([
+                'result' => [
+                    'status'  => 'danger',
+                    'message' => 'notFound',
+                ],
+            ]);
+        }
+
+        return response()->json(
+            $this->fm->chunkUpload(
+                $uploadId,
+                (int) $request->input('chunk_index'),
+                $request->file('chunk')
+            )
+        );
+    }
+
+    /**
+     * Finalize a chunked upload - assemble chunks and store to the disk
+     *
+     * @param  RequestValidator  $request
+     *
+     * @return JsonResponse
+     */
+    public function chunkUploadFinish(RequestValidator $request): JsonResponse
+    {
+        $uploadId = $request->input('upload_id');
+
+        if (! preg_match('/^[A-Za-z0-9._-]+$/', (string) $uploadId)) {
+            return response()->json([
+                'result' => [
+                    'status'  => 'danger',
+                    'message' => 'notFound',
+                ],
+            ]);
+        }
+
+        $finishResponse = $this->fm->chunkUploadFinish(
+            $request->input('disk'),
+            $request->input('path'),
+            $uploadId,
+            $request->input('name'),
+            (int) $request->input('total_chunks'),
+            (bool) $request->input('overwrite')
+        );
+        $status = $finishResponse['result']['status'];
+
+        if ($status === 'success') {
+            event(new FilesUploaded($request));
+        } elseif ($status !== 'warning') {
+            event(new FilesUploadFailed($request, $finishResponse['result']['message']));
+        }
+
+        return response()->json($finishResponse);
+    }
+
+    /**
+     * Abort a chunked upload - remove stored chunks
+     *
+     * @param  RequestValidator  $request
+     *
+     * @return JsonResponse
+     */
+    public function chunkAbort(RequestValidator $request): JsonResponse
+    {
+        $uploadId = $request->input('upload_id');
+
+        if (! preg_match('/^[A-Za-z0-9._-]+$/', (string) $uploadId)) {
+            return response()->json([
+                'result' => [
+                    'status'  => 'danger',
+                    'message' => 'notFound',
+                ],
+            ]);
+        }
+
+        return response()->json($this->fm->chunkUploadAbort($uploadId));
+    }
+
+    /**
      * Delete files and folders
      *
      * @param  RequestValidator  $request

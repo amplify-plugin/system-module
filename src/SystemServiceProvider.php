@@ -2,13 +2,11 @@
 
 namespace Amplify\System;
 
-use Amplify\System\Commands\EasyAskDatabaseExportCommand;
 use Amplify\System\Facades\AssetsFacade;
 use Amplify\System\Providers\AuthServiceProvider;
 use Amplify\System\Providers\BladeServiceProvider;
 use Amplify\System\Providers\CommandServiceProvider;
 use Amplify\System\Providers\EventServiceProvider;
-use Amplify\System\Providers\FileManagerServiceProvider;
 use Amplify\System\Providers\HealthCheckServiceProvider;
 use Amplify\System\Providers\MicrosoftGraphMailProvider;
 use Amplify\System\Providers\ValidationServiceProvider;
@@ -32,21 +30,12 @@ class SystemServiceProvider extends ServiceProvider
         }
 
         $this->app->register(AuthServiceProvider::class);
-
         $this->app->register(EventServiceProvider::class);
-
         $this->app->register(BladeServiceProvider::class);
-
         $this->app->register(CommandServiceProvider::class);
-
         $this->app->register(HealthCheckServiceProvider::class);
-
         $this->app->register(ValidationServiceProvider::class);
-
-        $this->app->register(FileManagerServiceProvider::class);
-
         $this->app->register(MicrosoftGraphMailProvider::class);
-
         $this->app->singleton(AssetsLoader::class, fn () => new AssetsLoader);
     }
 
@@ -62,8 +51,6 @@ class SystemServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-
-        $this->loadRoutesFrom(__DIR__.'/../routes/backend.php');
 
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/amplify/system'),
