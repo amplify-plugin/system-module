@@ -674,7 +674,7 @@ if (! function_exists('frontendSingleProductURL')) {
         $params['identifier'] = $identifier;
 
         if (config('amplify.frontend.easyask_single_product_index') != 'product_slug') {
-            $params['slug'] = $product instanceof ItemRow ? $product->Product_Slug : $product->product_slug;
+            $params['slug'] =  $product->Product_Slug ?? $product->product_slug ?? '' ;
         }
 
         if (! empty($seo_path)) {
