@@ -19,27 +19,11 @@ trait ExceptionHandlerTrait
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $exception) {
-            if ($exception instanceof SystemException || Cache::has($this->exceptionSignature($exception))) {
-                logger()->error($exception);
-                return;
-            }
-
-            if ($exception instanceof \Error) {
-                $this->notifyException($exception);
-            }
-        });
-
         $this->renderable(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json(['message' => 'Not Found.'], 404);
             }
         });
-    }
-
-    private function exceptionSignature($exception): string
-    {
-        return sha1(get_class($exception) . "|{$exception->getFile()}|{$exception->getLine()}");
     }
 
     public function render($request, Throwable $exception)
@@ -93,12 +77,8 @@ trait ExceptionHandlerTrait
                     Mail::to($support_mails)->send(new ExceptionReportMail($content));
 
                 }
-
-                Cache::put($this->exceptionSignature($throwable), true, now()->addMinutes(5));
             }
         } catch (Throwable $exception) {
-
-            Cache::forget($this->exceptionSignature($throwable));
 
             throw new SystemException($throwable->getMessage(), 0, $exception);
         }
