@@ -20,6 +20,16 @@ class PaymentGatewayController extends Controller
             $config['allow_credit_payments'] = config('amplify.payment.allow_credit_payments', false);
             $config['allow_payments'] = config('amplify.payment.allow_payments', false);
 
+            switch ($driver) {
+                case 'cenpos':
+                    if (!empty($config['css_url']) && !str_starts_with($config['css_url'], 'http')) {
+                        $config['css_url'] = asset($config['css_url']);
+                    }
+                    break;
+
+                default:
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => null,
