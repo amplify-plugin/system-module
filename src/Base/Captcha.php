@@ -165,7 +165,7 @@ class Captcha
         protected Hasher $hasher
     ) {
         $this->characters = config('amplify.captcha.characters', ['1', '2', '3', '4', '6', '7', '8', '9']);
-        $this->fontsDirectory = config('amplify.captcha.fontsDirectory', public_path('vendor/captcha/fonts'));
+        $this->fontsDirectory = config('amplify.captcha.fontsDirectory', public_path('vendor/widget/fonts'));
     }
 
     /**
@@ -190,7 +190,7 @@ class Captcha
      */
     public function create(string $config = 'default', bool $api = false)
     {
-        $this->backgrounds = $this->files->files(public_path('vendor/captcha/backgrounds'));
+        $this->backgrounds = $this->files->files(public_path('vendor/widget/backgrounds'));
         $this->fonts = $this->files->files($this->fontsDirectory);
 
         if (version_compare(app()->version(), '5.5.0', '>=')) {
