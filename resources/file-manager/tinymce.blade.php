@@ -12,7 +12,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css">
-    <link href="{{ asset('vendor/file-manager/css/file-manager.css') }}" rel="stylesheet">
+    <link href="{{ mix('js/plugins/file-manager/css/file-manager.css', 'vendor/backend') }}" rel="stylesheet">
 </head>
 <body>
 <div class="container-fluid">
