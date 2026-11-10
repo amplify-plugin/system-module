@@ -12,7 +12,7 @@ return [
     'date_format' => 'd M Y',
     'first_day_of_week' => 0, // Sunday (Carbon::SUNDAY)
     'default_reorder_limit' => 10,
-    'navbar_brand' => 'img/Amplify Logo 280 tagline.png',
+    'navbar_brand' => 'assets/img/amplify.png',
     'length_options' => '10,25,50,100,500',
     'color_scheme' => 'orange',
     'force_password_reset_enabled' => true,
