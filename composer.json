@@ -36,7 +36,7 @@
         "backpack/ckeditor-field": "^1.0",
         "backpack/pro": "^3.0",
         "backpack/tinymce-field": "*",
-        "backpack/theme-coreuiv2": "*",
+        "backpack/theme-coreuiv2": "dev-main",
         "composer/semver": "^3.6",
         "consoletvs/charts": "^6.9",
         "cviebrock/eloquent-sluggable": "^12.0",
@@ -84,5 +84,11 @@
     "suggest": {
         "ext-pcntl": "For Linux with Ext. PCNTL enabled for parallel process.",
         "league/flysystem-ftp": "^3.28 To allow amplify to push database to easyask."
-    }
+    },
+    "repositories" : [
+        {
+            "type" : "vcs",
+            "url": "https://github.com/amplify-theme/theme-coreuiv2"
+        }
+    ]
 }
