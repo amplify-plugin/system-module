@@ -31,7 +31,7 @@ return [
      * List of disk names that you want to use
      * (from config/filesystems)
      */
-    'diskList' => ['uploads'],
+    'diskList' => explode(',', trim(env('AMPLIFY_FILE_MANAGER_DISKS', 'uploads'))),
 
     /**
      * Default disk for left manager
