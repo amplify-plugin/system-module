@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Providers;
 
-use Amplify\System\Checks\CpuLoad\CpuLoadCheck;
 use Amplify\System\Checks\ApiLog\EasyAskApiLogCheck;
 use Amplify\System\Checks\ApiLog\ErpApiLogCheck;
+use Amplify\System\Checks\CpuLoad\CpuLoadCheck;
 use Amplify\System\Checks\SslCertificate\SslCertificateExpiredCheck;
 use Amplify\System\Checks\SslCertificate\SslCertificateValidityCheck;
 use Amplify\System\Sayt\Facade\Sayt;

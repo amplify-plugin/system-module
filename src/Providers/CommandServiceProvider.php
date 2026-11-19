@@ -2,8 +2,8 @@
 
 namespace Amplify\System\Providers;
 
-use Amplify\System\Commands\AggregateProductPurchasedTogetherCommand;
 use Amplify\System\Commands\AddProductThumbnailCommand;
+use Amplify\System\Commands\AggregateProductPurchasedTogetherCommand;
 use Amplify\System\Commands\CreateAllLoginCommand;
 use Amplify\System\Commands\DefragmentTablesCommand;
 use Amplify\System\Commands\DeleteProductsCommand;

@@ -4,7 +4,6 @@ namespace Amplify\System\Pipelines\Checkout;
 
 use Amplify\System\Contexts\CheckoutContext;
 use Closure;
-use Illuminate\Validation\ValidationException;
 
 final class ValidateCheckoutTotals
 {

@@ -2,7 +2,6 @@
 
 namespace Amplify\System\Pipelines\Checkout;
 
-use Amplify\System\Backend\Models\Contact;
 use Amplify\System\Backend\Models\Customer;
 use Amplify\System\Contexts\CheckoutContext;
 use Amplify\System\Contracts\Checkout;

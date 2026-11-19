@@ -2,7 +2,6 @@
 
 namespace Amplify\System;
 
-use Amplify\System\Commands\EasyAskDatabaseExportCommand;
 use Amplify\System\Facades\AssetsFacade;
 use Amplify\System\Providers\AuthServiceProvider;
 use Amplify\System\Providers\BladeServiceProvider;
