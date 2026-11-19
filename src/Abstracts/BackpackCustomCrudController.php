@@ -28,7 +28,7 @@ abstract class BackpackCustomCrudController extends CrudController
     private function applyPermissions(): void
     {
         Permission::selectRaw("`name`, REPLACE(`name`, '{$this->crud->entity_name}.', '') as `operation`")
-            ->where('guard_name', User::AUTH_GUARD)
+            ->where('guard_name', backpack_guard_name())
             ->where('name', 'like', "{$this->crud->entity_name}.%")
             ->get()
             ->each(function ($item) {
