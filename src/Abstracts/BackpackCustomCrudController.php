@@ -5,7 +5,7 @@ namespace Amplify\System\Abstracts;
 use Amplify\System\Backend\Models\Permission;
 use Amplify\System\Backend\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-
+#[\AllowDynamicProperties]
 abstract class BackpackCustomCrudController extends CrudController
 {
 
